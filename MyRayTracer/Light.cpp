@@ -9,7 +9,7 @@ Light::Light(double x, double y, double z, double in, double rC, double gC, doub
 	b(bC)
 {
 	centre.x = x;
-	centre.y = y;
+    centre.y = y;
 	centre.z = z;
 }
 

@@ -29,48 +29,11 @@ Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 200, 1, 0, 0)};
 int noLights = NO_LIGHTS;
 Light lights[NO_LIGHTS] = {Light(0,0,0, 1.0, 1, 1, 1)};
 
-/* Return values:
- * -1: Hasn't hit any object.
- *  0: Has hit a regular object.
- *  1: Has hit a light.
- */
- //TODO: Maybe return 0 and 1 are the same!
-int rayTracer(Ray ray, int depth)
+
+void rayTracer(Ray ray, int depth)
 {
-	int i, z, index, outcome;
+	int i, z, index;
 	double minT = -1, t;
-	bool hitLight = false;
-	
-	/* We have reached the limit of recursivity for ray tracing.
-	 * Consequently, we assume that we can't reach the light and
-	 * therefore, the pixel colour will be black, corresponding
-	 * to the absence of colour.
-	 */
-	
-	//TODO: We may calculate the distance to the light and make
-	// some kind of fading, instead of just paiting it black.
-	// Also, the background now will be white, while it should be black.
-	if (depth == MAX_DEPTH)
-	{
-		image[ray.getHPos()][ray.getWPos()].r = ray.getR();
-		image[ray.getHPos()][ray.getWPos()].g = ray.getG();
-		image[ray.getHPos()][ray.getWPos()].b = ray.getB();
-		
-		//TODO: Correct value to return?
-		return -1;
-	}
-	/* If this ray has hit the light, we don't need to perform 
-	 * calculations any further.
-	 * TODO: Maybe improve this and change the location of this.
-	 */
-	else if (hitLight)
-	{
-		image[ray.getHPos()][ray.getWPos()].r = ray.getR();
-		image[ray.getHPos()][ray.getWPos()].g = ray.getG();
-		image[ray.getHPos()][ray.getWPos()].b = ray.getB();
-		
-		return 1;
-	}
 	
 	/* Goes throught all the objects. TODO: Improve this to more objects. */
 	for (i = 0; i < noSpheres; i++)
@@ -85,6 +48,7 @@ int rayTracer(Ray ray, int depth)
 	/* We have found at least one intersection. */
 	if (minT != -1)
 	{
+		ray.setIntersected(true);
 		/* Calculate the new direction of the ray. */
 		ray.newDirection(minT, spheres[index]);
 			
@@ -93,34 +57,89 @@ int rayTracer(Ray ray, int depth)
 		{
 			/* The directional vector between the intersection point and the light. */
 			vector toLight;
-			
 			toLight = lights[z].getCentre() - ray.getOrigin();
+
+			/* We also need to calculate the normal at the intersection point. */
+			vector normal = ray.getOrigin() - spheres[index].getCentre();
+			double length = sqrt((normal.x*normal.x)
+							+ (normal.y*normal.y)
+								+ (normal.z*normal.z));
+			normal /= length;
 			
-			bool isInShadow = false;
-			/* Now, we have to see if we are in the shadow of any other object. */
-			for (i = 0; i < noSpheres && !isInShadow; i++)
-				if (spheres[i].intersects(ray, t))
-					isInShadow = true;
+			bool inShadow = false;
+			/* If the normal is perpendicular or is in opposite direction of the light,
+			 * we can skip this light because it's not going to light the intersection
+			 * point.
+			 */
+			if (normal * toLight <= 0.0)
+				inShadow = true;
+			/* Now, we have to see if we are in the shadow of any other object.
+			 * For that, we create a temporary ray that goes from the intersection
+			 * point to the light spot.
+			 */
+			/*Ray toLightRay = Ray(ray.getOrigin().x, ray.getOrigin().y, ray.getOrigin().z, 0, 0);
+			toLightRay.setDirection(toLight);
+			toLightRay.normalize();
+			for (i = 0; i < noSpheres && !inShadow; i++)
+				if (spheres[i].intersects(toLightRay, t))
+					inShadow = true;*/
+			
+			/* We aren't in shadow of any other object. Therefore, we have to calculate
+			 * the contribution of this light to the final result.
+			 */
+			if (!inShadow)
+			{
+				/* The Lambert Effect. Depending on the direction of the light, it might
+				 * be more or less intense.
+				 */
+				//printf("%lf\n",lights[z].getIntensity() );
+				double lambert = (ray.getDir() * normal) * lights[z].getIntensity();
+				//if (lambert > 0)
+				//	printf("great! %lf\n", lambert);
+				ray.increaseIntensity(lambert);
+			}
 			
 			/* Updates the colour of the ray. */
 			ray.updateR(spheres[index].getR());
 			ray.updateG(spheres[index].getG());
 			ray.updateB(spheres[index].getB());
-			
-			
 		}
+	}	
+	
+		/* We have reached the limit of recursivity for ray tracing.
+	 * Consequently, we assume that we can't reach the light and
+	 * therefore, the pixel colour will be black, corresponding
+	 * to the absence of colour.
+	 * If we don't have any intersection, there's no point keep
+	 * calculating the ray tracing.
+	 */
+	if (minT == -1 || depth == MAX_DEPTH)
+	{
+		/* We are not going any further. Therefore, we need to know the intensity
+		 * of this ray and apply it to the different colours.
+		 */
+		ray.applyIntensity();
+		
+		if (ray.hasIntersected())
+		{
+			image[ray.getHPos()][ray.getWPos()].r = ray.getR();
+			image[ray.getHPos()][ray.getWPos()].g = ray.getG();
+			image[ray.getHPos()][ray.getWPos()].b = ray.getB();
+		}
+		/* Background colour. */
+		else
+		{
+			image[ray.getHPos()][ray.getWPos()].r = 0;
+			image[ray.getHPos()][ray.getWPos()].g = 0;
+			image[ray.getHPos()][ray.getWPos()].b = 0;
+		}
+	
 	}
-	/* If we don't have any intersection. */
-	/*else
-		return -1;
-	*/		
+	/* We need to move to the next level of recursivity. */	
+	else
+		rayTracer(ray, depth + 1);
 	
-	/* We need to move to the next level of recursivity. */
-	outcome = rayTracer(ray, depth + 1);
-	
-	//TODO: Handle the outcome.
-	
-	return outcome;
+	return;
 }
 
 void renderImage()
@@ -137,7 +156,6 @@ void renderImage()
 			ray.normalize();
 			ray.setColour(1, 1, 1);
 			rayTracer(ray, 0);
-			
 		}
    /*for each pixel i, j in the image
       ray.setStart(0, 0, 0);   // ro

@@ -1,4 +1,5 @@
 #include <cmath>
+#include <stdio.h>
 #include "Ray.h"
 
 /* In the constructor, we set the starting point of the ray. */
@@ -9,6 +10,8 @@ Ray::Ray(double x, double y, double z, int w, int h):
 	origin.x = x;
 	origin.y = y;
 	origin.z = z;
+	intersected = false;
+	intensity = 0;
 }
 
 //Destructor
@@ -20,6 +23,11 @@ void Ray::setDirection(double x, double y, double z)
 	direction.x = x;
 	direction.y = y;
 	direction.z = z;
+}
+
+void Ray::setDirection(vector &v)
+{
+	direction = v;
 }
 
 /* Normalizes the direction vector of the ray. */
@@ -46,9 +54,14 @@ void Ray::newDirection(double t, Sphere &sphere)
 	 * Where y is the intersection point and c the centre
 	 * of the sphere.
 	 */
-	normal.x = origin.x + t*origin.x - sphere.getCentre().x;
-	normal.y = origin.y + t*origin.y - sphere.getCentre().y;
-	normal.z = origin.y + t*origin.z - sphere.getCentre().z;
+	normal.x = origin.x + t*direction.x - sphere.getCentre().x;
+	normal.y = origin.y + t*direction.y - sphere.getCentre().y;
+	normal.z = origin.y + t*direction.z - sphere.getCentre().z;
+	
+	/* Now, we update the start of the ray, which
+	 * is the intersection point.
+	 */
+	origin = origin + t*direction;
 	
 	/* Then, calculates the normal. */
 	double length = sqrt((normal.x*normal.x)
@@ -63,13 +76,23 @@ void Ray::newDirection(double t, Sphere &sphere)
 	 * TODO: That outter n is inner or external product?
 	 */
 	direction += -2*(direction*normal)*direction;
-	
-	/* Now, we update the start of the ray, which
-	 * is the intersection point.
-	 */
-	origin += t*origin;
-	
+
 	return;
+}
+
+void Ray::applyIntensity()
+{
+	r *= intensity;
+	g *= intensity;
+	b *= intensity;
+	
+	/* Make sure we don't overtake the normalized values. */
+	if (r > 1.0)
+		r = 1.0;
+	if (g > 1.0)
+		g = 1.0;
+	if (b > 1.0)
+		b = 1.0;
 }
 
 /* Returns the corresponding pixel in the final image. */
@@ -79,6 +102,8 @@ int Ray::getHPos() { return hPos; }
 vector Ray::getDir() {return direction;}
 point Ray::getOrigin() {return origin;}
 void Ray::setOrigin(point &p) { origin = p;}
+void Ray::setIntersected(bool b) {intersected = b;}
+bool Ray::hasIntersected() { return intersected;}
 
 /* Returns the colour for this ray or sets its initial colour. */
 double Ray::getR() {return r;}
@@ -90,3 +115,5 @@ void Ray::setColour(double rC, double gC, double bC) { r = rC; g = gC; b = bC;}
 void Ray::updateR(double per) { r *= per;};
 void Ray::updateG(double per) { g *= per;};
 void Ray::updateB(double per) { b *= per;};
+
+void Ray::increaseIntensity(double v) {intensity += v;};

@@ -9,7 +9,7 @@ Sphere::Sphere(double x, double y, double z, double rad, double rC, double gC, d
 	b(bC)
 {
 	centre.x = x;
-	centre.y = y;
+    centre.y = y;
 	centre.z = z;
 }
 
@@ -23,32 +23,16 @@ Sphere::~Sphere() {}
  *
  * OTHER INTERSECTIONS:
  * http://flylib.com/books/en/2.124.1.137/1/
- */
-double Sphere::getACoeficient(Ray &ray)
-{
-	//a = (x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2
-	return ray.getDir()*ray.getDir();
-}
-
-double Sphere::getBCoeficient(Ray &ray)
-{
-	//b = 2[ (x2 - x1) (x1 - x3) + (y2 - y1) (y1 - y3) + (z2 - z1) (z1 - z3) ]
-	return 2*(ray.getDir()*(ray.getOrigin() - centre));
-
-}
-double Sphere::getCCoeficient(Ray &ray)
-{
-	//c = x3^2 + y3^2 + z3^2 + x1^2 + y1^2 + z1^2 - 2[x3.x1 + y3.y1 + z3.z1] - r^2
-	return centre*centre + ray.getOrigin()*ray.getOrigin() - 2*(ray.getOrigin()*centre) - radius*radius;
-
-} 
- 
+ */ 
 bool Sphere::intersects(Ray &ray, double &t)
 {
     /* Compute a, b and c coefficients. */
-    double a = getACoeficient(ray);
-	double b = getBCoeficient(ray);
-    double c = getCCoeficient(ray);
+	//a = (x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2
+    double a = ray.getDir()*ray.getDir();
+	//b = 2[ (x2 - x1) (x1 - x3) + (y2 - y1) (y1 - y3) + (z2 - z1) (z1 - z3) ]
+	double b = 2*(ray.getDir()*(ray.getOrigin() - centre));
+	//c = x3^2 + y3^2 + z3^2 + x1^2 + y1^2 + z1^2 - 2[x3.x1 + y3.y1 + z3.z1] - r^2
+    double c = centre*centre + ray.getOrigin()*ray.getOrigin() - 2*(ray.getOrigin()*centre) - radius*radius;
 
     /* Find the discriminant. */
     double disc = b * b - 4 * a * c;
