@@ -24,10 +24,10 @@ pixelColour image[SCREEN_W][SCREEN_H];
 
 /* Definition of all objects in the scene. */
 int noSpheres = NO_SPHERES;
-Sphere spheres[NO_SPHERES] = {Sphere(125,325,200, 100, 1, 0.1, 0.1)};
+Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 100, 1.0, 1, 0.1, 0.1)};
 
 int noLights = NO_LIGHTS;
-Light lights[NO_LIGHTS] = {Light(-100,-100,0, 1.0, 1, 1, 1)};
+Light lights[NO_LIGHTS] = {Light(500,300,200, 1.0, 1, 1, 1)};
 
 
 void rayTracer(Ray ray, int depth)
@@ -61,28 +61,27 @@ void rayTracer(Ray ray, int depth)
 
 			/* We also need to calculate the normal at the intersection point. */
 			vector normal = ray.getOrigin() - spheres[index].getCentre();
-			double length = sqrt((normal.x*normal.x)
-							+ (normal.y*normal.y)
-								+ (normal.z*normal.z));
+			double length = sqrtf(normal*normal);
 			normal /= length;
 			
-			bool inShadow = false;
+			bool inShadow = true;
 			/* If the normal is perpendicular or is in opposite direction of the light,
 			 * we can skip this light because it's not going to light the intersection
 			 * point.
 			 */
-			//if (normal * toLight <= 0.0)
-			//	inShadow = true;
+			if (normal * toLight <= 0.0)
+				continue;
+
 			/* Now, we have to see if we are in the shadow of any other object.
 			 * For that, we create a temporary ray that goes from the intersection
 			 * point to the light spot.
 			 */
-			/*Ray toLightRay = Ray(ray.getOrigin().x, ray.getOrigin().y, ray.getOrigin().z, 0, 0);
+			Ray toLightRay = Ray(ray.getOrigin().x, ray.getOrigin().y, ray.getOrigin().z, 0, 0);
 			toLightRay.setDirection(toLight);
 			toLightRay.normalize();
-			for (i = 0; i < noSpheres && !inShadow; i++)
+			for (i = 0; i < noSpheres && inShadow; i++)
 				if (spheres[i].intersects(toLightRay, t))
-					inShadow = true;*/
+					inShadow = false;
 			
 			/* We aren't in shadow of any other object. Therefore, we have to calculate
 			 * the contribution of this light to the final result.
@@ -92,36 +91,31 @@ void rayTracer(Ray ray, int depth)
 				/* The Lambert Effect. Depending on the direction of the light, it might
 				 * be more or less intense.
 				 */
-				//printf("%lf\n",lights[z].getIntensity() );
-				double lambert = (ray.getDir() * normal) * lights[z].getIntensity();
-				//if (lambert > 0)
-				//	printf("great! %lf\n", lambert);
-				ray.increaseIntensity(lambert);
-			}
-			
-			/* Updates the colour of the ray. */
-			ray.updateR(spheres[index].getR());
-			ray.updateG(spheres[index].getG());
-			ray.updateB(spheres[index].getB());
+				double lambert = (toLightRay.getDir() * normal * lights[z].getIntensity());
+				
+				/* Updates the colour of the ray. */
+				ray.increaseR(lambert*lights[z].getR()*spheres[index].getR());
+				ray.increaseG(lambert*lights[z].getG()*spheres[index].getG());
+				ray.increaseB(lambert*lights[z].getB()*spheres[index].getB());
+			}	
 		}
+		
+		ray.multIntensity(spheres[index].getReflection());
 	}	
 	
-		/* We have reached the limit of recursivity for ray tracing.
+	/* We have reached the limit of recursivity for ray tracing.
 	 * Consequently, we assume that we can't reach the light and
 	 * therefore, the pixel colour will be black, corresponding
 	 * to the absence of colour.
 	 * If we don't have any intersection, there's no point keep
-	 * calculating the ray tracing.
+	 * calculating the ray tracing. Also, the ray might not carry
+	 * any more energy.
 	 */
-	if (minT == -1 || depth == MAX_DEPTH)
+	if (minT == -1 || depth == MAX_DEPTH || ray.getIntensity() == 0.0)
 	{
-		/* We are not going any further. Therefore, we need to know the intensity
-		 * of this ray and apply it to the different colours.
-		 */
-		ray.applyIntensity();
-		
 		if (ray.hasIntersected())
 		{
+			ray.normalizeColour();
 			image[ray.getHPos()][ray.getWPos()].r = ray.getR();
 			image[ray.getHPos()][ray.getWPos()].g = ray.getG();
 			image[ray.getHPos()][ray.getWPos()].b = ray.getB();
@@ -154,7 +148,6 @@ void renderImage()
 			Ray ray(j,i,-1000.0, i, j);
 			ray.setDirection(0,0,1.0);
 			ray.normalize();
-			ray.setColour(1, 1, 1);
 			rayTracer(ray, 0);
 		}
    /*for each pixel i, j in the image

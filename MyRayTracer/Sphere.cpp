@@ -1,8 +1,9 @@
 #include "Sphere.h"
 
 /* In the constructor, we set the starting point of the ray. */
-Sphere::Sphere(double x, double y, double z, double rad, double rC, double gC, double bC):
+Sphere::Sphere(double x, double y, double z, double rad, double ref, double rC, double gC, double bC):
 	radius(rad),
+	reflection(ref),
 	/* Remember, these are percentages of reflection. */
 	r(rC),
 	g(gC),
@@ -89,3 +90,5 @@ double Sphere::getRadius() { return radius; }
 double Sphere::getR() {return r;}
 double Sphere::getG() {return g;}
 double Sphere::getB() {return b;}
+
+double Sphere::getReflection() {return reflection;}

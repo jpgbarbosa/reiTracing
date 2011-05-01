@@ -12,6 +12,10 @@ Ray::Ray(double x, double y, double z, int w, int h):
 	origin.z = z;
 	intersected = false;
 	intensity = 0;
+	
+	r = 0;
+	g = 0;
+	b = 0;
 }
 
 //Destructor
@@ -54,9 +58,7 @@ void Ray::newDirection(double t, Sphere &sphere)
 	 * Where y is the intersection point and c the centre
 	 * of the sphere.
 	 */
-	normal.x = origin.x + t*direction.x - sphere.getCentre().x;
-	normal.y = origin.y + t*direction.y - sphere.getCentre().y;
-	normal.z = origin.y + t*direction.z - sphere.getCentre().z;
+	normal = origin + t*direction - sphere.getCentre();
 	
 	/* Now, we update the start of the ray, which
 	 * is the intersection point.
@@ -64,9 +66,7 @@ void Ray::newDirection(double t, Sphere &sphere)
 	origin = origin + t*direction;
 	
 	/* Then, calculates the normal. */
-	double length = sqrt((normal.x*normal.x)
-					+ (normal.y*normal.y)
-						+ (normal.z*normal.z));
+	double length = sqrtf(normal*normal);
 	normal /= length;
 	
 	/* With the normal calculated, we find the new direction
@@ -80,15 +80,9 @@ void Ray::newDirection(double t, Sphere &sphere)
 	return;
 }
 
-void Ray::applyIntensity()
+/* Normalize colour in order to avoid values superior to 1. */
+double Ray::normalizeColour()
 {
-	intensity /= 200000;
-	
-	r *= intensity;
-	g *= intensity;
-	b *= intensity;
-	
-	/* Make sure we don't overtake the normalized values. */
 	if (r > 1.0)
 		r = 1.0;
 	if (g > 1.0)
@@ -111,11 +105,11 @@ bool Ray::hasIntersected() { return intersected;}
 double Ray::getR() {return r;}
 double Ray::getG() {return g;}
 double Ray::getB() {return b;}
-void Ray::setColour(double rC, double gC, double bC) { r = rC; g = gC; b = bC;}
 
 /* Updates the colour for this ray. */
-void Ray::updateR(double per) { r *= per;};
-void Ray::updateG(double per) { g *= per;};
-void Ray::updateB(double per) { b *= per;};
+void Ray::increaseR(double per) { r += per;};
+void Ray::increaseG(double per) { g += per;};
+void Ray::increaseB(double per) { b += per;};
 
-void Ray::increaseIntensity(double v) {intensity += v;};
+double Ray::getIntensity() { return intensity;};
+void Ray::multIntensity(double v) {intensity *= v;};
