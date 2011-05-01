@@ -82,6 +82,8 @@ void Ray::newDirection(double t, Sphere &sphere)
 
 void Ray::applyIntensity()
 {
+	intensity /= 200000;
+	
 	r *= intensity;
 	g *= intensity;
 	b *= intensity;

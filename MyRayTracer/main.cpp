@@ -24,10 +24,10 @@ pixelColour image[SCREEN_W][SCREEN_H];
 
 /* Definition of all objects in the scene. */
 int noSpheres = NO_SPHERES;
-Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 200, 1, 0, 0)};
+Sphere spheres[NO_SPHERES] = {Sphere(125,325,200, 100, 1, 0.1, 0.1)};
 
 int noLights = NO_LIGHTS;
-Light lights[NO_LIGHTS] = {Light(0,0,0, 1.0, 1, 1, 1)};
+Light lights[NO_LIGHTS] = {Light(-100,-100,0, 1.0, 1, 1, 1)};
 
 
 void rayTracer(Ray ray, int depth)
@@ -71,8 +71,8 @@ void rayTracer(Ray ray, int depth)
 			 * we can skip this light because it's not going to light the intersection
 			 * point.
 			 */
-			if (normal * toLight <= 0.0)
-				inShadow = true;
+			//if (normal * toLight <= 0.0)
+			//	inShadow = true;
 			/* Now, we have to see if we are in the shadow of any other object.
 			 * For that, we create a temporary ray that goes from the intersection
 			 * point to the light spot.
