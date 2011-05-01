@@ -1,0 +1,15 @@
+/*** globalvar.h ***/
+extern double     (*objint[])();
+extern int        (*objnrm[])();
+extern int        nlight,lightlim;
+extern t_light    light[];
+extern int        nobject,objectlim;
+extern t_object   object[];
+extern int        nsurface,surfacelim;
+extern t_surface  surface[];
+extern int        sizex,sizey;
+extern t_3d       eyep,lookp,up;
+extern double     hfov,vfov;
+extern int        level,maxlevel;
+extern char       *outfilename[];
+extern t_color    background;

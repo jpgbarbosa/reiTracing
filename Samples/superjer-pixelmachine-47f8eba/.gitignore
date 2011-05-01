@@ -1,0 +1,6 @@
+images/*
+video/*
+*.o
+stderr.txt
+stdout.txt
+pixelmachine
