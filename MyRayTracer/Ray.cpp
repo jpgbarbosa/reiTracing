@@ -11,7 +11,7 @@ Ray::Ray(double x, double y, double z, int w, int h):
 	origin.y = y;
 	origin.z = z;
 	intersected = false;
-	intensity = 0;
+	intensity = 1;
 	
 	r = 0;
 	g = 0;
@@ -75,7 +75,7 @@ void Ray::newDirection(double t, Sphere &sphere)
 	 * Where d is the old direction and n is the normal.
 	 * TODO: That outter n is inner or external product?
 	 */
-	direction += -2*(direction*normal)*direction;
+	direction += -2*(direction*normal)*normal;
 
 	return;
 }

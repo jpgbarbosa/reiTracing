@@ -52,33 +52,63 @@ bool Sphere::intersects(Ray &ray, double &t)
     else
         q = (-b + distSqrt)/2.0;
 
-    // compute t0 and t1
+    /* Compute t0 and t1. */
     double t0 = q / a;
     double t1 = c / q;
 
-    // make sure t0 is smaller than t1
+    /* Make sure t0 is smaller than t1. */
     if (t0 > t1)
     {
-        // if t0 is bigger than t1 swap them around
+        /* If t0 is bigger than t1, swap them around. */
         float temp = t0;
         t0 = t1;
         t1 = temp;
     }
 
-    // if t1 is less than zero, the object is in the ray's negative direction
-    // and consequently the ray misses the sphere
-    if (t1 < 0)
+    /* If t1 is less than zero, the object is in the ray's negative direction
+     * and consequently, the ray misses the sphere.
+	 * Also, if the intersection point is the same as the starting point, we
+	 * simply ignore it.
+	 */
+    if (t1 <= 0 || t0 <= 0)
         return false;
 
-    // if t0 is less than zero, the intersection point is at t1
+    /* If t0 is less than zero, the intersection point is at t1. */
     if (t0 < 0)
 		t = t1;
-
-    // else the intersection point is at t0
+    /* Else, the intersection point is at t0. */
     else
 		t = t0;
- 
+	
 	return true;
+}
+
+bool Sphere::intersectsTwo(Ray &ray, double &t)
+{
+    // Intersection of a ray and a sphere
+    // Check the articles for the rationale
+    // NB : this is probably a naive solution
+    // that could cause precision problems
+    // but that will do it for now. 
+    vector dist = centre - ray.getOrigin(); 
+    double B = ray.getDir() * dist;
+    double D = B*B - dist * dist + radius * radius; 
+    if (D < 0.0f) 
+        return false; 
+    double t0 = B - sqrtf(D); 
+    double t1 = B + sqrtf(D);
+    bool retvalue = false;  
+    if ((t0 > 0.1f) && (t0 < t)) 
+    {
+        t = t0;
+        retvalue = true; 
+    } 
+    if ((t1 > 0.1f) && (t1 < t)) 
+    {
+        t = t1; 
+        retvalue = true; 
+    }
+    return retvalue; 
 }
 
 /* Returns centre and radius of the sphere. */

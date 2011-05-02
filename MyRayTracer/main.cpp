@@ -25,7 +25,7 @@ pixelColour image[SCREEN_W][SCREEN_H];
 /* Definition of all objects in the scene. */
 int noSpheres = NO_SPHERES;
 //Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 100, 1.0, 1, 0, 0), Sphere(325,515,100, 100, 1.0, 0.0, 0.0, 1.0)};
-Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 100, 1.0, 1, 0, 0)};
+Sphere spheres[NO_SPHERES] = {Sphere(300,400,-10, 100, 1.0, 1, 0, 0)};
 
 int noLights = NO_LIGHTS;
 Light lights[NO_LIGHTS] = {Light(300,400,-1000, 1.0, 1, 1, 1)};
@@ -35,6 +35,9 @@ void rayTracer(Ray ray, int depth)
 {
 	int i, z, index;
 	double minT = -1, t;
+	
+	//if (depth > 3)
+	//	printf("DEPTH IS %d\n", depth);
 	
 	/* Goes throught all the objects. TODO: Improve this to more objects. */
 	for (i = 0; i < noSpheres; i++)
@@ -49,6 +52,8 @@ void rayTracer(Ray ray, int depth)
 	/* We have found at least one intersection. */
 	if (minT != -1)
 	{
+		if (depth > 0)
+			printf("Damn\n");
 		ray.setIntersected(true);
 		/* Calculate the new direction of the ray. */
 		ray.newDirection(minT, spheres[index]);
@@ -93,7 +98,7 @@ void rayTracer(Ray ray, int depth)
 				/* The Lambert Effect. Depending on the direction of the light, it might
 				 * be more or less intense.
 				 */
-				double lambert = (toLightRay.getDir() * normal * lights[z].getIntensity());
+				double lambert = (toLightRay.getDir() * normal * lights[z].getIntensity() * ray.getIntensity());
 				
 				/* Updates the colour of the ray. */
 				ray.increaseR(lambert*lights[z].getR()*spheres[index].getR());
