@@ -28,7 +28,7 @@ int noSpheres = NO_SPHERES;
 Sphere spheres[NO_SPHERES] = {Sphere(300,400,100, 100, 1.0, 1, 0, 0)};
 
 int noLights = NO_LIGHTS;
-Light lights[NO_LIGHTS] = {Light(300,400,-1000, 1.0, 1, 1, 1)};
+Light lights[NO_LIGHTS] = {Light(0,0,0, 0.2, 1, 1, 1)};
 
 
 void rayTracer(Ray ray, int depth)
@@ -62,10 +62,11 @@ void rayTracer(Ray ray, int depth)
 
 			/* We also need to calculate the normal at the intersection point. */
 			vector normal = ray.getOrigin() - spheres[index].getCentre();
-			double length = sqrtf(normal*normal);
-			normal /= length;
+			double temp = normal*normal;
+			double length = 1.0/sqrtf(temp);
+			normal = length*normal;
 			
-			bool inShadow = true;
+			bool inShadow = false;
 			/* If the normal is perpendicular or is in opposite direction of the light,
 			 * we can skip this light because it's not going to light the intersection
 			 * point.
@@ -78,11 +79,12 @@ void rayTracer(Ray ray, int depth)
 			 * point to the light spot.
 			 */
 			Ray toLightRay = Ray(ray.getOrigin().x, ray.getOrigin().y, ray.getOrigin().z, 0, 0);
+		
 			toLightRay.setDirection(toLight);
 			toLightRay.normalize();
-			for (i = 0; i < noSpheres && inShadow; i++)
-				if (spheres[i].intersects(toLightRay, t))
-					inShadow = false;
+			for (i = 0; i < noSpheres && !inShadow; i++)
+				if (spheres[i].intersects(toLightRay, t) && i != index)
+					inShadow = true;
 			
 			/* We aren't in shadow of any other object. Therefore, we have to calculate
 			 * the contribution of this light to the final result.
@@ -92,7 +94,7 @@ void rayTracer(Ray ray, int depth)
 				/* The Lambert Effect. Depending on the direction of the light, it might
 				 * be more or less intense.
 				 */
-				double lambert = (toLightRay.getDir() * normal * lights[z].getIntensity());
+				double lambert = (toLightRay.getDir() * normal) * ray.getIntensity() * lights[z].getIntensity();
 				
 				/* Updates the colour of the ray. */
 				ray.increaseR(lambert*lights[z].getR()*spheres[index].getR());
