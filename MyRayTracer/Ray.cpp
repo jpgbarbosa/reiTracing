@@ -11,7 +11,7 @@ Ray::Ray(double x, double y, double z, int w, int h):
 	origin.y = y;
 	origin.z = z;
 	intersected = false;
-	intensity = 1;
+	intensity = 0;
 	
 	r = 0;
 	g = 0;

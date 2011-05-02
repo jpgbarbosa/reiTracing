@@ -25,10 +25,10 @@ pixelColour image[SCREEN_W][SCREEN_H];
 /* Definition of all objects in the scene. */
 int noSpheres = NO_SPHERES;
 //Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 100, 1.0, 1, 0, 0), Sphere(325,515,100, 100, 1.0, 0.0, 0.0, 1.0)};
-Sphere spheres[NO_SPHERES] = {Sphere(300,400,100, 100, 1.0, 1, 0, 0)};
+Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 100, 1.0, 1, 0, 0)};
 
 int noLights = NO_LIGHTS;
-Light lights[NO_LIGHTS] = {Light(0,0,0, 0.2, 1, 1, 1)};
+Light lights[NO_LIGHTS] = {Light(300,400,-1000, 1.0, 1, 1, 1)};
 
 
 void rayTracer(Ray ray, int depth)
@@ -62,9 +62,8 @@ void rayTracer(Ray ray, int depth)
 
 			/* We also need to calculate the normal at the intersection point. */
 			vector normal = ray.getOrigin() - spheres[index].getCentre();
-			double temp = normal*normal;
-			double length = 1.0/sqrtf(temp);
-			normal = length*normal;
+			double length = sqrtf(normal*normal);
+			normal /= length;
 			
 			bool inShadow = false;
 			/* If the normal is perpendicular or is in opposite direction of the light,
@@ -79,10 +78,10 @@ void rayTracer(Ray ray, int depth)
 			 * point to the light spot.
 			 */
 			Ray toLightRay = Ray(ray.getOrigin().x, ray.getOrigin().y, ray.getOrigin().z, 0, 0);
-		
 			toLightRay.setDirection(toLight);
 			toLightRay.normalize();
 			for (i = 0; i < noSpheres && !inShadow; i++)
+				//TODO: Does the second part of the && is correct?
 				if (spheres[i].intersects(toLightRay, t) && i != index)
 					inShadow = true;
 			
@@ -94,7 +93,7 @@ void rayTracer(Ray ray, int depth)
 				/* The Lambert Effect. Depending on the direction of the light, it might
 				 * be more or less intense.
 				 */
-				double lambert = (toLightRay.getDir() * normal) * ray.getIntensity() * lights[z].getIntensity();
+				double lambert = (toLightRay.getDir() * normal * lights[z].getIntensity());
 				
 				/* Updates the colour of the ray. */
 				ray.increaseR(lambert*lights[z].getR()*spheres[index].getR());
