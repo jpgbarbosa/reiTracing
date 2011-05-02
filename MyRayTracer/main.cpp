@@ -10,8 +10,8 @@
 
 #define SCREEN_W 800
 #define SCREEN_H 600
-#define MAX_DEPTH 5
-#define NO_SPHERES 1
+#define MAX_DEPTH 1
+#define NO_SPHERES 2
 #define NO_LIGHTS 1
 
 /* The screen definition. */
@@ -25,7 +25,7 @@ pixelColour image[SCREEN_W][SCREEN_H];
 /* Definition of all objects in the scene. */
 int noSpheres = NO_SPHERES;
 //Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 100, 1.0, 1, 0, 0), Sphere(325,515,100, 100, 1.0, 0.0, 0.0, 1.0)};
-Sphere spheres[NO_SPHERES] = {Sphere(300,400,-10, 100, 1.0, 1, 0, 0)};
+Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 100, 1.0, 1, 0.1, 0.1), Sphere(100,100,0, 100, 1.0, 0.1, 0.1, 1)};
 
 int noLights = NO_LIGHTS;
 Light lights[NO_LIGHTS] = {Light(300,400,-1000, 1.0, 1, 1, 1)};
@@ -52,9 +52,6 @@ void rayTracer(Ray ray, int depth)
 	/* We have found at least one intersection. */
 	if (minT != -1)
 	{
-		if (depth > 0)
-			printf("Damn\n");
-		ray.setIntersected(true);
 		/* Calculate the new direction of the ray. */
 		ray.newDirection(minT, spheres[index]);
 			
@@ -104,6 +101,7 @@ void rayTracer(Ray ray, int depth)
 				ray.increaseR(lambert*lights[z].getR()*spheres[index].getR());
 				ray.increaseG(lambert*lights[z].getG()*spheres[index].getG());
 				ray.increaseB(lambert*lights[z].getB()*spheres[index].getB());
+				ray.setIntersected(true);
 			}	
 		}
 		
@@ -183,7 +181,56 @@ void display()
 			pixels[i*(screenWidth*3) + j*3 + 1] = image[i][j].g;
 			pixels[i*(screenWidth*3) + j*3 + 2] = image[i][j].b;
 		}
-		
+	/* Aliasing techniques:
+	 * Given all the calculated colours from the ray tracing process, we
+	 * pick up all the values around it and calculate its mean. That mean
+	 * will be the final colour of the pixel.
+	 */	
+	for( i = 1; i < screenHeight - 1; i++)
+	{
+		for (j = 1; j < screenWidth - 1; j++)
+		{
+			/* RED. */
+			double value;
+			value = pixels[(i-1)*(screenWidth*3) + (j-1)*3]
+					+ pixels[(i-1)*(screenWidth*3) + j*3]
+					  + pixels[(i-1)*(screenWidth*3) + (j+1)*3]
+					    + pixels[i*(screenWidth*3) + (j-1)*3]
+						  + pixels[i*(screenWidth*3) + j*3]
+						    + pixels[i*(screenWidth*3) + (j+1)*3]
+							  + pixels[(i+1)*(screenWidth*3) + (j-1)*3]
+							    + pixels[(i+1)*(screenWidth*3) + j*3]
+								  + pixels[(i+1)*(screenWidth*3) + (j+1)*3];
+			
+			pixels[i*(screenWidth*3) + j*3] = value / 9;
+			
+			/* GREEN. */
+			value = pixels[(i-1)*(screenWidth*3) + (j-1)*3 + 1]
+					+ pixels[(i-1)*(screenWidth*3) + j*3 + 1]
+					  + pixels[(i-1)*(screenWidth*3) + (j+1)*3 + 1]
+					    + pixels[i*(screenWidth*3) + (j-1)*3 + 1]
+						  + pixels[i*(screenWidth*3) + j*3 + 1]
+						    + pixels[i*(screenWidth*3) + (j+1)*3 + 1]
+							  + pixels[(i+1)*(screenWidth*3) + (j-1)*3 + 1]
+							    + pixels[(i+1)*(screenWidth*3) + j*3 + 1]
+								  + pixels[(i+1)*(screenWidth*3) + (j+1)*3 + 1];
+			
+			pixels[i*(screenWidth*3) + j*3 + 1] = value / 9;
+			
+			/* BLUE. */
+			value = pixels[(i-1)*(screenWidth*3) + (j-1)*3 + 2]
+					+ pixels[(i-1)*(screenWidth*3) + j*3 + 2]
+					  + pixels[(i-1)*(screenWidth*3) + (j+1)*3 + 2]
+					    + pixels[i*(screenWidth*3) + (j-1)*3 + 2]
+						  + pixels[i*(screenWidth*3) + j*3 + 2]
+						    + pixels[i*(screenWidth*3) + (j+1)*3 + 2]
+							  + pixels[(i+1)*(screenWidth*3) + (j-1)*3 + 2]
+							    + pixels[(i+1)*(screenWidth*3) + j*3 + 2]
+								  + pixels[(i+1)*(screenWidth*3) + (j+1)*3 + 2];
+			
+			pixels[i*(screenWidth*3) + j*3 + 2] = value / 9;
+		}
+	}
 	
 	/*for( i = 0; i < screenHeight; i++)
 		for (j = 0; j < screenWidth; j++)

@@ -52,6 +52,7 @@ void Ray::normalize()
 void Ray::newDirection(double t, Sphere &sphere)
 {
 	vector normal;
+	vector oldDir;
 	
 	/* First, we calculate the normal.
 	 * n = (y - c) / ||y - c||
@@ -75,7 +76,8 @@ void Ray::newDirection(double t, Sphere &sphere)
 	 * Where d is the old direction and n is the normal.
 	 * TODO: That outter n is inner or external product?
 	 */
-	direction += -2*(direction*normal)*normal;
+	oldDir = direction;
+	direction = direction - 2*(direction*normal)*normal;
 
 	return;
 }
@@ -109,7 +111,7 @@ double Ray::getB() {return b;}
 /* Updates the colour for this ray. */
 void Ray::increaseR(double per) { r += per;};
 void Ray::increaseG(double per) { g += per;};
-void Ray::increaseB(double per) { b += per;};
+void Ray::increaseB(double per) { b = per;};
 
 double Ray::getIntensity() { return intensity;};
 void Ray::multIntensity(double v) {intensity *= v;};
