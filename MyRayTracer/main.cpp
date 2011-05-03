@@ -1,6 +1,8 @@
 #include <windows.h>
 #include <GL/glut.h>
 #include <stdio.h>
+#include <cmath>
+#include <algorithm>
 
 /* Defines the needed classes and their headers. */
 #include "Sphere.h"
@@ -25,12 +27,10 @@ pixelColour image[SCREEN_W][SCREEN_H];
 
 /* Definition of all objects in the scene. */
 int noSpheres = NO_SPHERES;
-//Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 100, 1.0, 1, 0, 0), Sphere(325,515,100, 100, 1.0, 0.0, 0.0, 1.0)};
-Sphere spheres[NO_SPHERES] = {Sphere(100,200,100, 50, 0.5, 0, 0, 1),
-								Sphere(200,300,-100, 80, 0.5, 1, 0, 0)};
+Sphere spheres[NO_SPHERES];
 
 int noLights = NO_LIGHTS;
-Light lights[NO_LIGHTS] = {Light(300,400,-1000, 1.0, 1, 1, 1)};
+Light lights[NO_LIGHTS];
 
 double min(double t, double v)
 {
@@ -60,6 +60,12 @@ void rayTracer(Ray ray, int depth)
 	/* We have found at least one intersection. */
 	if (minT != -1)
 	{
+		/* Used in the Blinn-Phong calculation. */
+		vector oldDir;
+		oldDir.x = ray.getDir().x;
+		oldDir.y = ray.getDir().y;
+		oldDir.z = ray.getDir().z;
+		
 		/* Calculate the new direction of the ray. */
 		ray.newDirection(minT, spheres[index]);
 			
@@ -103,12 +109,32 @@ void rayTracer(Ray ray, int depth)
 				/* The Lambert Effect. Depending on the direction of the light, it might
 				 * be more or less intense.
 				 */
-				double lambert = (toLightRay.getDir() * normal * lights[z].getIntensity() * ray.getIntensity());
+				double lambert = (toLightRay.getDir() * normal * ray.getIntensity());
 				
 				/* Updates the colour of the ray. */
 				ray.increaseR(lambert*lights[z].getR()*spheres[index].getR());
 				ray.increaseG(lambert*lights[z].getG()*spheres[index].getG());
 				ray.increaseB(lambert*lights[z].getB()*spheres[index].getB());
+			
+				/* The Blinn-Phong Effect. 
+                 * The direction of Blinn is exactly at mid point of the light ray 
+                 * and the view ray. 
+                 * We compute the Blinn vector and then we normalize it
+                 * then we compute the coeficient of blinn
+                 * which is the specular contribution of the current light.
+				  */
+                double fViewProjection = oldDir * normal;
+				double fLightProjection = toLightRay.getDir() * normal;
+				vector blinnDir = toLightRay.getDir() - oldDir;
+				double temp = blinnDir * blinnDir;
+				if (temp != 0.0f )
+				{
+					double blinn = 1.0/sqrtf(temp) * max(fLightProjection - fViewProjection , 0.0);
+                    blinn = ray.getIntensity() * powf(blinn, spheres[index].getPower());
+					ray.increaseR(blinn * spheres[index].getSpecular().r  * lights[z].getIntensity());
+					ray.increaseG(blinn * spheres[index].getSpecular().g  * lights[z].getIntensity());
+					ray.increaseB(blinn * spheres[index].getSpecular().b  * lights[z].getIntensity());
+				}
 			}	
 		}
 		
@@ -241,6 +267,29 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(screenWidth, screenHeight);
 	glutCreateWindow("Our Ray Tracer");
+	
+	/* Spheres initialization. */
+	spheres[0] = Sphere(100.0,200.0,0.0, 50.0, 0.0, 0.0, 1.0);
+	spheres[0].setReflection(0.7);
+	spheres[0].setPower(0.2);
+	spheres[0].setSpecularR(0.1);
+	spheres[0].setSpecularG(0.0);
+	spheres[0].setSpecularB(1.0);
+	spheres[0].setDiffuseR(0.01);
+	spheres[0].setDiffuseG(0.05);
+	spheres[0].setDiffuseB(0.9);
+	spheres[1] = Sphere(500.0,300.0,0.0, 80.0, 1.0, 0.0, 0.0);
+	spheres[1].setReflection(0.1);
+	spheres[1].setPower(0.8);
+	spheres[1].setSpecularR(0.8);
+	spheres[1].setSpecularG(0.7);
+	spheres[1].setSpecularB(0.6);
+	spheres[1].setDiffuseR(0.9);
+	spheres[1].setDiffuseG(0.1);
+	spheres[1].setDiffuseB(0.1);
+	
+	/* Lights initialization. */
+	lights[0] = Light(300,400,-1000, 1.0, 1, 1, 1);
 	
 	// Starts the ray tracing process.
 	renderImage();

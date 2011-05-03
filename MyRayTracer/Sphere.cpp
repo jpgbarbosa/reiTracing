@@ -1,9 +1,8 @@
 #include "Sphere.h"
 
 /* In the constructor, we set the starting point of the ray. */
-Sphere::Sphere(double x, double y, double z, double rad, double ref, double rC, double gC, double bC):
+Sphere::Sphere(double x, double y, double z, double rad, double rC, double gC, double bC):
 	radius(rad),
-	reflection(ref),
 	/* Remember, these are percentages of reflection. */
 	r(rC),
 	g(gC),
@@ -14,6 +13,7 @@ Sphere::Sphere(double x, double y, double z, double rad, double ref, double rC, 
 	centre.z = z;
 }
 
+Sphere::Sphere() {}
 //Destructor
 Sphere::~Sphere() {}
 
@@ -83,34 +83,6 @@ bool Sphere::intersects(Ray &ray, double &t)
 	return true;
 }
 
-bool Sphere::intersectsTwo(Ray &ray, double &t)
-{
-    // Intersection of a ray and a sphere
-    // Check the articles for the rationale
-    // NB : this is probably a naive solution
-    // that could cause precision problems
-    // but that will do it for now. 
-    vector dist = centre - ray.getOrigin(); 
-    double B = ray.getDir() * dist;
-    double D = B*B - dist * dist + radius * radius; 
-    if (D < 0.0f) 
-        return false; 
-    double t0 = B - sqrtf(D); 
-    double t1 = B + sqrtf(D);
-    bool retvalue = false;  
-    if ((t0 > 0.1f) && (t0 < t)) 
-    {
-        t = t0;
-        retvalue = true; 
-    } 
-    if ((t1 > 0.1f) && (t1 < t)) 
-    {
-        t = t1; 
-        retvalue = true; 
-    }
-    return retvalue; 
-}
-
 /* Returns centre and radius of the sphere. */
 point Sphere::getCentre() { return centre; }
 double Sphere::getRadius() { return radius; }
@@ -122,3 +94,14 @@ double Sphere::getG() {return g;}
 double Sphere::getB() {return b;}
 
 double Sphere::getReflection() {return reflection;}
+double Sphere::getPower() { return power;}
+colour Sphere::getSpecular() { return specular;}
+colour Sphere::getDiffuse() { return diffuse;}
+void Sphere::setReflection(double v) {reflection = v;}
+void Sphere::setPower(double v) {power = v;}
+void Sphere::setSpecularR(double v) {specular.r = v;}
+void Sphere::setSpecularG(double v) {specular.g = v;}
+void Sphere::setSpecularB(double v) {specular.b = v;}
+void Sphere::setDiffuseR(double v) {diffuse.r = v;}
+void Sphere::setDiffuseG(double v) {diffuse.g = v;}
+void Sphere::setDiffuseB(double v) {diffuse.b = v;}

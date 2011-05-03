@@ -13,13 +13,13 @@ Light::Light(double x, double y, double z, double in, double rC, double gC, doub
 	centre.z = z;
 }
 
+Light::Light() { }
 //Destructor
 Light::~Light() {}
 
 /* Returns centre and radius of the sphere. */
 point Light::getCentre() { return centre; }
 double Light::getIntensity() { return intensity; }
-
 
 /* Returns the colour of this sphere. */
 double Light::getR() {return r;}
