@@ -122,18 +122,21 @@ void rayTracer(Ray ray, int depth)
                  * We compute the Blinn vector and then we normalize it
                  * then we compute the coeficient of blinn
                  * which is the specular contribution of the current light.
-				  */
-                double fViewProjection = oldDir * normal;
-				double fLightProjection = toLightRay.getDir() * normal;
+				 */
 				vector blinnDir = toLightRay.getDir() - oldDir;
-				double temp = blinnDir * blinnDir;
-				if (temp != 0.0f )
+				double internProd = blinnDir * blinnDir;
+				
+				if (internProd != 0.0 )
 				{
-					double blinn = 1.0/sqrtf(temp) * max(fLightProjection - fViewProjection , 0.0);
-                    blinn = ray.getIntensity() * powf(blinn, spheres[index].getPower());
-					ray.increaseR(blinn * spheres[index].getSpecular().r  * lights[z].getIntensity());
-					ray.increaseG(blinn * spheres[index].getSpecular().g  * lights[z].getIntensity());
-					ray.increaseB(blinn * spheres[index].getSpecular().b  * lights[z].getIntensity());
+					double fViewProjection = oldDir * normal;
+					double fLightProjection = toLightRay.getDir() * normal;
+				
+					/* Calculates the coeficient and then applies it to each colour component. */
+					double blinnCoef = 1.0/sqrtf(internProd) * max(fLightProjection - fViewProjection , 0.0);
+                    blinnCoef = ray.getIntensity() * powf(blinnCoef, spheres[index].getPower());
+					ray.increaseR(blinnCoef * spheres[index].getSpecular().r  * lights[z].getIntensity());
+					ray.increaseG(blinnCoef * spheres[index].getSpecular().g  * lights[z].getIntensity());
+					ray.increaseB(blinnCoef * spheres[index].getSpecular().b  * lights[z].getIntensity());
 				}
 			}	
 		}
@@ -271,19 +274,19 @@ int main(int argc, char** argv) {
 	/* Spheres initialization. */
 	spheres[0] = Sphere(100.0,200.0,0.0, 50.0, 0.0, 0.0, 1.0);
 	spheres[0].setReflection(0.7);
-	spheres[0].setPower(0.2);
-	spheres[0].setSpecularR(0.1);
-	spheres[0].setSpecularG(0.0);
+	spheres[0].setPower(50);
+	spheres[0].setSpecularR(1);
+	spheres[0].setSpecularG(1);
 	spheres[0].setSpecularB(1.0);
 	spheres[0].setDiffuseR(0.01);
 	spheres[0].setDiffuseG(0.05);
 	spheres[0].setDiffuseB(0.9);
 	spheres[1] = Sphere(500.0,300.0,0.0, 80.0, 1.0, 0.0, 0.0);
 	spheres[1].setReflection(0.1);
-	spheres[1].setPower(0.8);
-	spheres[1].setSpecularR(0.8);
-	spheres[1].setSpecularG(0.7);
-	spheres[1].setSpecularB(0.6);
+	spheres[1].setPower(50);
+	spheres[1].setSpecularR(1);
+	spheres[1].setSpecularG(1);
+	spheres[1].setSpecularB(1);
 	spheres[1].setDiffuseR(0.9);
 	spheres[1].setDiffuseG(0.1);
 	spheres[1].setDiffuseB(0.1);
