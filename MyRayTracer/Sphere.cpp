@@ -70,7 +70,7 @@ bool Sphere::intersects(Ray &ray, double &t)
 	 * Also, if the intersection point is the same as the starting point, we
 	 * simply ignore it.
 	 */
-    if (t1 <= 0 || t0 <= 0)
+    if (t1 <= EPSLON || t0 <= EPSLON)
         return false;
 
     /* If t0 is less than zero, the intersection point is at t1. */

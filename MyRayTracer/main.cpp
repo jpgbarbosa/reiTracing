@@ -42,7 +42,7 @@ double min(double t, double v)
 void rayTracer(Ray ray, int depth)
 {
 	int i, z, index;
-	double minT = -1, t;
+	double minT = -1, t = -1;
 	
 	//if (depth > 3)
 	//	printf("DEPTH IS %d\n", depth);
@@ -50,12 +50,14 @@ void rayTracer(Ray ray, int depth)
 	/* Goes throught all the objects. TODO: Improve this to more objects. */
 	for (i = 0; i < noSpheres; i++)
 		if (spheres[i].intersects(ray, t))
+		{
 			/* Finds the closest. */
 			if (t < minT || minT == -1)
 			{
 				minT = t;
 				index = i;
 			}
+		}
 	
 	/* We have found at least one intersection. */
 	if (minT != -1)
@@ -168,13 +170,13 @@ void rayTracer(Ray ray, int depth)
 
 void renderImage()
 {
-	int i, j;
+	int x, y;
 	
-	for (i = 0; i < screenHeight; i++)
-		for (j = 0; j < screenWidth; j++)
+	for (y = 0; y < screenHeight; y++)
+		for (x = 0; x < screenWidth; x++)
 		{
 			/*TODO: Change the starting point and the direction later. */
-			Ray ray(j,i,-1000.0, i, j);
+			Ray ray(x,y,-1000.0, y, x);
 			ray.setDirection(0,0,1.0);
 			ray.normalize();
 			rayTracer(ray, 0);
@@ -272,24 +274,24 @@ int main(int argc, char** argv) {
 	glutCreateWindow("Our Ray Tracer");
 	
 	/* Spheres initialization. */
-	spheres[0] = Sphere(100.0,200.0,0.0, 50.0, 0.0, 0.0, 1.0);
-	spheres[0].setReflection(0.7);
+	spheres[0] = Sphere(500.0,300, 100.0, 80.0, 1.0, 0.0, 0.0);
+	spheres[0].setReflection(1.0);
 	spheres[0].setPower(50);
 	spheres[0].setSpecularR(1);
 	spheres[0].setSpecularG(1);
-	spheres[0].setSpecularB(1.0);
-	spheres[0].setDiffuseR(0.01);
-	spheres[0].setDiffuseG(0.05);
-	spheres[0].setDiffuseB(0.9);
-	spheres[1] = Sphere(500.0,300.0,0.0, 80.0, 1.0, 0.0, 0.0);
-	spheres[1].setReflection(0.1);
+	spheres[0].setSpecularB(1);
+	spheres[0].setDiffuseR(0.9);
+	spheres[0].setDiffuseG(0.1);
+	spheres[0].setDiffuseB(0.1);
+	spheres[1] = Sphere(100.0,200.0,-100.0, 50.0, 0.0, 0.0, 1.0);
+	spheres[1].setReflection(0.7);
 	spheres[1].setPower(50);
 	spheres[1].setSpecularR(1);
 	spheres[1].setSpecularG(1);
-	spheres[1].setSpecularB(1);
-	spheres[1].setDiffuseR(0.9);
-	spheres[1].setDiffuseG(0.1);
-	spheres[1].setDiffuseB(0.1);
+	spheres[1].setSpecularB(1.0);
+	spheres[1].setDiffuseR(0.01);
+	spheres[1].setDiffuseG(0.05);
+	spheres[1].setDiffuseB(0.9);
 	
 	/* Lights initialization. */
 	lights[0] = Light(300,400,-1000, 1.0, 1, 1, 1);
