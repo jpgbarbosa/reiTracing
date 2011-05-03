@@ -14,6 +14,7 @@
 #define NO_SPHERES 2
 #define NO_LIGHTS 1
 
+using namespace std;
 /* The screen definition. */
 int screenWidth = SCREEN_W;
 int screenHeight = SCREEN_H;
@@ -25,12 +26,18 @@ pixelColour image[SCREEN_W][SCREEN_H];
 /* Definition of all objects in the scene. */
 int noSpheres = NO_SPHERES;
 //Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 100, 1.0, 1, 0, 0), Sphere(325,515,100, 100, 1.0, 0.0, 0.0, 1.0)};
-Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 50, 0.15, 0, 0, 1),
-								Sphere(200,300,0, 80, 0.15, 1, 0, 0)};
+Sphere spheres[NO_SPHERES] = {Sphere(100,200,100, 50, 0.5, 0, 0, 1),
+								Sphere(200,300,-100, 80, 0.5, 1, 0, 0)};
 
 int noLights = NO_LIGHTS;
 Light lights[NO_LIGHTS] = {Light(300,400,-1000, 1.0, 1, 1, 1)};
 
+double min(double t, double v)
+{
+	if (t < v)
+		return t;
+	return v;
+}
 
 void rayTracer(Ray ray, int depth)
 {
@@ -102,7 +109,6 @@ void rayTracer(Ray ray, int depth)
 				ray.increaseR(lambert*lights[z].getR()*spheres[index].getR());
 				ray.increaseG(lambert*lights[z].getG()*spheres[index].getG());
 				ray.increaseB(lambert*lights[z].getB()*spheres[index].getB());
-				ray.setIntersected(true);
 			}	
 		}
 		
@@ -119,21 +125,10 @@ void rayTracer(Ray ray, int depth)
 	 */
 	if (minT == -1 || depth == MAX_DEPTH || ray.getIntensity() == 0.0)
 	{
-		if (ray.hasIntersected())
-		{
-			//ray.normalizeColour();
-			image[ray.getHPos()][ray.getWPos()].r = ray.getR();
-			image[ray.getHPos()][ray.getWPos()].g = ray.getG();
-			image[ray.getHPos()][ray.getWPos()].b = ray.getB();
-		}
-		/* Background colour. */
-		else
-		{
-			image[ray.getHPos()][ray.getWPos()].r = 0;
-			image[ray.getHPos()][ray.getWPos()].g = 0;
-			image[ray.getHPos()][ray.getWPos()].b = 0;
-		}
-	
+		ray.normalizeColour();
+		image[ray.getHPos()][ray.getWPos()].r = ray.getR();
+		image[ray.getHPos()][ray.getWPos()].g = ray.getG();
+		image[ray.getHPos()][ray.getWPos()].b = ray.getB();
 	}
 	/* We need to move to the next level of recursivity. */	
 	else
@@ -145,7 +140,6 @@ void rayTracer(Ray ray, int depth)
 void renderImage()
 {
 	int i, j;
-	
 	
 	for (i = 0; i < screenHeight; i++)
 		for (j = 0; j < screenWidth; j++)
@@ -178,9 +172,9 @@ void display()
 	for( i = 0; i < screenHeight; i++)
 		for (j = 0; j < screenWidth; j++)
 		{
-			pixels[i*(screenWidth*3) + j*3] = image[i][j].r;
-			pixels[i*(screenWidth*3) + j*3 + 1] = image[i][j].g;
-			pixels[i*(screenWidth*3) + j*3 + 2] = image[i][j].b;
+			pixels[i*(screenWidth*3) + j*3] = image[j][i].r;
+			pixels[i*(screenWidth*3) + j*3 + 1] = image[j][i].g;
+			pixels[i*(screenWidth*3) + j*3 + 2] = image[j][i].b;
 		}
 	/* Aliasing techniques:
 	 * Given all the calculated colours from the ray tracing process, we
@@ -232,25 +226,10 @@ void display()
 			pixels[i*(screenWidth*3) + j*3 + 2] = value / 9;
 		}
 	}
-	
-	/*for( i = 0; i < screenHeight; i++)
-		for (j = 0; j < screenWidth; j++)
-		{
-			float no;
-			if (j > 600)
-				no = 1;
-			else
-				no = 0.0;
-			
-			pixels[i*(screenWidth*3) + j*3] = no;
-			pixels[i*(screenWidth*3) + j*3 + 1] = no;
-			pixels[i*(screenWidth*3) + j*3 + 2] = no;
-		}
-	*/
+		
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	/* Writes a block of pixels to the framebuffer. */
-
 	glDrawPixels(screenWidth,screenHeight,GL_RGB,GL_FLOAT, pixels);
 
 	glutSwapBuffers();

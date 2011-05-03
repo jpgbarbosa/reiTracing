@@ -10,7 +10,6 @@ Ray::Ray(double x, double y, double z, int w, int h):
 	origin.x = x;
 	origin.y = y;
 	origin.z = z;
-	intersected = false;
 	intensity = 1;
 	
 	r = 0;
@@ -52,7 +51,6 @@ void Ray::normalize()
 void Ray::newDirection(double t, Sphere &sphere)
 {
 	vector normal;
-	vector oldDir;
 	
 	/* First, we calculate the normal.
 	 * n = (y - c) / ||y - c||
@@ -64,7 +62,7 @@ void Ray::newDirection(double t, Sphere &sphere)
 	/* Now, we update the start of the ray, which
 	 * is the intersection point.
 	 */
-	origin = origin + t*direction;
+	origin = origin + t*direction;	
 	
 	/* Then, calculates the normal. */
 	double length = sqrtf(normal*normal);
@@ -76,7 +74,6 @@ void Ray::newDirection(double t, Sphere &sphere)
 	 * Where d is the old direction and n is the normal.
 	 * TODO: That outter n is inner or external product?
 	 */
-	oldDir = direction;
 	direction = direction - 2*(direction*normal)*normal;
 
 	return;
@@ -100,8 +97,6 @@ int Ray::getHPos() { return hPos; }
 vector Ray::getDir() {return direction;}
 point Ray::getOrigin() {return origin;}
 void Ray::setOrigin(point &p) { origin = p;}
-void Ray::setIntersected(bool b) {intersected = b;}
-bool Ray::hasIntersected() { return intersected;}
 
 /* Returns the colour for this ray or sets its initial colour. */
 double Ray::getR() {return r;}
