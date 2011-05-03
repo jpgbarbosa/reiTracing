@@ -111,7 +111,7 @@ double Ray::getB() {return b;}
 /* Updates the colour for this ray. */
 void Ray::increaseR(double per) { r += per;};
 void Ray::increaseG(double per) { g += per;};
-void Ray::increaseB(double per) { b = per;};
+void Ray::increaseB(double per) { b += per;};
 
 double Ray::getIntensity() { return intensity;};
 void Ray::multIntensity(double v) {intensity *= v;};

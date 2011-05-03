@@ -25,7 +25,8 @@ pixelColour image[SCREEN_W][SCREEN_H];
 /* Definition of all objects in the scene. */
 int noSpheres = NO_SPHERES;
 //Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 100, 1.0, 1, 0, 0), Sphere(325,515,100, 100, 1.0, 0.0, 0.0, 1.0)};
-Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 100, 1.0, 1, 0.1, 0.1), Sphere(100,100,0, 100, 1.0, 0.1, 0.1, 1)};
+Sphere spheres[NO_SPHERES] = {Sphere(300,400,0, 50, 0.15, 0, 0, 1),
+								Sphere(200,300,0, 80, 0.15, 1, 0, 0)};
 
 int noLights = NO_LIGHTS;
 Light lights[NO_LIGHTS] = {Light(300,400,-1000, 1.0, 1, 1, 1)};
