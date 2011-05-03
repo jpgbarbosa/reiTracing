@@ -25,7 +25,9 @@ int screenSize = SCREEN_W*SCREEN_H;
 /* This array will hold all the colours for all the pixels in the screen. */
 pixelColour image[SCREEN_W][SCREEN_H];
 
-/* Definition of all objects in the scene. */
+/* Definition of all objects in the scene, as well as the camera. */
+point camera; // TODO: For now, we are assuming that the view plan is at z = 0;
+
 int noSpheres = NO_SPHERES;
 Sphere spheres[NO_SPHERES];
 
@@ -42,11 +44,8 @@ double min(double t, double v)
 void rayTracer(Ray ray, int depth)
 {
 	int i, z, index;
-	double minT = -1, t = -1;
-	
-	//if (depth > 3)
-	//	printf("DEPTH IS %d\n", depth);
-	
+	double minT = -1, t;
+
 	/* Goes throught all the objects. TODO: Improve this to more objects. */
 	for (i = 0; i < noSpheres; i++)
 		if (spheres[i].intersects(ray, t))
@@ -178,6 +177,9 @@ void renderImage()
 			/*TODO: Change the starting point and the direction later. */
 			Ray ray(x,y,-1000.0, y, x);
 			ray.setDirection(0,0,1.0);
+			//point pixelPoint = {(0.5 + x, 0.5 + y, 0.0)};
+			//vector dir = pixelPoint - camera;
+			//ray.setDirection(dir);
 			ray.normalize();
 			rayTracer(ray, 0);
 		}
@@ -272,6 +274,11 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(screenWidth, screenHeight);
 	glutCreateWindow("Our Ray Tracer");
+	
+	/* Camera initialization. */
+	camera.x = 300;
+	camera.y = 400;
+	camera.z = -1000;
 	
 	/* Spheres initialization. */
 	spheres[0] = Sphere(500.0,300, 100.0, 80.0, 1.0, 0.0, 0.0);
