@@ -1,8 +1,6 @@
 #include <windows.h>
 #include <GL/glut.h>
 #include <stdio.h>
-#include <cmath>
-#include <algorithm>
 
 /* Defines the needed classes and their headers. */
 #include "Sphere.h"
@@ -282,26 +280,26 @@ int main(int argc, char** argv) {
 	
 	/* Spheres initialization. */
 	spheres[0] = Sphere(500.0,300, 100.0, 80.0, 1.0, 0.0, 0.0);
-	spheres[0].setReflection(1.0);
+	spheres[0].setReflection(0.01);
 	spheres[0].setPower(50);
 	spheres[0].setSpecularR(1);
 	spheres[0].setSpecularG(1);
 	spheres[0].setSpecularB(1);
 	spheres[0].setDiffuseR(0.9);
-	spheres[0].setDiffuseG(0.1);
-	spheres[0].setDiffuseB(0.1);
-	spheres[1] = Sphere(100.0,200.0,-100.0, 50.0, 0.0, 0.0, 1.0);
-	spheres[1].setReflection(0.7);
+	spheres[0].setDiffuseG(0.0);
+	spheres[0].setDiffuseB(0.0);
+	spheres[1] = Sphere(380.0,220.0,-100.0, 50.0, 0.0, 0.0, 1.0);
+	spheres[1].setReflection(0.01);
 	spheres[1].setPower(50);
 	spheres[1].setSpecularR(1);
 	spheres[1].setSpecularG(1);
 	spheres[1].setSpecularB(1.0);
-	spheres[1].setDiffuseR(0.01);
-	spheres[1].setDiffuseG(0.05);
+	spheres[1].setDiffuseR(0.0);
+	spheres[1].setDiffuseG(0.0);
 	spheres[1].setDiffuseB(0.9);
 	
 	/* Lights initialization. */
-	lights[0] = Light(300,400,-1000, 1.0, 1, 1, 1);
+	lights[0] = Light(0,0,-1000, 1.0, 1, 1, 1);
 	
 	// Starts the ray tracing process.
 	renderImage();
