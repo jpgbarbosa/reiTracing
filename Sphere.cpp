@@ -8,7 +8,7 @@ Sphere::Sphere(double x, double y, double z, double rad, double rC, double gC, d
     Object(x, y, z, rC, gC, bC);
 }
 
-Sphere::Sphere() {}
+Sphere::Sphere() { Object(); }
 //Destructor
 Sphere::~Sphere() {}
 
