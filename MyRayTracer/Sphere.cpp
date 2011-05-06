@@ -2,15 +2,10 @@
 
 /* In the constructor, we set the starting point of the ray. */
 Sphere::Sphere(double x, double y, double z, double rad, double rC, double gC, double bC):
-	radius(rad),
-	/* Remember, these are percentages of reflection. */
-	r(rC),
-	g(gC),
-	b(bC)
+	radius(rad)
 {
-	centre.x = x;
-    centre.y = y;
-	centre.z = z;
+    /* Creates the parent class. */
+    Object(x, y, z, rC, gC, bC);
 }
 
 Sphere::Sphere() {}
@@ -86,22 +81,3 @@ bool Sphere::intersects(Ray &ray, double &t)
 /* Returns centre and radius of the sphere. */
 point Sphere::getCentre() { return centre; }
 double Sphere::getRadius() { return radius; }
-
-
-/* Returns the colour of this sphere. */
-double Sphere::getR() {return r;}
-double Sphere::getG() {return g;}
-double Sphere::getB() {return b;}
-
-double Sphere::getReflection() {return reflection;}
-double Sphere::getPower() { return power;}
-colour Sphere::getSpecular() { return specular;}
-colour Sphere::getDiffuse() { return diffuse;}
-void Sphere::setReflection(double v) {reflection = v;}
-void Sphere::setPower(double v) {power = v;}
-void Sphere::setSpecularR(double v) {specular.r = v;}
-void Sphere::setSpecularG(double v) {specular.g = v;}
-void Sphere::setSpecularB(double v) {specular.b = v;}
-void Sphere::setDiffuseR(double v) {diffuse.r = v;}
-void Sphere::setDiffuseG(double v) {diffuse.g = v;}
-void Sphere::setDiffuseB(double v) {diffuse.b = v;}
