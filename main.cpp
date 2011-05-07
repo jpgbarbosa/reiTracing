@@ -117,11 +117,11 @@ void rayTracer(Ray ray, int depth)
 				ray.increaseB(lambert*lights[z].getB()*spheres[index].getB());
 			
 				/* The Blinn-Phong Effect. 
-                 * The direction of Blinn is exactly at mid point of the light ray 
-                 * and the view ray. 
-                 * We compute the Blinn vector and then we normalize it
-                 * then we compute the coeficient of blinn
-                 * which is the specular contribution of the current light.
+                                 * The direction of Blinn is exactly at mid point of the light ray
+                                 * and the view ray.
+                                 * We compute the Blinn vector and then we normalize it
+                                 * then we compute the coeficient of blinn
+                                 * which is the specular contribution of the current light.
 				 */
 				vector blinnDir = toLightRay.getDir() - oldDir;
 				double internProd = blinnDir * blinnDir;
@@ -133,7 +133,7 @@ void rayTracer(Ray ray, int depth)
 				
 					/* Calculates the coeficient and then applies it to each colour component. */
 					double blinnCoef = 1.0/sqrtf(internProd) * max(fLightProjection - fViewProjection , 0.0);
-                    blinnCoef = ray.getIntensity() * powf(blinnCoef, spheres[index].getPower());
+                                        blinnCoef = ray.getIntensity() * powf(blinnCoef, spheres[index].getShininess());
 					ray.increaseR(blinnCoef * spheres[index].getSpecular().r  * lights[z].getIntensity());
 					ray.increaseG(blinnCoef * spheres[index].getSpecular().g  * lights[z].getIntensity());
 					ray.increaseB(blinnCoef * spheres[index].getSpecular().b  * lights[z].getIntensity());
@@ -282,22 +282,14 @@ int main(int argc, char** argv) {
 	/* Spheres initialization. */
 	spheres[0] = Sphere(500.0,300, 100.0, 80.0, 1.0, 0.0, 0.0);
 	spheres[0].setReflection(0.01);
-	spheres[0].setPower(50);
-	spheres[0].setSpecularR(1);
-	spheres[0].setSpecularG(1);
-	spheres[0].setSpecularB(1);
-	spheres[0].setDiffuseR(0.9);
-	spheres[0].setDiffuseG(0.0);
-	spheres[0].setDiffuseB(0.0);
+	spheres[0].setShininess(50);
+	spheres[0].setSpecular(1, 1, 1);
+	spheres[0].setDiffuse(0.9, 0, 0);
 	spheres[1] = Sphere(380.0,220.0,-100.0, 50.0, 0.0, 0.0, 1.0);
 	spheres[1].setReflection(0.01);
-	spheres[1].setPower(50);
-	spheres[1].setSpecularR(1);
-	spheres[1].setSpecularG(1);
-	spheres[1].setSpecularB(1.0);
-	spheres[1].setDiffuseR(0.0);
-	spheres[1].setDiffuseG(0.0);
-	spheres[1].setDiffuseB(0.9);
+	spheres[1].setShininess(50);
+	spheres[1].setSpecular(1, 1, 1);
+	spheres[1].setDiffuse(0.0, 0.0, 0.9);
 	
 	/* Lights initialization. */
 	lights[0] = Light(0,0,-1000, 1.0, 1, 1, 1);
