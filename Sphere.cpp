@@ -1,3 +1,4 @@
+/* Defines the needed classes and their headers. */
 #include "Sphere.h"
 #include "Object.h"
 #include "Ray.h"
@@ -5,7 +6,6 @@
 /* In the constructor, we set the starting point of the ray. */
 Sphere::Sphere(double x, double y, double z, double rad, double rC, double gC, double bC):
 	radius(rad)
-	/* Remember, these are percentages of reflection. */
 {
     centre.x = x;
     centre.y = y;
@@ -85,6 +85,5 @@ bool Sphere::intersects(Ray &ray, double &t)
 	return true;
 }
 
-/* Returns centre and radius of the sphere. */
-point Sphere::getCentre() { return centre; }
+/* Returns the radius of the sphere. */
 double Sphere::getRadius() { return radius; }

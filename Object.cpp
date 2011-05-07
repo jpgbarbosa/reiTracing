@@ -1,10 +1,13 @@
+/* Defines the needed classes and their headers. */
 #include "Object.h"
 #include "Ray.h"
 
-//Constructor
+/* Constructor. */
 Object::Object() { }
-//Destructor
+/* Destructor */
 Object::~Object() {}
+
+point Object::getCentre() { return centre; }
 
 /* Returns the colour of this Object. */
 double Object::getR() {return c.r;}

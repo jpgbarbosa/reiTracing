@@ -1,5 +1,6 @@
 #include <cmath>
-#include <stdio.h>
+
+/* Defines the needed classes and their headers. */
 #include "Ray.h"
 #include "Sphere.h"
 
