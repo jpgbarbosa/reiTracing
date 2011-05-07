@@ -1,6 +1,7 @@
 #include <cmath>
 #include <stdio.h>
 #include "Ray.h"
+#include "Sphere.h"
 
 /* In the constructor, we set the starting point of the ray. */
 Ray::Ray(double x, double y, double z, int w, int h):

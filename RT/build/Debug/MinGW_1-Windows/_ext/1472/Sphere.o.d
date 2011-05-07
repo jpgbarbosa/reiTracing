@@ -1,8 +1,10 @@
 build/Debug/MinGW_1-Windows/_ext/1472/Sphere.o: ../Sphere.cpp ../Sphere.h \
- ../Ray.h ../BasicStructures.h
+ ../BasicStructures.h ../Object.h ../Ray.h
 
 ../Sphere.h:
 
-../Ray.h:
-
 ../BasicStructures.h:
+
+../Object.h:
+
+../Ray.h:

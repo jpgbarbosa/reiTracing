@@ -1,14 +1,21 @@
 #include "Sphere.h"
+#include "Object.h"
+#include "Ray.h"
 
 /* In the constructor, we set the starting point of the ray. */
 Sphere::Sphere(double x, double y, double z, double rad, double rC, double gC, double bC):
 	radius(rad)
+	/* Remember, these are percentages of reflection. */
 {
-    /* Creates the parent class. */
-    Object(x, y, z, rC, gC, bC);
+    centre.x = x;
+    centre.y = y;
+    centre.z = z;
+    c.r = rC;
+    c.g = gC;
+    c.b = bC;
 }
 
-Sphere::Sphere() { Object(); }
+Sphere::Sphere() {}
 //Destructor
 Sphere::~Sphere() {}
 

@@ -7,6 +7,7 @@
 #include "Ray.h"
 #include "Light.h"
 #include "BasicStructures.h"
+#include "Object.h"
 
 #define SCREEN_W 800
 #define SCREEN_H 600
@@ -132,7 +133,7 @@ void rayTracer(Ray ray, int depth)
 				
 					/* Calculates the coeficient and then applies it to each colour component. */
 					double blinnCoef = 1.0/sqrtf(internProd) * max(fLightProjection - fViewProjection , 0.0);
-                    blinnCoef = ray.getIntensity() * powf(blinnCoef, spheres[index].getShininess());
+                    blinnCoef = ray.getIntensity() * powf(blinnCoef, spheres[index].getPower());
 					ray.increaseR(blinnCoef * spheres[index].getSpecular().r  * lights[z].getIntensity());
 					ray.increaseG(blinnCoef * spheres[index].getSpecular().g  * lights[z].getIntensity());
 					ray.increaseB(blinnCoef * spheres[index].getSpecular().b  * lights[z].getIntensity());
@@ -281,7 +282,7 @@ int main(int argc, char** argv) {
 	/* Spheres initialization. */
 	spheres[0] = Sphere(500.0,300, 100.0, 80.0, 1.0, 0.0, 0.0);
 	spheres[0].setReflection(0.01);
-	spheres[0].setShininess(50);
+	spheres[0].setPower(50);
 	spheres[0].setSpecularR(1);
 	spheres[0].setSpecularG(1);
 	spheres[0].setSpecularB(1);
@@ -290,7 +291,7 @@ int main(int argc, char** argv) {
 	spheres[0].setDiffuseB(0.0);
 	spheres[1] = Sphere(380.0,220.0,-100.0, 50.0, 0.0, 0.0, 1.0);
 	spheres[1].setReflection(0.01);
-	spheres[1].setShininess(50);
+	spheres[1].setPower(50);
 	spheres[1].setSpecularR(1);
 	spheres[1].setSpecularG(1);
 	spheres[1].setSpecularB(1.0);

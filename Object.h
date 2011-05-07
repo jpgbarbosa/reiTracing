@@ -1,55 +1,1 @@
-/* 
- * File:   Object.h
- * Author: Ivo
- *
- * Created on 6 de Maio de 2011, 16:27
- */
-
-#ifndef OBJECT_H
-#define	OBJECT_H
-
-#include "BasicStructures.h"
-#include "Ray.h"
-#include "Sphere.h"
-
-class Object{
-protected:
-        /* The centre of the object. */
-	point centre;
-	/* The colour of this object. */
-	colour c;
-	/* Coeficients used for the Lambert and Blinn-Phong Effects. */
-	double reflection, shininess;
-	colour diffuse, specular;
-
-public:
-        /* - - - - - - - CONSTRUCTOR & DESTRUCTOR - - - - - - - -*/
-        explicit Object(double x, double y, double z, double rC, double gC, double bC);
-        explicit Object();
-        
-	/* - - - - - - - OTHER METHODS - - - - - - - -*/
-	/* Determinates whether the ray intersects this sphere or not. */
-	virtual bool intersects(Ray &ray, double &t) = 0;
-
-	/* - - - - - - - GETTERS & SETTERS - - - - - - - -*/
-        double getR();
-	double getG();
-	double getB();
-
-	double getReflection();
-	double getShininess();
-	colour getSpecular();
-	colour getDiffuse();
-
-	void setReflection(double v);
-	void setShininess(double v);
-	void setSpecularR(double v);
-	void setSpecularG(double v);
-	void setSpecularB(double v);
-	void setDiffuseR(double v);
-	void setDiffuseG(double v);
-	void setDiffuseB(double v);
-};
-
-#endif	/* OBJECT_H */
-
+#ifndef _H_Object#define _H_Objectclass Ray;#include "BasicStructures.h"/* Header for the Sphere class. */class Object{protected:	/* - - - - - - - - - - - - ATTRIBUTES - - - - - - - - - -*/    	/* The colour of this object. */	colour c;	/* Coeficients used for the Lambert and Blinn-Phong Effects. */	double reflection, power;	colour diffuse, specular;public:	/* - - - - - - - CONSTRUCTOR & DESTRUCTOR - - - - - - - -*/	/* Constructor & destructor. */	explicit Object();	~Object();	/* - - - - - - - OTHER METHODS - - - - - - - -*/        virtual bool intersects(Ray &ray, double &t) = 0;	/* - - - - - - - GETTERS & SETTERS - - - - - - - -*/        double getR();	double getG();	double getB();	double getReflection();	double getPower();	colour getSpecular();	colour getDiffuse();	void setReflection(double v);	void setPower(double v);	void setSpecularR(double v);	void setSpecularG(double v);	void setSpecularB(double v);	void setDiffuseR(double v);	void setDiffuseG(double v);	void setDiffuseB(double v);        };#endif
