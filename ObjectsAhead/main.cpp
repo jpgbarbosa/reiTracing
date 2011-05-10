@@ -4,21 +4,16 @@
 
 /* Defines the needed classes and their headers. */
 #include "Sphere.h"
-#include "Ray.h"
-#include "Light.h"
-#include "Plane.h"
 #include "BasicStructures.h"
+#include "Light.h"
 #include "Object.h"
+
 
 #define SCREEN_W 800
 #define SCREEN_H 600
 #define MAX_DEPTH 1
 #define NO_SPHERES 2
 #define NO_LIGHTS 1
-#define NO_PLANES 1
-
-#define INTERSECTS_SPHERE 1
-#define INTERSECTS_PLANE 2
 
 using namespace std;
 /* The screen definition. */
@@ -34,8 +29,6 @@ point camera; // TODO: For now, we are assuming that the view plan is at z = 0;
 
 int noSpheres = NO_SPHERES;
 Sphere spheres[NO_SPHERES];
-int noPlanes = NO_PLANES;
-Plane planes[NO_PLANES];
 
 int noLights = NO_LIGHTS;
 Light lights[NO_LIGHTS];
@@ -51,10 +44,8 @@ void rayTracer(Ray ray, int depth)
 {
 	int i, z, index;
 	double minT = -1, t;
-        /* So we can know the object that this ray intersects. */
-        int intersectionType = -1;
 
-	/* Goes through all the sphere objects in the scene. */
+	/* Goes throught all the objects. TODO: Improve this to more objects. */
 	for (i = 0; i < noSpheres; i++)
 		if (spheres[i].intersects(ray, t))
 		{
@@ -63,20 +54,6 @@ void rayTracer(Ray ray, int depth)
 			{
 				minT = t;
 				index = i;
-                                intersectionType = INTERSECTS_SPHERE;
-			}
-		}
-        /* Goes through all the planes in the scene. */
-        for (i = 0; i < noPlanes; i++)
-		if (planes[i].intersects(ray, t))
-		{
-			/* Finds the closest. */
-			if (t < minT || minT == -1)
-			{
-                            minT = t;
-                            index = i;
-                            intersectionType = INTERSECTS_PLANE;
-
 			}
 		}
 	
@@ -90,33 +67,19 @@ void rayTracer(Ray ray, int depth)
 		oldDir.z = ray.getDir().z;
 		
 		/* Calculate the new direction of the ray. */
-                if (intersectionType == INTERSECTS_SPHERE)
-                {
-                    ray.newDirection(minT, spheres[index]);
-                }
-                else if (intersectionType == INTERSECTS_PLANE)
-                {
-                    ray.newDirection(minT, planes[index]);
-                }
+		ray.newDirection(minT, spheres[index]);
 			
 		/* Then, calculate the lighting at this point. */
 		for (z = 0; z < noLights; z++)
 		{
 			/* The directional vector between the intersection point and the light. */
-			vector toLight, normal;
+			vector toLight;
 			toLight = lights[z].getCentre() - ray.getOrigin();
 
 			/* We also need to calculate the normal at the intersection point. */
-                        if (intersectionType == INTERSECTS_SPHERE)
-                        {
-                            normal = ray.getOrigin() - spheres[index].getCentre();
-                            double length = sqrtf(normal*normal);
-                            normal /= length;
-                        }
-                        else if (intersectionType == INTERSECTS_PLANE)
-                        {
-                            normal = planes[index].getNormal();
-                        }
+			vector normal = ray.getOrigin() - spheres[index].getCentre();
+			double length = sqrtf(normal*normal);
+			normal /= length;
 			
 			bool inShadow = false;
 			/* If the normal is perpendicular or is in opposite direction of the light,
@@ -149,25 +112,16 @@ void rayTracer(Ray ray, int depth)
 				double lambert = (toLightRay.getDir() * normal * ray.getIntensity());
 				
 				/* Updates the colour of the ray. */
-                                if (intersectionType == INTERSECTS_SPHERE)
-                                {
-                                    ray.increaseR(lambert*lights[z].getR()*spheres[index].getR());
-                                    ray.increaseG(lambert*lights[z].getG()*spheres[index].getG());
-                                    ray.increaseB(lambert*lights[z].getB()*spheres[index].getB());
-                                }
-                                else if (intersectionType == INTERSECTS_PLANE)
-                                {
-                                    ray.increaseR(lambert*lights[z].getR()*planes[index].getR());
-                                    ray.increaseG(lambert*lights[z].getG()*planes[index].getG());
-                                    ray.increaseB(lambert*lights[z].getB()*planes[index].getB());
-                                }
+				ray.increaseR(lambert*lights[z].getR()*spheres[index].getR());
+				ray.increaseG(lambert*lights[z].getG()*spheres[index].getG());
+				ray.increaseB(lambert*lights[z].getB()*spheres[index].getB());
 			
 				/* The Blinn-Phong Effect. 
-                                 * The direction of Blinn is exactly at mid point of the light ray
-                                 * and the view ray.
-                                 * We compute the Blinn vector and then we normalize it
-                                 * then we compute the coeficient of blinn
-                                 * which is the specular contribution of the current light.
+                 * The direction of Blinn is exactly at mid point of the light ray 
+                 * and the view ray. 
+                 * We compute the Blinn vector and then we normalize it
+                 * then we compute the coeficient of blinn
+                 * which is the specular contribution of the current light.
 				 */
 				vector blinnDir = toLightRay.getDir() - oldDir;
 				double internProd = blinnDir * blinnDir;
@@ -179,28 +133,15 @@ void rayTracer(Ray ray, int depth)
 				
 					/* Calculates the coeficient and then applies it to each colour component. */
 					double blinnCoef = 1.0/sqrtf(internProd) * max(fLightProjection - fViewProjection , 0.0);
-                                        if (intersectionType == INTERSECTS_SPHERE)
-                                        {
-                                            blinnCoef = ray.getIntensity() * powf(blinnCoef, spheres[index].getShininess());
-                                            ray.increaseR(blinnCoef * spheres[index].getSpecular().r  * lights[z].getIntensity());
-                                            ray.increaseG(blinnCoef * spheres[index].getSpecular().g  * lights[z].getIntensity());
-                                            ray.increaseB(blinnCoef * spheres[index].getSpecular().b  * lights[z].getIntensity());
-                                        }
-                                        else if (intersectionType == INTERSECTS_PLANE)
-                                        {
-                                            blinnCoef = ray.getIntensity() * powf(blinnCoef, planes[index].getShininess());
-                                            ray.increaseR(blinnCoef * planes[index].getSpecular().r  * lights[z].getIntensity());
-                                            ray.increaseG(blinnCoef * planes[index].getSpecular().g  * lights[z].getIntensity());
-                                            ray.increaseB(blinnCoef * planes[index].getSpecular().b  * lights[z].getIntensity());
-                                        }
-                                }
+                    blinnCoef = ray.getIntensity() * powf(blinnCoef, spheres[index].getShininess());
+					ray.increaseR(blinnCoef * spheres[index].getSpecular().r  * lights[z].getIntensity());
+					ray.increaseG(blinnCoef * spheres[index].getSpecular().g  * lights[z].getIntensity());
+					ray.increaseB(blinnCoef * spheres[index].getSpecular().b  * lights[z].getIntensity());
+				}
 			}	
 		}
-
-                if (intersectionType == INTERSECTS_SPHERE)
-                    ray.multIntensity(spheres[index].getReflection());
-                else if (intersectionType == INTERSECTS_PLANE)
-                    ray.multIntensity(planes[index].getReflection());
+		
+		ray.multIntensity(spheres[index].getReflection());
 	}	
 	
 	/* We have reached the limit of recursivity for ray tracing.
@@ -235,9 +176,9 @@ void renderImage()
 			/*TODO: Change the starting point and the direction later. */
 			Ray ray(x,y,-1000.0, y, x);
 			ray.setDirection(0,0,1.0);
-			point pixelPoint = {(0.5 + x, 0.5 + y, 0.0)};
-			vector dir = pixelPoint - camera;
-			ray.setDirection(dir);
+			//point pixelPoint = {(0.5 + x, 0.5 + y, 0.0)};
+			//vector dir = pixelPoint - camera;
+			//ray.setDirection(dir);
 			ray.normalize();
 			rayTracer(ray, 0);
 		}
@@ -336,28 +277,28 @@ int main(int argc, char** argv) {
 	/* Camera initialization. */
 	camera.x = 300;
 	camera.y = 400;
-	camera.z = -5000;
+	camera.z = -1000;
 	
 	/* Spheres initialization. */
 	spheres[0] = Sphere(500.0,300, 100.0, 80.0, 1.0, 0.0, 0.0);
 	spheres[0].setReflection(0.01);
 	spheres[0].setShininess(50);
-	spheres[0].setSpecular(1, 1, 1);
-	spheres[0].setDiffuse(0.9, 0, 0);
+	spheres[0].setSpecularR(1);
+	spheres[0].setSpecularG(1);
+	spheres[0].setSpecularB(1);
+	spheres[0].setDiffuseR(0.9);
+	spheres[0].setDiffuseG(0.0);
+	spheres[0].setDiffuseB(0.0);
 	spheres[1] = Sphere(380.0,220.0,-100.0, 50.0, 0.0, 0.0, 1.0);
 	spheres[1].setReflection(0.01);
 	spheres[1].setShininess(50);
-	spheres[1].setSpecular(1, 1, 1);
-	spheres[1].setDiffuse(0.0, 0.0, 0.9);
-
-        /* Planes initialization. */
-        vector normalZero = {1, 1, 0};
-        planes[0] = Plane(0,0,0, normalZero, 0.1,0.1,1);
-        planes[0].setReflection(0.01);
-	planes[0].setShininess(1);
-	planes[0].setSpecular(0.1, 0.1, 0.1);
-	planes[0].setDiffuse(0.1, 0.1, 1);
-
+	spheres[1].setSpecularR(1);
+	spheres[1].setSpecularG(1);
+	spheres[1].setSpecularB(1.0);
+	spheres[1].setDiffuseR(0.0);
+	spheres[1].setDiffuseG(0.0);
+	spheres[1].setDiffuseB(0.9);
+	
 	/* Lights initialization. */
 	lights[0] = Light(0,0,-1000, 1.0, 1, 1, 1);
 	

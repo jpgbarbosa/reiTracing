@@ -33,6 +33,7 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/_ext/1472/Plane.o \
 	${OBJECTDIR}/_ext/1472/Object.o \
 	${OBJECTDIR}/_ext/1472/Light.o \
 	${OBJECTDIR}/_ext/1472/main.o \
@@ -63,6 +64,11 @@ LDLIBSOPTIONS=
 dist/Release/MinGW_1-Windows/rt.exe: ${OBJECTFILES}
 	${MKDIR} -p dist/Release/MinGW_1-Windows
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/rt ${OBJECTFILES} ${LDLIBSOPTIONS} 
+
+${OBJECTDIR}/_ext/1472/Plane.o: ../Plane.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1472
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1472/Plane.o ../Plane.cpp
 
 ${OBJECTDIR}/_ext/1472/Object.o: ../Object.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1472

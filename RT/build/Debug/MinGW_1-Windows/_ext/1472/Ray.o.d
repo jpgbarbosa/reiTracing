@@ -1,5 +1,5 @@
 build/Debug/MinGW_1-Windows/_ext/1472/Ray.o: ../Ray.cpp ../Ray.h \
- ../BasicStructures.h ../Sphere.h ../Object.h
+ ../BasicStructures.h ../Sphere.h ../Object.h ../Plane.h
 
 ../Ray.h:
 
@@ -8,3 +8,5 @@ build/Debug/MinGW_1-Windows/_ext/1472/Ray.o: ../Ray.cpp ../Ray.h \
 ../Sphere.h:
 
 ../Object.h:
+
+../Plane.h:

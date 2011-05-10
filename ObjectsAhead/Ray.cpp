@@ -1,9 +1,8 @@
 #include <cmath>
-
-/* Defines the needed classes and their headers. */
+#include <stdio.h>
 #include "Ray.h"
+#include "Object.h"
 #include "Sphere.h"
-#include "Plane.h"
 
 /* In the constructor, we set the starting point of the ray. */
 Ray::Ray(double x, double y, double z, int w, int h):
@@ -79,22 +78,7 @@ void Ray::newDirection(double t, Sphere &sphere)
 	 */
 	direction = direction - 2*(direction*normal)*normal;
 
-        normalize();
-
 	return;
-}
-
-void Ray::newDirection(double t, Plane &plane)
-{
-    /* Sets the new origin of the ray. */
-    origin = origin + t*direction;
-
-    /* And then, its new direction. */
-    direction = 2*(direction*plane.getNormal())*plane.getNormal() - direction;
-
-    normalize();
-    
-    return;
 }
 
 /* Normalize colour in order to avoid values superior to 1. */

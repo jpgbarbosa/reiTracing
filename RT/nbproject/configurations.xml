@@ -8,6 +8,7 @@
       <itemPath>../BasicStructures.h</itemPath>
       <itemPath>../Light.h</itemPath>
       <itemPath>../Object.h</itemPath>
+      <itemPath>../Plane.h</itemPath>
       <itemPath>../Ray.h</itemPath>
       <itemPath>../Sphere.h</itemPath>
     </logicalFolder>
@@ -22,6 +23,7 @@
                    kind="SOURCE_LOGICAL_FOLDER">
       <itemPath>../Light.cpp</itemPath>
       <itemPath>../Object.cpp</itemPath>
+      <itemPath>../Plane.cpp</itemPath>
       <itemPath>../Ray.cpp</itemPath>
       <itemPath>../Sphere.cpp</itemPath>
       <itemPath>../main.cpp</itemPath>
