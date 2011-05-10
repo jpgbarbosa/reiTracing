@@ -97,6 +97,7 @@ void rayTracer(Ray ray, int depth)
                 else if (intersectionType == INTERSECTS_PLANE)
                 {
                     ray.newDirection(minT, planes[index]);
+                    //printf("%lf %lf %lf\n", ray.getOrigin().x,ray.getOrigin().y, ray.getOrigin().z);
                 }
 			
 		/* Then, calculate the lighting at this point. */
@@ -189,6 +190,7 @@ void rayTracer(Ray ray, int depth)
                                         else if (intersectionType == INTERSECTS_PLANE)
                                         {
                                             blinnCoef = ray.getIntensity() * powf(blinnCoef, planes[index].getShininess());
+                                            blinnCoef = 1;
                                             ray.increaseR(blinnCoef * planes[index].getSpecular().r  * lights[z].getIntensity());
                                             ray.increaseG(blinnCoef * planes[index].getSpecular().g  * lights[z].getIntensity());
                                             ray.increaseB(blinnCoef * planes[index].getSpecular().b  * lights[z].getIntensity());
@@ -326,6 +328,38 @@ void display()
 	glutSwapBuffers();
 }
 
+void teste()
+{
+    point centre = {0,0,0};
+    point origin = {100, 100, 100};
+    vector normal = {1,0,0};
+    vector dir = {1, 1, -1};
+    double t;
+
+    double numerator = (centre - origin)*normal;
+    double denominator = dir*normal;
+
+    /* The ray is parallel to the plane. Can be either
+     * inside the plane or outside it.
+     */
+    if (denominator == 0)
+    {
+        printf("0...\n");
+        return;
+    }
+
+    t = numerator/denominator;
+
+    printf("We have %lf\n", t);
+
+    point final;
+
+    final = origin + t*dir;
+
+    printf("%lf %lf %lf\n", final.x, final.y, final.z);
+
+}
+
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 
@@ -351,12 +385,14 @@ int main(int argc, char** argv) {
 	spheres[1].setDiffuse(0.0, 0.0, 0.9);
 
         /* Planes initialization. */
-        vector normalZero = {1, 1, 0};
+        vector normalZero = {1, 0, 0};
         planes[0] = Plane(0,0,0, normalZero, 0.1,0.1,1);
         planes[0].setReflection(0.01);
 	planes[0].setShininess(1);
-	planes[0].setSpecular(0.1, 0.1, 0.1);
+	planes[0].setSpecular(0.1, 0.1, 1);
 	planes[0].setDiffuse(0.1, 0.1, 1);
+        
+        teste();
 
 	/* Lights initialization. */
 	lights[0] = Light(0,0,-1000, 1.0, 1, 1, 1);
