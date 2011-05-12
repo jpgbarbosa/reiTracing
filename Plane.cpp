@@ -32,6 +32,11 @@ bool Plane::intersects(Ray &ray, double &t)
         return false;
 
     t = numerator/denominator;
+
+    /* We are only looking for forward intersections. */
+    if (t <= EPSLON)
+        return false;
+    
     return true;
 }
 

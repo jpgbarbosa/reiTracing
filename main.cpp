@@ -12,7 +12,7 @@
 
 #define SCREEN_W 800
 #define SCREEN_H 600
-#define MAX_DEPTH 1
+#define MAX_DEPTH 10
 #define NO_SPHERES 2
 #define NO_LIGHTS 1
 #define NO_PLANES 1
@@ -98,6 +98,7 @@ void rayTracer(Ray ray, int depth)
                 {
                     ray.newDirection(minT, planes[index]);
                     //printf("%lf %lf %lf\n", ray.getOrigin().x,ray.getOrigin().y, ray.getOrigin().z);
+                    //printf("%d %d\n", ray.getHPos(), ray.getWPos());
                 }
 			
 		/* Then, calculate the lighting at this point. */
@@ -124,9 +125,14 @@ void rayTracer(Ray ray, int depth)
 			 * we can skip this light because it's not going to light the intersection
 			 * point.
 			 */
-			if (normal * toLight <= 0.0)
-				continue;
-
+			if (normal * toLight < -EPSLON)
+                        {
+                            //printf("TOLIGHT: %lf %lf %lf\n", toLight.x, toLight.y, toLight.z);
+                            //printf("NORMAL: %lf %lf %lf\n", normal.x, normal.y, normal.z);
+                            //printf("%lf\n", normal * toLight);
+                            continue;
+                        }
+                        
 			/* Now, we have to see if we are in the shadow of any other object.
 			 * For that, we create a temporary ray that goes from the intersection
 			 * point to the light spot.
@@ -137,8 +143,8 @@ void rayTracer(Ray ray, int depth)
 			for (i = 0; i < noSpheres && !inShadow; i++)
 				//TODO: Does the second part of the && is correct?
 				if (spheres[i].intersects(toLightRay, t) && i != index)
-					inShadow = true;
-			
+                                    inShadow = true;
+                        
 			/* We aren't in shadow of any other object. Therefore, we have to calculate
 			 * the contribution of this light to the final result.
 			 */
@@ -235,12 +241,18 @@ void renderImage()
 		for (x = 0; x < screenWidth; x++)
 		{
 			/*TODO: Change the starting point and the direction later. */
-			Ray ray(x,y,-1000.0, y, x);
+			/* Orthogonal Perspective
+                        Ray ray(x,y,-1000.0, y, x);
 			ray.setDirection(0,0,1.0);
-			point pixelPoint = {(0.5 + x, 0.5 + y, 0.0)};
+                         */
+                        /* Conic Perspective. */
+                        Ray ray(x,y, 0.0, y, x);
+			point pixelPoint = {0.5 + x, 0.5 + y, 0.0};
 			vector dir = pixelPoint - camera;
 			ray.setDirection(dir);
+                        //printf("Dir: %lf %lf %lf\n", ray.getDir().x, ray.getDir().y, ray.getDir().z);
 			ray.normalize();
+                        
 			rayTracer(ray, 0);
 		}
    /*for each pixel i, j in the image
@@ -373,21 +385,21 @@ int main(int argc, char** argv) {
 	camera.z = -5000;
 	
 	/* Spheres initialization. */
-	spheres[0] = Sphere(500.0,300, 100.0, 80.0, 1.0, 0.0, 0.0);
+	spheres[0] = Sphere(500.0,300, 1900.0, 80.0, 1.0, 0.0, 0.0);
 	spheres[0].setReflection(0.01);
 	spheres[0].setShininess(50);
 	spheres[0].setSpecular(1, 1, 1);
 	spheres[0].setDiffuse(0.9, 0, 0);
-	spheres[1] = Sphere(380.0,220.0,-100.0, 50.0, 0.0, 0.0, 1.0);
+	spheres[1] = Sphere(380.0,220.0, 1700.0, 50.0, 0.0, 0.0, 1.0);
 	spheres[1].setReflection(0.01);
 	spheres[1].setShininess(50);
 	spheres[1].setSpecular(1, 1, 1);
 	spheres[1].setDiffuse(0.0, 0.0, 0.9);
 
         /* Planes initialization. */
-        vector normalZero = {1, 0, 0};
+        vector normalZero = {0, 1, 0};
         planes[0] = Plane(0,0,0, normalZero, 0.1,0.1,1);
-        planes[0].setReflection(0.01);
+        planes[0].setReflection(0.0);
 	planes[0].setShininess(1);
 	planes[0].setSpecular(0.1, 0.1, 1);
 	planes[0].setDiffuse(0.1, 0.1, 1);
