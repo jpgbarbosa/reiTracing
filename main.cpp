@@ -141,9 +141,16 @@ void rayTracer(Ray ray, int depth)
 			toLightRay.setDirection(toLight);
 			toLightRay.normalize();
 			for (i = 0; i < noSpheres && !inShadow; i++)
-				//TODO: Does the second part of the && is correct?
-				if (spheres[i].intersects(toLightRay, t) && i != index)
-                                    inShadow = true;
+				if (spheres[i].intersects(toLightRay, t))
+                                    /* It can't intersect with itself. */
+                                    if (!(intersectionType == INTERSECTS_SPHERE && index == i))
+                                        inShadow = true;
+                                
+                        for (i = 0; i < noPlanes && !inShadow; i++)
+				if (planes[i].intersects(toLightRay, t))
+                                    /* It can't intersect with itself. */
+                                    if (!(intersectionType == INTERSECTS_PLANE && index == i))
+                                        inShadow = true;
                         
 			/* We aren't in shadow of any other object. Therefore, we have to calculate
 			 * the contribution of this light to the final result.
@@ -219,7 +226,7 @@ void rayTracer(Ray ray, int depth)
 	 * calculating the ray tracing. Also, the ray might not carry
 	 * any more energy.
 	 */
-	if (minT == -1 || depth == MAX_DEPTH || ray.getIntensity() == 0.0)
+	if (minT == -1 || depth == MAX_DEPTH || ray.getIntensity() <= EPSLON)
 	{
 		ray.normalizeColour();
 		image[ray.getHPos()][ray.getWPos()].r = ray.getR();
@@ -250,18 +257,10 @@ void renderImage()
 			point pixelPoint = {0.5 + x, 0.5 + y, 0.0};
 			vector dir = pixelPoint - camera;
 			ray.setDirection(dir);
-                        //printf("Dir: %lf %lf %lf\n", ray.getDir().x, ray.getDir().y, ray.getDir().z);
-			ray.normalize();
+                        ray.normalize();
                         
 			rayTracer(ray, 0);
 		}
-   /*for each pixel i, j in the image
-      ray.setStart(0, 0, 0);   // ro
-      ray.setDir  ((.5 + i) * tan(fovx)* 2 / m,
-		   	    (.5 + j) * tan(fovy)* 2 / n,
-			    1.0);		 // rd
-      ray.normalize();
-      image[i][j] = rayTrace(ray); */
 }
 
 
@@ -340,38 +339,6 @@ void display()
 	glutSwapBuffers();
 }
 
-void teste()
-{
-    point centre = {0,0,0};
-    point origin = {100, 100, 100};
-    vector normal = {1,0,0};
-    vector dir = {1, 1, -1};
-    double t;
-
-    double numerator = (centre - origin)*normal;
-    double denominator = dir*normal;
-
-    /* The ray is parallel to the plane. Can be either
-     * inside the plane or outside it.
-     */
-    if (denominator == 0)
-    {
-        printf("0...\n");
-        return;
-    }
-
-    t = numerator/denominator;
-
-    printf("We have %lf\n", t);
-
-    point final;
-
-    final = origin + t*dir;
-
-    printf("%lf %lf %lf\n", final.x, final.y, final.z);
-
-}
-
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 
@@ -385,29 +352,27 @@ int main(int argc, char** argv) {
 	camera.z = -5000;
 	
 	/* Spheres initialization. */
-	spheres[0] = Sphere(500.0,300, 1900.0, 80.0, 1.0, 0.0, 0.0);
-	spheres[0].setReflection(0.01);
+	spheres[0] = Sphere(500.0,300, 300.0, 80.0, 1.0, 0.0, 0.0);
+	spheres[0].setReflection(0.0);
 	spheres[0].setShininess(50);
 	spheres[0].setSpecular(1, 1, 1);
 	spheres[0].setDiffuse(0.9, 0, 0);
-	spheres[1] = Sphere(380.0,220.0, 1700.0, 50.0, 0.0, 0.0, 1.0);
-	spheres[1].setReflection(0.01);
+	spheres[1] = Sphere(380.0,220.0, 100.0, 50.0, 0.0, 0.0, 1.0);
+	spheres[1].setReflection(0.0);
 	spheres[1].setShininess(50);
 	spheres[1].setSpecular(1, 1, 1);
 	spheres[1].setDiffuse(0.0, 0.0, 0.9);
 
         /* Planes initialization. */
         vector normalZero = {0, 1, 0};
-        planes[0] = Plane(0,0,0, normalZero, 0.1,0.1,1);
+        planes[0] = Plane(0,0,0, normalZero, 0.6,0.6,0.6);
         planes[0].setReflection(0.0);
-	planes[0].setShininess(1);
-	planes[0].setSpecular(0.1, 0.1, 1);
-	planes[0].setDiffuse(0.1, 0.1, 1);
-        
-        teste();
+	planes[0].setShininess(20);
+	planes[0].setSpecular(1, 1, 1);
+	planes[0].setDiffuse(0.1, 0.1, 0.1);
 
 	/* Lights initialization. */
-	lights[0] = Light(0,0,-1000, 1.0, 1, 1, 1);
+	lights[0] = Light(300,800,200, 1.0, 1, 1, 1);
 	
 	// Starts the ray tracing process.
 	renderImage();
