@@ -15,7 +15,7 @@
 #define MAX_DEPTH 10
 #define NO_SPHERES 2
 #define NO_LIGHTS 1
-#define NO_PLANES 2
+#define NO_PLANES 3
 
 #define INTERSECTS_SPHERE 1
 #define INTERSECTS_PLANE 2
@@ -150,7 +150,7 @@ void rayTracer(Ray ray, int depth)
 				if (planes[i].intersects(toLightRay, t))
                                     /* It can't intersect with itself. */
                                     if (!(intersectionType == INTERSECTS_PLANE && index == i))
-                                        inShadow = true;
+                                        inShadow = false;
                         
 			/* We aren't in shadow of any other object. Therefore, we have to calculate
 			 * the contribution of this light to the final result.
@@ -379,9 +379,15 @@ int main(int argc, char** argv) {
 	planes[1].setShininess(20);
 	planes[1].setSpecular(0.2, 0.2, 0.2);
 	planes[1].setDiffuse(0.2, 0.2, 0.2);
+        vector normalTwo = {0, 0, -1};
+        planes[2] = Plane(0,0,20000, normalTwo, 0.7,0.0,0.0);
+        planes[2].setReflection(0.0);
+	planes[2].setShininess(20);
+	planes[2].setSpecular(0.2, 0.2, 0.2);
+	planes[2].setDiffuse(0.2, 0.2, 0.2);
 
 	/* Lights initialization. */
-	lights[0] = Light(300,800,200, 1.0, 1, 1, 1);
+	lights[0] = Light(300,500,200, 1.0, 1, 1, 1);
 	
 	// Starts the ray tracing process.
 	renderImage();
