@@ -36,7 +36,14 @@ bool Plane::intersects(Ray &ray, double &t)
     /* We are only looking for forward intersections. */
     if (t <= EPSLON)
         return false;
-    
+
+    /* We have to check if intersection point is beyond the light
+     * or not.
+     */
+    if (ray.isToLightRay())
+        if (t > ray.getToLightDistance())
+            return false;
+
     return true;
 }
 

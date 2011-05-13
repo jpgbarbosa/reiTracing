@@ -139,6 +139,7 @@ void rayTracer(Ray ray, int depth)
 			 */
 			Ray toLightRay = Ray(ray.getOrigin().x, ray.getOrigin().y, ray.getOrigin().z, 0, 0);
 			toLightRay.setDirection(toLight);
+                        toLightRay.setIsToLight(true, sqrtf(toLightRay.getDir() * toLightRay.getDir()));
 			toLightRay.normalize();
 			for (i = 0; i < noSpheres && !inShadow; i++)
 				if (spheres[i].intersects(toLightRay, t))
@@ -150,7 +151,14 @@ void rayTracer(Ray ray, int depth)
 				if (planes[i].intersects(toLightRay, t))
                                     /* It can't intersect with itself. */
                                     if (!(intersectionType == INTERSECTS_PLANE && index == i))
-                                        inShadow = false;
+                                    {
+                                        if (intersectionType != INTERSECTS_PLANE)
+                                        {
+                                            printf("%lf and index %d and i %d and type %d\n", t, index, i, intersectionType);
+                                            //getchar();
+                                        }
+                                        inShadow = true;
+                                    }
                         
 			/* We aren't in shadow of any other object. Therefore, we have to calculate
 			 * the contribution of this light to the final result.
@@ -371,10 +379,10 @@ int main(int argc, char** argv) {
         planes[0] = Plane(0,0,0, normalZero, 0.0,0.0,0.7);
         planes[0].setReflection(0.0);
 	planes[0].setShininess(20);
-	planes[0].setSpecular(1, 1, 1);
+	planes[0].setSpecular(0.6, 0.4, 0.2);
 	planes[0].setDiffuse(0.0, 0.0, 0.7);
         vector normalOne = {-1, 0, 0};
-        planes[1] = Plane(700,0,0, normalOne, 0.0,0.0,0.7);
+        planes[1] = Plane(800,0,0, normalOne, 0.0,0.0,0.7);
         planes[1].setReflection(0.0);
 	planes[1].setShininess(20);
 	planes[1].setSpecular(0.2, 0.2, 0.2);
@@ -383,8 +391,8 @@ int main(int argc, char** argv) {
         planes[2] = Plane(0,0,20000, normalTwo, 0.7,0.0,0.0);
         planes[2].setReflection(0.0);
 	planes[2].setShininess(20);
-	planes[2].setSpecular(0.2, 0.2, 0.2);
-	planes[2].setDiffuse(0.2, 0.2, 0.2);
+	planes[2].setSpecular(0.8, 0.6, 0.4);
+	planes[2].setDiffuse(0.7, 0.2, 0.1);
 
 	/* Lights initialization. */
 	lights[0] = Light(300,500,200, 1.0, 1, 1, 1);

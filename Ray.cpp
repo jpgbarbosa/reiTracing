@@ -15,9 +15,12 @@ Ray::Ray(double x, double y, double z, int w, int h):
 	origin.z = z;
 	intensity = 1;
 	
-	r = 0;
-	g = 0;
-	b = 0;
+	c.r = 0;
+	c.g = 0;
+	c.b = 0;
+
+        isToLight = false;
+        distanceToLight = 0;
 }
 
 //Destructor
@@ -39,10 +42,8 @@ void Ray::setDirection(vector &v)
 /* Normalizes the direction vector of the ray. */
 void Ray::normalize()
 {
-	double length = sqrt((direction.x*direction.x)
-						+ (direction.y*direction.y)
-							+ (direction.z*direction.z));
-	direction.x /= length;
+	double length = sqrt(direction * direction);
+        direction.x /= length;
 	direction.y /= length;
 	direction.z /= length;
 }
@@ -100,12 +101,12 @@ void Ray::newDirection(double t, Plane &plane)
 /* Normalize colour in order to avoid values superior to 1. */
 double Ray::normalizeColour()
 {
-	if (r > 1.0)
-		r = 1.0;
-	if (g > 1.0)
-		g = 1.0;
-	if (b > 1.0)
-		b = 1.0;
+	if (c.r > 1.0)
+		c.r = 1.0;
+	if (c.g > 1.0)
+		c.g = 1.0;
+	if (c.b > 1.0)
+		c.b = 1.0;
 }
 
 /* Returns the corresponding pixel in the final image. */
@@ -117,14 +118,18 @@ point Ray::getOrigin() {return origin;}
 void Ray::setOrigin(point &p) { origin = p;}
 
 /* Returns the colour for this ray or sets its initial colour. */
-double Ray::getR() {return r;}
-double Ray::getG() {return g;}
-double Ray::getB() {return b;}
+double Ray::getR() {return c.r;}
+double Ray::getG() {return c.g;}
+double Ray::getB() {return c.b;}
 
 /* Updates the colour for this ray. */
-void Ray::increaseR(double per) { r += per;}
-void Ray::increaseG(double per) { g += per;}
-void Ray::increaseB(double per) { b += per;}
+void Ray::increaseR(double per) { c.r += per;}
+void Ray::increaseG(double per) { c.g += per;}
+void Ray::increaseB(double per) { c.b += per;}
 
 double Ray::getIntensity() { return intensity;}
 void Ray::multIntensity(double v) {intensity *= v;}
+
+void Ray::setIsToLight(bool v, double d) {isToLight = v; distanceToLight = d;}
+bool Ray::isToLightRay() {return isToLight;}
+double Ray::getToLightDistance() {return distanceToLight;}

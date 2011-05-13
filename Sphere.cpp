@@ -81,8 +81,15 @@ bool Sphere::intersects(Ray &ray, double &t)
     /* Else, the intersection point is at t0. */
     else
 		t = t0;
-	
-	return true;
+
+    /* We have to check if intersection point is beyond the light
+     * or not.
+     */
+    if (ray.isToLightRay())
+        if (t > ray.getToLightDistance())
+            return false;
+
+    return true;
 }
 
 /* Returns the radius of the sphere. */
