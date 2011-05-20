@@ -83,6 +83,20 @@ void rayTracer(Ray ray, int depth)
 	/* We have found at least one intersection. */
 	if (minT != -1)
 	{
+                /* There can be also refraction. In that case, we start a new call
+                 * of the function and from this moment on, the ray splits into two.
+                 */
+                if (intersectionType == INTERSECTS_SPHERE)
+                {
+                    if (spheres[index].getRefraction() > 0)
+                    {
+                       Ray refractionRay = ray;
+
+                       /* Recursively starts a new ray, now for the refraction. */
+                       rayTracer(refractionRay, depth + 1);
+
+                    }
+                }
 		/* Used in the Blinn-Phong calculation. */
 		vector oldDir;
 		oldDir.x = ray.getDir().x;
@@ -151,14 +165,7 @@ void rayTracer(Ray ray, int depth)
 				if (planes[i].intersects(toLightRay, t))
                                     /* It can't intersect with itself. */
                                     if (!(intersectionType == INTERSECTS_PLANE && index == i))
-                                    {
-                                        if (intersectionType != INTERSECTS_PLANE)
-                                        {
-                                            printf("%lf and index %d and i %d and type %d\n", t, index, i, intersectionType);
-                                            //getchar();
-                                        }
                                         inShadow = true;
-                                    }
                         
 			/* We aren't in shadow of any other object. Therefore, we have to calculate
 			 * the contribution of this light to the final result.
@@ -217,7 +224,7 @@ void rayTracer(Ray ray, int depth)
                                             ray.increaseB(blinnCoef * planes[index].getSpecular().b  * lights[z].getIntensity());
                                         }
                                 }
-			}	
+			} /* if (!inShadow)*/
 		}
 
                 if (intersectionType == INTERSECTS_SPHERE)
@@ -368,11 +375,13 @@ int main(int argc, char** argv) {
 	spheres[0].setShininess(50);
 	spheres[0].setSpecular(1, 1, 1);
 	spheres[0].setDiffuse(0.9, 0, 0);
+        spheres[0].setRefraction(0);
 	spheres[1] = Sphere(380.0,220.0, 100.0, 50.0, 0.0, 0.0, 1.0);
 	spheres[1].setReflection(0.0);
 	spheres[1].setShininess(50);
 	spheres[1].setSpecular(1, 1, 1);
 	spheres[1].setDiffuse(0.0, 0.0, 0.9);
+        spheres[1].setRefraction(0);
 
         /* Planes initialization. */
         vector normalZero = {0, 1, 0};
@@ -381,18 +390,21 @@ int main(int argc, char** argv) {
 	planes[0].setShininess(20);
 	planes[0].setSpecular(0.6, 0.4, 0.2);
 	planes[0].setDiffuse(0.0, 0.0, 0.7);
+        planes[0].setRefraction(0);
         vector normalOne = {-1, 0, 0};
         planes[1] = Plane(800,0,0, normalOne, 0.0,0.0,0.7);
         planes[1].setReflection(0.0);
 	planes[1].setShininess(20);
 	planes[1].setSpecular(0.2, 0.2, 0.2);
 	planes[1].setDiffuse(0.2, 0.2, 0.2);
+        planes[1].setRefraction(0);
         vector normalTwo = {0, 0, -1};
         planes[2] = Plane(0,0,20000, normalTwo, 0.7,0.0,0.0);
         planes[2].setReflection(0.0);
 	planes[2].setShininess(20);
 	planes[2].setSpecular(0.8, 0.6, 0.4);
 	planes[2].setDiffuse(0.7, 0.2, 0.1);
+        planes[2].setRefraction(0);
 
 	/* Lights initialization. */
 	lights[0] = Light(300,500,200, 1.0, 1, 1, 1);

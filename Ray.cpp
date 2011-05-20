@@ -26,6 +26,38 @@ Ray::Ray(double x, double y, double z, int w, int h):
 //Destructor
 Ray::~Ray() {}
 
+void Ray::operator = (Ray& newRay)
+{
+    /* Make sure it's not the same object. */
+    if (this != &newRay)
+    {
+        /* COPIES: */
+        /* The W and H positions...*/
+        newRay.setWPos(wPos);
+        newRay.setHPos(hPos);
+
+        /* The origin... */
+        newRay.getOrigin().x = origin.x;
+        newRay.getOrigin().y = origin.y;
+        newRay.getOrigin().z = origin.z;
+
+        /* The direction... */
+        newRay.getDir().x = direction.x;
+        newRay.getDir().y = direction.y;
+        newRay.getDir().z = direction.z;
+
+        /* The colour...*/
+        newRay.setR(c.r);
+        newRay.setG(c.g);
+        newRay.setB(c.b);
+
+        /* The intensity...*/
+        newRay.setIntensity(intensity);
+        
+    }
+    return;
+}
+
 /* Sets the direction of the ray. */
 void Ray::setDirection(double x, double y, double z)
 {
@@ -112,6 +144,9 @@ double Ray::normalizeColour()
 /* Returns the corresponding pixel in the final image. */
 int Ray::getWPos() { return wPos; }
 int Ray::getHPos() { return hPos; }
+void Ray::setWPos(int v) { wPos = v; }
+void Ray::setHPos(int v) { hPos = v; }
+
 /* Ray coordinates. */
 vector Ray::getDir() {return direction;}
 point Ray::getOrigin() {return origin;}
@@ -121,6 +156,9 @@ void Ray::setOrigin(point &p) { origin = p;}
 double Ray::getR() {return c.r;}
 double Ray::getG() {return c.g;}
 double Ray::getB() {return c.b;}
+void Ray::setR(double v) {c.r = v;}
+void Ray::setG(double v) {c.g = v;}
+void Ray::setB(double v) {c.b = v;}
 
 /* Updates the colour for this ray. */
 void Ray::increaseR(double per) { c.r += per;}
@@ -129,6 +167,7 @@ void Ray::increaseB(double per) { c.b += per;}
 
 double Ray::getIntensity() { return intensity;}
 void Ray::multIntensity(double v) {intensity *= v;}
+void Ray::setIntensity(double v) {intensity = v;}
 
 void Ray::setIsToLight(bool v, double d) {isToLight = v; distanceToLight = d;}
 bool Ray::isToLightRay() {return isToLight;}
