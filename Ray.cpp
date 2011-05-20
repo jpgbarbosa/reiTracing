@@ -37,14 +37,10 @@ void Ray::operator = (Ray& newRay)
         newRay.setHPos(hPos);
 
         /* The origin... */
-        newRay.getOrigin().x = origin.x;
-        newRay.getOrigin().y = origin.y;
-        newRay.getOrigin().z = origin.z;
+        newRay.setOrigin(origin);
 
         /* The direction... */
-        newRay.getDir().x = direction.x;
-        newRay.getDir().y = direction.y;
-        newRay.getDir().z = direction.z;
+        newRay.setDirection(direction);
 
         /* The colour...*/
         newRay.setR(c.r);
@@ -66,69 +62,10 @@ void Ray::setDirection(double x, double y, double z)
 	direction.z = z;
 }
 
-void Ray::setDirection(vector &v)
-{
-	direction = v;
-}
+void Ray::setDirection(vector v) { direction = v; }
 
 /* Normalizes the direction vector of the ray. */
-void Ray::normalize()
-{
-	double length = sqrt(direction * direction);
-        direction.x /= length;
-	direction.y /= length;
-	direction.z /= length;
-}
-
-/* Sets the new direction of the ray after an intersection.
- * See more at:
- * http://en.wikipedia.org/wiki/Ray_tracing_(graphics)
- */
-void Ray::newDirection(double t, Sphere &sphere)
-{
-	vector normal;
-	
-	/* First, we calculate the normal.
-	 * n = (y - c) / ||y - c||
-	 * Where y is the intersection point and c the centre
-	 * of the sphere.
-	 */
-	normal = origin + t*direction - sphere.getCentre();
-	
-	/* Now, we update the start of the ray, which
-	 * is the intersection point.
-	 */
-	origin = origin + t*direction;	
-	
-	/* Then, calculates the normal. */
-	double length = sqrtf(normal*normal);
-	normal /= length;
-	
-	/* With the normal calculated, we find the new direction
-	 * vector.
-	 * r = d - 2(n.d)n
-	 * Where d is the old direction and n is the normal.
-	 * TODO: That outter n is inner or external product?
-	 */
-	direction = direction - 2*(direction*normal)*normal;
-
-        normalize();
-
-	return;
-}
-
-void Ray::newDirection(double t, Plane &plane)
-{
-    /* Sets the new origin of the ray. */
-    origin = origin + t*direction;
-
-    /* And then, its new direction. */
-    direction = 2*(direction*plane.getNormal())*plane.getNormal() - direction;
-
-    normalize();
-    
-    return;
-}
+void Ray::normalize() { direction /= sqrt(direction * direction);}
 
 /* Normalize colour in order to avoid values superior to 1. */
 double Ray::normalizeColour()
@@ -150,7 +87,7 @@ void Ray::setHPos(int v) { hPos = v; }
 /* Ray coordinates. */
 vector Ray::getDir() {return direction;}
 point Ray::getOrigin() {return origin;}
-void Ray::setOrigin(point &p) { origin = p;}
+void Ray::setOrigin(point p) { origin = p;}
 
 /* Returns the colour for this ray or sets its initial colour. */
 double Ray::getR() {return c.r;}

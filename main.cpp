@@ -16,9 +16,7 @@
 #define NO_SPHERES 2
 #define NO_LIGHTS 1
 #define NO_PLANES 3
-
-#define INTERSECTS_SPHERE 1
-#define INTERSECTS_PLANE 2
+#define NO_OBJECTS 4
 
 using namespace std;
 /* The screen definition. */
@@ -37,6 +35,9 @@ Sphere spheres[NO_SPHERES];
 int noPlanes = NO_PLANES;
 Plane planes[NO_PLANES];
 
+int noObjects = NO_OBJECTS;
+Object *objects[NO_OBJECTS];
+
 int noLights = NO_LIGHTS;
 Light lights[NO_LIGHTS];
 
@@ -54,29 +55,16 @@ void rayTracer(Ray ray, int depth)
         /* So we can know the object that this ray intersects. */
         int intersectionType = -1;
 
-	/* Goes through all the sphere objects in the scene. */
-	for (i = 0; i < noSpheres; i++)
-		if (spheres[i].intersects(ray, t))
+	/* Goes through all the objects in the scene. */
+	for (i = 0; i < noObjects; i++)
+		if (objects[i]->intersects(ray, t))
 		{
 			/* Finds the closest. */
 			if (t < minT || minT == -1)
 			{
 				minT = t;
 				index = i;
-                                intersectionType = INTERSECTS_SPHERE;
-			}
-		}
-        /* Goes through all the planes in the scene. */
-        for (i = 0; i < noPlanes; i++)
-		if (planes[i].intersects(ray, t))
-		{
-			/* Finds the closest. */
-			if (t < minT || minT == -1)
-			{
-                            minT = t;
-                            index = i;
-                            intersectionType = INTERSECTS_PLANE;
-
+                                intersectionType = objects[i]->getIntersectionType();
 			}
 		}
 	
@@ -88,7 +76,7 @@ void rayTracer(Ray ray, int depth)
                  */
                 if (intersectionType == INTERSECTS_SPHERE)
                 {
-                    if (spheres[index].getRefraction() > 0)
+                    if (objects[index]->getRefraction() > 0)
                     {
                        Ray refractionRay = ray;
 
@@ -104,16 +92,7 @@ void rayTracer(Ray ray, int depth)
 		oldDir.z = ray.getDir().z;
 		
 		/* Calculate the new direction of the ray. */
-                if (intersectionType == INTERSECTS_SPHERE)
-                {
-                    ray.newDirection(minT, spheres[index]);
-                }
-                else if (intersectionType == INTERSECTS_PLANE)
-                {
-                    ray.newDirection(minT, planes[index]);
-                    //printf("%lf %lf %lf\n", ray.getOrigin().x,ray.getOrigin().y, ray.getOrigin().z);
-                    //printf("%d %d\n", ray.getHPos(), ray.getWPos());
-                }
+                objects[index]->newDirection(ray, minT);
 			
 		/* Then, calculate the lighting at this point. */
 		for (z = 0; z < noLights; z++)
@@ -125,14 +104,12 @@ void rayTracer(Ray ray, int depth)
 			/* We also need to calculate the normal at the intersection point. */
                         if (intersectionType == INTERSECTS_SPHERE)
                         {
-                            normal = ray.getOrigin() - spheres[index].getCentre();
+                            normal = ray.getOrigin() - objects[index]->getCentre();
                             double length = sqrtf(normal*normal);
                             normal /= length;
                         }
                         else if (intersectionType == INTERSECTS_PLANE)
-                        {
-                            normal = planes[index].getNormal();
-                        }
+                            normal = ((Plane *)objects[index])->getNormal();
 			
 			bool inShadow = false;
 			/* If the normal is perpendicular or is in opposite direction of the light,
@@ -140,12 +117,7 @@ void rayTracer(Ray ray, int depth)
 			 * point.
 			 */
 			if (normal * toLight < -EPSLON)
-                        {
-                            //printf("TOLIGHT: %lf %lf %lf\n", toLight.x, toLight.y, toLight.z);
-                            //printf("NORMAL: %lf %lf %lf\n", normal.x, normal.y, normal.z);
-                            //printf("%lf\n", normal * toLight);
                             continue;
-                        }
                         
 			/* Now, we have to see if we are in the shadow of any other object.
 			 * For that, we create a temporary ray that goes from the intersection
@@ -155,17 +127,11 @@ void rayTracer(Ray ray, int depth)
 			toLightRay.setDirection(toLight);
                         toLightRay.setIsToLight(true, sqrtf(toLightRay.getDir() * toLightRay.getDir()));
 			toLightRay.normalize();
-			for (i = 0; i < noSpheres && !inShadow; i++)
-				if (spheres[i].intersects(toLightRay, t))
-                                    /* It can't intersect with itself. */
-                                    if (!(intersectionType == INTERSECTS_SPHERE && index == i))
-                                        inShadow = true;
-                                
-                        for (i = 0; i < noPlanes && !inShadow; i++)
-				if (planes[i].intersects(toLightRay, t))
-                                    /* It can't intersect with itself. */
-                                    if (!(intersectionType == INTERSECTS_PLANE && index == i))
-                                        inShadow = true;
+                        
+			for (i = 0; i < noObjects && !inShadow; i++)
+                                /* It can't intersect with itself. */
+				if (objects[i]->intersects(toLightRay, t) && index != i)
+                                    inShadow = true;
                         
 			/* We aren't in shadow of any other object. Therefore, we have to calculate
 			 * the contribution of this light to the final result.
@@ -178,18 +144,9 @@ void rayTracer(Ray ray, int depth)
 				double lambert = (toLightRay.getDir() * normal * ray.getIntensity());
 				
 				/* Updates the colour of the ray. */
-                                if (intersectionType == INTERSECTS_SPHERE)
-                                {
-                                    ray.increaseR(lambert*lights[z].getR()*spheres[index].getR());
-                                    ray.increaseG(lambert*lights[z].getG()*spheres[index].getG());
-                                    ray.increaseB(lambert*lights[z].getB()*spheres[index].getB());
-                                }
-                                else if (intersectionType == INTERSECTS_PLANE)
-                                {
-                                    ray.increaseR(lambert*lights[z].getR()*planes[index].getR());
-                                    ray.increaseG(lambert*lights[z].getG()*planes[index].getG());
-                                    ray.increaseB(lambert*lights[z].getB()*planes[index].getB());
-                                }
+                                ray.increaseR(lambert*lights[z].getR()*objects[index]->getR());
+                                ray.increaseG(lambert*lights[z].getG()*objects[index]->getG());
+                                ray.increaseB(lambert*lights[z].getB()*objects[index]->getB());
 			
 				/* The Blinn-Phong Effect. 
                                  * The direction of Blinn is exactly at mid point of the light ray
@@ -208,29 +165,15 @@ void rayTracer(Ray ray, int depth)
 				
 					/* Calculates the coeficient and then applies it to each colour component. */
 					double blinnCoef = 1.0/sqrtf(internProd) * max(fLightProjection - fViewProjection , 0.0);
-                                        if (intersectionType == INTERSECTS_SPHERE)
-                                        {
-                                            blinnCoef = ray.getIntensity() * powf(blinnCoef, spheres[index].getShininess());
-                                            ray.increaseR(blinnCoef * spheres[index].getSpecular().r  * lights[z].getIntensity());
-                                            ray.increaseG(blinnCoef * spheres[index].getSpecular().g  * lights[z].getIntensity());
-                                            ray.increaseB(blinnCoef * spheres[index].getSpecular().b  * lights[z].getIntensity());
-                                        }
-                                        else if (intersectionType == INTERSECTS_PLANE)
-                                        {
-                                            blinnCoef = ray.getIntensity() * powf(blinnCoef, planes[index].getShininess());
-                                            blinnCoef = 1;
-                                            ray.increaseR(blinnCoef * planes[index].getSpecular().r  * lights[z].getIntensity());
-                                            ray.increaseG(blinnCoef * planes[index].getSpecular().g  * lights[z].getIntensity());
-                                            ray.increaseB(blinnCoef * planes[index].getSpecular().b  * lights[z].getIntensity());
-                                        }
+                                        blinnCoef = ray.getIntensity() * powf(blinnCoef, objects[index]->getShininess());
+                                        ray.increaseR(blinnCoef * objects[index]->getSpecular().r  * lights[z].getIntensity());
+                                        ray.increaseG(blinnCoef * objects[index]->getSpecular().g  * lights[z].getIntensity());
+                                        ray.increaseB(blinnCoef * objects[index]->getSpecular().b  * lights[z].getIntensity());
                                 }
 			} /* if (!inShadow)*/
 		}
 
-                if (intersectionType == INTERSECTS_SPHERE)
-                    ray.multIntensity(spheres[index].getReflection());
-                else if (intersectionType == INTERSECTS_PLANE)
-                    ray.multIntensity(planes[index].getReflection());
+                ray.multIntensity(objects[index]->getReflection());
 	}	
 	
 	/* We have reached the limit of recursivity for ray tracing.
@@ -370,41 +313,56 @@ int main(int argc, char** argv) {
 	camera.z = -5000;
 	
 	/* Spheres initialization. */
-	spheres[0] = Sphere(500.0,300, 300.0, 80.0, 1.0, 0.0, 0.0);
-	spheres[0].setReflection(0.0);
-	spheres[0].setShininess(50);
-	spheres[0].setSpecular(1, 1, 1);
-	spheres[0].setDiffuse(0.9, 0, 0);
-        spheres[0].setRefraction(0);
-	spheres[1] = Sphere(380.0,220.0, 100.0, 50.0, 0.0, 0.0, 1.0);
-	spheres[1].setReflection(0.0);
-	spheres[1].setShininess(50);
-	spheres[1].setSpecular(1, 1, 1);
-	spheres[1].setDiffuse(0.0, 0.0, 0.9);
-        spheres[1].setRefraction(0);
+        Sphere *sphere = new Sphere(500.0,300, 300.0, 80.0, 1.0, 0.0, 0.0);
+	(*sphere).setReflection(0.0);
+	(*sphere).setShininess(50);
+	(*sphere).setSpecular(1, 1, 1);
+	(*sphere).setDiffuse(0.9, 0, 0);
+        (*sphere).setRefraction(0);
+
+        objects[0] = sphere;
+
+	sphere = new Sphere(380.0,220.0, 100.0, 50.0, 0.0, 0.0, 1.0);
+	(*sphere).setReflection(0.0);
+	(*sphere).setShininess(50);
+	(*sphere).setSpecular(1, 1, 1);
+	(*sphere).setDiffuse(0.0, 0.0, 0.9);
+        (*sphere).setRefraction(0);
+
+        objects[1] = sphere;
 
         /* Planes initialization. */
+
         vector normalZero = {0, 1, 0};
-        planes[0] = Plane(0,0,0, normalZero, 0.0,0.0,0.7);
-        planes[0].setReflection(0.0);
-	planes[0].setShininess(20);
-	planes[0].setSpecular(0.6, 0.4, 0.2);
-	planes[0].setDiffuse(0.0, 0.0, 0.7);
-        planes[0].setRefraction(0);
+        Plane *plane = new Plane(0,0,0, normalZero, 0.0,0.0,0.7);
+        (*plane).setReflection(0.0);
+	(*plane).setShininess(20);
+	(*plane).setSpecular(0.6, 0.4, 0.2);
+	(*plane).setDiffuse(0.0, 0.0, 0.7);
+        (*plane).setRefraction(0);
+
+        objects[2] = plane;
+
         vector normalOne = {-1, 0, 0};
-        planes[1] = Plane(800,0,0, normalOne, 0.0,0.0,0.7);
-        planes[1].setReflection(0.0);
-	planes[1].setShininess(20);
-	planes[1].setSpecular(0.2, 0.2, 0.2);
-	planes[1].setDiffuse(0.2, 0.2, 0.2);
-        planes[1].setRefraction(0);
-        vector normalTwo = {0, 0, -1};
-        planes[2] = Plane(0,0,20000, normalTwo, 0.7,0.0,0.0);
-        planes[2].setReflection(0.0);
-	planes[2].setShininess(20);
-	planes[2].setSpecular(0.8, 0.6, 0.4);
-	planes[2].setDiffuse(0.7, 0.2, 0.1);
-        planes[2].setRefraction(0);
+        
+        plane = new Plane(800,0,0, normalOne, 0.0,0.0,0.7);
+        (*plane).setReflection(0.0);
+	(*plane).setShininess(20);
+	(*plane).setSpecular(0.2, 0.2, 0.2);
+	(*plane).setDiffuse(0.2, 0.2, 0.2);
+        (*plane).setRefraction(0);
+
+        objects[3] = plane;
+        
+        /*vector normalTwo = {0, 0, -1};
+        plane = new Plane(0,0,20000, normalTwo, 0.7,0.0,0.0);
+        (*plane).setReflection(0.0);
+	(*plane).setShininess(20);
+	(*plane).setSpecular(0.8, 0.6, 0.4);
+	(*plane).setDiffuse(0.7, 0.2, 0.1);
+        (*plane).setRefraction(0);
+
+        objects[4] = plane; */
 
 	/* Lights initialization. */
 	lights[0] = Light(300,500,200, 1.0, 1, 1, 1);

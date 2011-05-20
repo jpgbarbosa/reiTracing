@@ -13,6 +13,8 @@ Sphere::Sphere(double x, double y, double z, double rad, double rC, double gC, d
     c.r = rC;
     c.g = gC;
     c.b = bC;
+    intersectionType = INTERSECTS_SPHERE;
+    
 }
 
 Sphere::Sphere() {}
@@ -90,6 +92,44 @@ bool Sphere::intersects(Ray &ray, double &t)
             return false;
 
     return true;
+}
+
+/* Sets the new direction of the ray after an intersection.
+ * See more at:
+ * http://en.wikipedia.org/wiki/Ray_tracing_(graphics)
+ */
+void Sphere::newDirection(Ray& ray, double& t)
+{
+    vector normal;
+
+    /* First, we calculate the normal.
+     * n = (y - c) / ||y - c||
+     * Where y is the intersection point and c the centre
+     * of the sphere.
+     */
+    normal = ray.getOrigin() + t*ray.getDir() - centre;
+
+    /* Now, we update the start of the ray, which
+     * is the intersection point.
+     */
+    ray.setOrigin(ray.getOrigin() + t*ray.getDir());
+
+    /* Then, calculates the normal. */
+    double length = sqrtf(normal*normal);
+    normal /= length;
+
+    /* With the normal calculated, we find the new direction
+     * vector.
+     * r = d - 2(n.d)n
+     * Where d is the old direction and n is the normal.
+     * TODO: That outter n is inner or external product?
+     */
+    ray.setDirection(ray.getDir() - 2*(ray.getDir()*normal)*normal);
+
+    ray.normalize();
+
+    return;
+
 }
 
 /* Returns the radius of the sphere. */

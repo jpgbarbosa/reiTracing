@@ -8,6 +8,7 @@ Object::Object() { }
 Object::~Object() {}
 
 point Object::getCentre() { return centre; }
+int Object::getIntersectionType() {return intersectionType;}
 
 /* Returns the colour of this Object. */
 double Object::getR() {return c.r;}

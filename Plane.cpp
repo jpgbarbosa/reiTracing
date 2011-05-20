@@ -13,6 +13,7 @@ Plane::Plane(double x, double y, double z, vector n, double rC, double gC, doubl
     c.r = rC;
     c.g = gC;
     c.b = bC;
+    intersectionType = INTERSECTS_PLANE;
 }
 
 Plane::Plane() {}
@@ -45,6 +46,20 @@ bool Plane::intersects(Ray &ray, double &t)
             return false;
 
     return true;
+}
+
+void Plane::newDirection(Ray &ray, double &t)
+{
+    /* Sets the new origin of the ray. */
+    ray.setOrigin(ray.getOrigin() + t*ray.getDir());
+
+    /* And then, its new direction. */
+    ray.setDirection(2*(ray.getDir()*normal)*normal - ray.getDir());
+
+    ray.normalize();
+
+    return;
+
 }
 
 /* Returns the radius of the sphere. */
