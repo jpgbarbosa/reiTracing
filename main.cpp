@@ -216,8 +216,55 @@ void renderImage()
 			vector dir = pixelPoint - camera;
 			ray.setDirection(dir);
                         ray.normalize();
-                        
 			rayTracer(ray, 0);
+                        
+                        /*Ray ray(x,y, 0.0, y, x);
+                        vector dir;
+                        point pixelPoint;
+                        colour finalColour;
+                        finalColour.r = 0.0;
+                        finalColour.g = 0.0;
+                        finalColour.b = 0.0;
+
+			pixelPoint.x = 0.5 + x;
+                        pixelPoint.y = 0.5 + y;
+                        pixelPoint.z = 0.0;
+			dir = pixelPoint - camera;
+			ray.setDirection(dir);
+                        ray.normalize();
+			rayTracer(ray, 0);
+                        finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
+                        image[ray.getHPos()][ray.getWPos()] = 0.0;
+
+                        pixelPoint.x = 0.5 + x;
+                        pixelPoint.y = y;
+                        pixelPoint.z = 0.0;
+			dir = pixelPoint - camera;
+			ray.setDirection(dir);
+                        ray.normalize();
+			rayTracer(ray, 0);
+                        finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
+                        image[ray.getHPos()][ray.getWPos()] = 0;
+
+                        pixelPoint.x = x;
+                        pixelPoint.y = 0.5 + y;
+                        pixelPoint.z = 0.0;
+			dir = pixelPoint - camera;
+			ray.setDirection(dir);
+                        ray.normalize();
+			rayTracer(ray, 0);
+                        finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
+                        image[ray.getHPos()][ray.getWPos()] = 0.0;
+
+                        pixelPoint.x = x;
+                        pixelPoint.y = y;
+                        pixelPoint.z = 0.0;
+			dir = pixelPoint - camera;
+			ray.setDirection(dir);
+                        ray.normalize();
+			rayTracer(ray, 0);
+                        finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
+                        image[ray.getHPos()][ray.getWPos()] = finalColour / 4;*/
 		}
 }
 
@@ -305,7 +352,7 @@ int main(int argc, char** argv) {
 
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(screenWidth, screenHeight);
-	glutCreateWindow("Our Ray Tracer");
+	glutCreateWindow("Our Fantastic Ray Tracer");
 	
 	/* Camera initialization. */
 	camera.x = 300;
@@ -318,7 +365,7 @@ int main(int argc, char** argv) {
 	(*sphere).setShininess(50);
 	(*sphere).setSpecular(1, 1, 1);
 	(*sphere).setDiffuse(0.9, 0, 0);
-        (*sphere).setRefraction(0);
+        (*sphere).setRefraction(0.0);
 
         objects[0] = sphere;
 
