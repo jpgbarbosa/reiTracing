@@ -159,9 +159,12 @@ void rayTracer(Ray ray, int depth)
                 double lambert = (toLightRay.getDir() * normal * ray.getIntensity());
 
                 /* Updates the colour of the ray. */
-                ray.increaseR(lambert*lights[z].getR()*objects[index]->getR());
-                ray.increaseG(lambert*lights[z].getG()*objects[index]->getG());
-                ray.increaseB(lambert*lights[z].getB()*objects[index]->getB());
+                /* The smaller the transparency coefficient is, the darker is the shadow produced
+                 * by the objects.
+                 */
+                ray.increaseR(lambert*lights[z].getR()*objects[index]->getR() * transparencyCoef);
+                ray.increaseG(lambert*lights[z].getG()*objects[index]->getG() * transparencyCoef);
+                ray.increaseB(lambert*lights[z].getB()*objects[index]->getB() * transparencyCoef);
 
                 /* The Blinn-Phong Effect.
                  * The direction of Blinn is exactly at mid point of the light ray
@@ -402,7 +405,7 @@ int main(int argc, char** argv) {
 	(*sphere).setShininess(10);
 	(*sphere).setSpecular(0.2, 0.2, 0.2);
 	(*sphere).setDiffuse(0.2, 0.2, 0.2);
-        (*sphere).setRefraction(0.9);
+        (*sphere).setRefraction(0.5);
 
         objects[1] = sphere;
 
