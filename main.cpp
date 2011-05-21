@@ -385,11 +385,11 @@ int main(int argc, char** argv) {
 	(*sphere).setDiffuse(0.0, 0.0, 0.9);
         (*sphere).setRefraction(0.9);*/
 
-        sphere = new Sphere(480.0,300.0, 100.0, 50.0, 0.9, 0.9, 0.9);
+        sphere = new Sphere(450.0,300.0, 100.0, 50.0, 0.1, 0.1, 0.1);
 	(*sphere).setReflection(0.0);
-	(*sphere).setShininess(50);
-	(*sphere).setSpecular(1, 1, 1);
-	(*sphere).setDiffuse(0.9, 0.9, 0.9);
+	(*sphere).setShininess(10);
+	(*sphere).setSpecular(0.2, 0.2, 0.2);
+	(*sphere).setDiffuse(0.2, 0.2, 0.2);
         (*sphere).setRefraction(0.9);
 
         objects[1] = sphere;
