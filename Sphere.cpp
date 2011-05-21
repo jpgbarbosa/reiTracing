@@ -151,6 +151,9 @@ bool Sphere::refractionRedirection(Ray &ray, double t0, double t1)
     
     /* First, we calculate the outgoing point of this
      * ray in the sphere.
+     * We have to add a fixed component of 0.1 because otherwise,
+     * the second point will be exactly on the sphere and we will
+     * have troubles at the next intersections.
      */
     ray.setOrigin(ray.getOrigin() + (t1 + 0.1)*ray.getDir());
 
