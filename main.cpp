@@ -18,6 +18,8 @@
 #define NO_PLANES 3
 #define NO_OBJECTS 4
 
+#define ANTIALIASING_LIMIT 0.4
+
 using namespace std;
 /* The screen definition. */
 int screenWidth = SCREEN_W;
@@ -51,48 +53,56 @@ double min(double t, double v)
 void rayTracer(Ray ray, int depth)
 {
 	int i, z, index;
-	double minT = -1, t;
+	double minT0 = -1, minT1 = -1, t0, t1;
         /* So we can know the object that this ray intersects. */
         int intersectionType = -1;
 
 	/* Goes through all the objects in the scene. */
 	for (i = 0; i < noObjects; i++)
-		if (objects[i]->intersects(ray, t))
+		if (objects[i]->intersects(ray, t0, t1))
 		{
 			/* Finds the closest. */
-			if (t < minT || minT == -1)
+			if (t0 < minT0 || minT0 == -1)
 			{
-				minT = t;
+				minT0 = t0;
 				index = i;
                                 intersectionType = objects[i]->getIntersectionType();
 			}
 		}
 	
 	/* We have found at least one intersection. */
-	if (minT != -1)
+	if (minT0 != -1)
 	{
+
+		/* Used in the Blinn-Phong calculation. */
+		vector oldDir = ray.getDir();
+		
+		/* Calculate the new direction of the ray. */
+                objects[index]->newDirection(ray, minT0);
+
                 /* There can be also refraction. In that case, we start a new call
                  * of the function and from this moment on, the ray splits into two.
                  */
-                if (intersectionType == INTERSECTS_SPHERE)
+                if (objects[index]->getRefraction() > 0)
                 {
-                    if (objects[index]->getRefraction() > 0)
-                    {
-                       Ray refractionRay = ray;
+                   Ray refractionRay = ray;
+                   /* We need to do this, because the starting point of the refraction
+                    * ray will be the intersection point, but the direction will be the
+                    * same as the direction of the ray before it hit the object.
+                    */
+                   refractionRay.setDirection(oldDir);
 
-                       /* Recursively starts a new ray, now for the refraction. */
-                       rayTracer(refractionRay, depth + 1);
+                   /* Calculates the new starting point of the ray, at the 'other
+                    * side' of the object.
+                    */
+                   objects[index]->refractionRedirection(refractionRay, minT1);
 
-                    }
+                   /* Sets the new intensity of the ray. */
+                   refractionRay.setIntensity(refractionRay.getIntensity()*objects[index]->getRefraction());
+
+                   /* Recursively starts a new ray, now for the refraction. */
+                   //rayTracer(refractionRay, depth + 1);
                 }
-		/* Used in the Blinn-Phong calculation. */
-		vector oldDir;
-		oldDir.x = ray.getDir().x;
-		oldDir.y = ray.getDir().y;
-		oldDir.z = ray.getDir().z;
-		
-		/* Calculate the new direction of the ray. */
-                objects[index]->newDirection(ray, minT);
 			
 		/* Then, calculate the lighting at this point. */
 		for (z = 0; z < noLights; z++)
@@ -102,15 +112,8 @@ void rayTracer(Ray ray, int depth)
 			toLight = lights[z].getCentre() - ray.getOrigin();
 
 			/* We also need to calculate the normal at the intersection point. */
-                        if (intersectionType == INTERSECTS_SPHERE)
-                        {
-                            normal = ray.getOrigin() - objects[index]->getCentre();
-                            double length = sqrtf(normal*normal);
-                            normal /= length;
-                        }
-                        else if (intersectionType == INTERSECTS_PLANE)
-                            normal = ((Plane *)objects[index])->getNormal();
-			
+                        objects[index]->intersectionPointNormal(ray, normal);
+
 			bool inShadow = false;
 			/* If the normal is perpendicular or is in opposite direction of the light,
 			 * we can skip this light because it's not going to light the intersection
@@ -130,7 +133,7 @@ void rayTracer(Ray ray, int depth)
                         
 			for (i = 0; i < noObjects && !inShadow; i++)
                                 /* It can't intersect with itself. */
-				if (objects[i]->intersects(toLightRay, t) && index != i)
+				if (objects[i]->intersects(toLightRay, t0, t1) && index != i)
                                     inShadow = true;
                         
 			/* We aren't in shadow of any other object. Therefore, we have to calculate
@@ -184,7 +187,7 @@ void rayTracer(Ray ray, int depth)
 	 * calculating the ray tracing. Also, the ray might not carry
 	 * any more energy.
 	 */
-	if (minT == -1 || depth == MAX_DEPTH || ray.getIntensity() <= EPSLON)
+	if (minT0 == -1 || depth == MAX_DEPTH || ray.getIntensity() <= EPSLON)
 	{
 		ray.normalizeColour();
 		image[ray.getHPos()][ray.getWPos()].r = ray.getR();
@@ -271,7 +274,7 @@ void renderImage()
 
 void display()
 {
-	int i, j, k,  aliasingTimes = 0;
+	int i, j, k,  aliasingTimes = 1;
 	
 	/* Passes into an array all the colours gathered in the matrix 
 	 * image, so we can use it in the DrawPixels.
@@ -308,7 +311,8 @@ void display()
                                                                 + pixels[(i+1)*(screenWidth*3) + j*3]
                                                                       + pixels[(i+1)*(screenWidth*3) + (j+1)*3];
 
-                            pixels[i*(screenWidth*3) + j*3] = value / 9;
+                            if (abs(pixels[i*(screenWidth*3) + j*3] - value / 9) > ANTIALIASING_LIMIT)
+                                pixels[i*(screenWidth*3) + j*3] = value / 9;
 
                             /* GREEN. */
                             value = pixels[(i-1)*(screenWidth*3) + (j-1)*3 + 1]
@@ -321,7 +325,8 @@ void display()
                                                                 + pixels[(i+1)*(screenWidth*3) + j*3 + 1]
                                                                       + pixels[(i+1)*(screenWidth*3) + (j+1)*3 + 1];
 
-                            pixels[i*(screenWidth*3) + j*3 + 1] = value / 9;
+                            if (abs(pixels[i*(screenWidth*3) + j*3 + 1] - value / 9) > ANTIALIASING_LIMIT)
+                                pixels[i*(screenWidth*3) + j*3 + 1] = value / 9;
 
                             /* BLUE. */
                             value = pixels[(i-1)*(screenWidth*3) + (j-1)*3 + 2]
@@ -334,7 +339,8 @@ void display()
                                                                 + pixels[(i+1)*(screenWidth*3) + j*3 + 2]
                                                                       + pixels[(i+1)*(screenWidth*3) + (j+1)*3 + 2];
 
-                            pixels[i*(screenWidth*3) + j*3 + 2] = value / 9;
+                            if (abs(pixels[i*(screenWidth*3) + j*3 + 2] - value / 9) > ANTIALIASING_LIMIT)
+                                pixels[i*(screenWidth*3) + j*3 + 2] = value / 9;
                     }
             }
         }
@@ -374,7 +380,7 @@ int main(int argc, char** argv) {
 	(*sphere).setShininess(50);
 	(*sphere).setSpecular(1, 1, 1);
 	(*sphere).setDiffuse(0.0, 0.0, 0.9);
-        (*sphere).setRefraction(0);
+        (*sphere).setRefraction(0.9);
 
         objects[1] = sphere;
 

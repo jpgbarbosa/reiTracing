@@ -21,7 +21,7 @@ Plane::Plane() {}
 Plane::~Plane() {}
 
 
-bool Plane::intersects(Ray &ray, double &t)
+bool Plane::intersects(Ray &ray, double &rT0, double &rT1)
 {
     double numerator = (centre - ray.getOrigin())*normal;
     double denominator = ray.getDir()*normal;
@@ -32,17 +32,19 @@ bool Plane::intersects(Ray &ray, double &t)
     if (denominator == 0)
         return false;
 
-    t = numerator/denominator;
+    rT0 = numerator/denominator;
+    /* Just to make sure we invalidate rT1. */
+    rT1 = EPSLON;
 
     /* We are only looking for forward intersections. */
-    if (t <= EPSLON)
+    if (rT0 <= EPSLON)
         return false;
 
     /* We have to check if intersection point is beyond the light
      * or not.
      */
     if (ray.isToLightRay())
-        if (t > ray.getToLightDistance())
+        if (rT0 > ray.getToLightDistance())
             return false;
 
     return true;
@@ -60,6 +62,24 @@ void Plane::newDirection(Ray &ray, double &t)
 
     return;
 
+}
+
+/* In a plane, with no thickness, the ray will continue to move. Refraction isn't
+ * applicable.
+ */
+void Plane::refractionRedirection(Ray &ray, double t)
+{
+    return;
+}
+
+void Plane::intersectionPointNormal(Ray &ray, vector &normalInt)
+{
+    /* At a plane, the normal at the intersection point is simply the
+     * normal of the whole plane.
+     */
+    normalInt = normal;
+
+    return;
 }
 
 /* Returns the radius of the sphere. */

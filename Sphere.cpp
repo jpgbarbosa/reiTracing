@@ -1,4 +1,5 @@
 /* Defines the needed classes and their headers. */
+#include <stdio.h>
 #include "Sphere.h"
 #include "Object.h"
 #include "Ray.h"
@@ -29,7 +30,7 @@ Sphere::~Sphere() {}
  * OTHER INTERSECTIONS:
  * http://flylib.com/books/en/2.124.1.137/1/
  */ 
-bool Sphere::intersects(Ray &ray, double &t)
+bool Sphere::intersects(Ray &ray, double &rT0, double &rT1)
 {
     /* Compute a, b and c coefficients. */
 	//a = (x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2
@@ -71,24 +72,35 @@ bool Sphere::intersects(Ray &ray, double &t)
 
     /* If t1 is less than zero, the object is in the ray's negative direction
      * and consequently, the ray misses the sphere.
-	 * Also, if the intersection point is the same as the starting point, we
-	 * simply ignore it.
-	 */
-    if (t1 <= EPSLON || t0 <= EPSLON)
+     * Also, if the intersection point is the same as the starting point, we
+     * simply ignore it.
+     */
+    if (t0 <= EPSLON && t1 <= EPSLON)
         return false;
 
+    /* Now, we need to save both furthest and closest points, because we need the
+     * closest to perform a regular intersection, and the furthest to perform, if
+     * necessary, refractions.
+     */
+
     /* If t0 is less than zero, the intersection point is at t1. */
-    if (t0 < 0)
-		t = t1;
+    if (t0 <= EPSLON)
+    {
+	rT0 = t1;
+        rT1 = EPSLON;
+    }
     /* Else, the intersection point is at t0. */
     else
-		t = t0;
+    {
+	rT0 = t0;
+        rT1 = t1;
+    }
 
     /* We have to check if intersection point is beyond the light
      * or not.
      */
     if (ray.isToLightRay())
-        if (t > ray.getToLightDistance())
+        if (rT0 > ray.getToLightDistance())
             return false;
 
     return true;
@@ -130,6 +142,28 @@ void Sphere::newDirection(Ray& ray, double& t)
 
     return;
 
+}
+
+void Sphere::refractionRedirection(Ray &ray, double t)
+{
+    /* First, we calculate the outgoing point of this
+     * ray in the sphere.
+     */
+    //printf("Before: %lf %lf %lf\n", ray.getOrigin().x,ray.getOrigin().y, ray.getOrigin().z);
+    ray.setOrigin(ray.getOrigin() + t*ray.getDir());
+    //printf("After: %lf %lf %lf\n", ray.getOrigin().x,ray.getOrigin().y, ray.getOrigin().z);
+
+    //printf("With %lf\n", t);
+
+    return;
+}
+
+void Sphere::intersectionPointNormal(Ray &ray, vector &normalInt)
+{
+    normalInt = ray.getOrigin() - centre;
+    normalInt /= sqrtf(normalInt*normalInt);
+
+    return;
 }
 
 /* Returns the radius of the sphere. */
