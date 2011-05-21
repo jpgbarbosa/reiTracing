@@ -383,7 +383,7 @@ int main(int argc, char** argv) {
     (*sphere).setReflection(0.9);
     (*sphere).setShininess(50);
     (*sphere).setSpecular(1, 1, 1);
-    (*sphere).setDiffuse(0.9, 0, 0);
+    (*sphere).setDiffuse(0.0, 0.0, 0.0);
     (*sphere).setRefraction(0.0);
 
     objects[0] = sphere;
@@ -419,11 +419,11 @@ int main(int argc, char** argv) {
 
     /* Right wall. */
     vector normalOne = {-1, 0, 0};
-    plane = new Plane(800,0,0, normalOne, 0.0,0.0,0.7);
-    (*plane).setReflection(0.0);
-    (*plane).setShininess(20);
-    (*plane).setSpecular(0.2, 0.2, 0.2);
-    (*plane).setDiffuse(0.2, 0.2, 0.2);
+    plane = new Plane(800,0,0, normalOne, 0.0,0.0,0.0);
+    (*plane).setReflection(0.9);
+    (*plane).setShininess(50);
+    (*plane).setSpecular(1, 1, 1);
+    (*plane).setDiffuse(0.0, 0.0, 0.0);
     (*plane).setRefraction(0);
 
     objects[3] = plane;
