@@ -33,11 +33,11 @@ Sphere::~Sphere() {}
 bool Sphere::intersects(Ray &ray, double &rT0, double &rT1)
 {
     /* Compute a, b and c coefficients. */
-	//a = (x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2
+    //a = (x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2
     double a = ray.getDir()*ray.getDir();
-	//b = 2[ (x2 - x1) (x1 - x3) + (y2 - y1) (y1 - y3) + (z2 - z1) (z1 - z3) ]
-	double b = 2*(ray.getDir()*(ray.getOrigin() - centre));
-	//c = x3^2 + y3^2 + z3^2 + x1^2 + y1^2 + z1^2 - 2[x3.x1 + y3.y1 + z3.z1] - r^2
+    //b = 2[ (x2 - x1) (x1 - x3) + (y2 - y1) (y1 - y3) + (z2 - z1) (z1 - z3) ]
+    double b = 2*(ray.getDir()*(ray.getOrigin() - centre));
+    //c = x3^2 + y3^2 + z3^2 + x1^2 + y1^2 + z1^2 - 2[x3.x1 + y3.y1 + z3.z1] - r^2
     double c = centre*centre + ray.getOrigin()*ray.getOrigin() - 2*(ray.getOrigin()*centre) - radius*radius;
 
     /* Find the discriminant. */

@@ -7,20 +7,20 @@
 
 /* In the constructor, we set the starting point of the ray. */
 Ray::Ray(double x, double y, double z, int w, int h):
-	wPos(w),
-	hPos(h)
+    wPos(w),
+    hPos(h)
 {
-	origin.x = x;
-	origin.y = y;
-	origin.z = z;
-	intensity = 1;
-	
-	c.r = 0;
-	c.g = 0;
-	c.b = 0;
+    origin.x = x;
+    origin.y = y;
+    origin.z = z;
+    intensity = 1;
 
-        isToLight = false;
-        distanceToLight = 0;
+    c.r = 0;
+    c.g = 0;
+    c.b = 0;
+
+    isToLight = false;
+    distanceToLight = 0;
 }
 
 //Destructor
@@ -57,9 +57,9 @@ void Ray::operator = (Ray& newRay)
 /* Sets the direction of the ray. */
 void Ray::setDirection(double x, double y, double z)
 {
-	direction.x = x;
-	direction.y = y;
-	direction.z = z;
+    direction.x = x;
+    direction.y = y;
+    direction.z = z;
 }
 
 void Ray::setDirection(vector v) { direction = v; }
@@ -70,12 +70,12 @@ void Ray::normalize() { direction /= sqrt(direction * direction);}
 /* Normalize colour in order to avoid values superior to 1. */
 double Ray::normalizeColour()
 {
-	if (c.r > 1.0)
-		c.r = 1.0;
-	if (c.g > 1.0)
-		c.g = 1.0;
-	if (c.b > 1.0)
-		c.b = 1.0;
+    if (c.r > 1.0)
+            c.r = 1.0;
+    if (c.g > 1.0)
+            c.g = 1.0;
+    if (c.b > 1.0)
+            c.b = 1.0;
 }
 
 /* Returns the corresponding pixel in the final image. */
