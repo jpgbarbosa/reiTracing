@@ -30,12 +30,7 @@ int screenSize = SCREEN_W*SCREEN_H;
 colour image[SCREEN_W][SCREEN_H];
 
 /* Definition of all objects in the scene, as well as the camera. */
-point camera; // TODO: For now, we are assuming that the view plan is at z = 0;
-
-int noSpheres = NO_SPHERES;
-Sphere spheres[NO_SPHERES];
-int noPlanes = NO_PLANES;
-Plane planes[NO_PLANES];
+point camera;
 
 int noObjects = NO_OBJECTS;
 Object *objects[NO_OBJECTS];
@@ -197,267 +192,267 @@ void rayTracer(Ray ray, int depth)
         ray.multIntensity(objects[index]->getReflection());
     }
 	
-	/* We have reached the limit of recursivity for ray tracing.
-	 * Consequently, we assume that we can't reach the light and
-	 * therefore, the pixel colour will be black, corresponding
-	 * to the absence of colour.
-	 * If we don't have any intersection, there's no point keep
-	 * calculating the ray tracing. Also, the ray might not carry
-	 * any more energy.
-	 */
-	if (minT0 == -1 || depth == MAX_DEPTH || ray.getIntensity() <= EPSLON)
-	{
-		ray.normalizeColour();
-		image[ray.getHPos()][ray.getWPos()].r += ray.getR();
-		image[ray.getHPos()][ray.getWPos()].g += ray.getG();
-		image[ray.getHPos()][ray.getWPos()].b += ray.getB();
-	}
-	/* We need to move to the next level of recursivity. */	
-	else
-		rayTracer(ray, depth + 1);
-	
-	return;
+    /* We have reached the limit of recursivity for ray tracing.
+     * Consequently, we assume that we can't reach the light and
+     * therefore, the pixel colour will be black, corresponding
+     * to the absence of colour.
+     * If we don't have any intersection, there's no point keep
+     * calculating the ray tracing. Also, the ray might not carry
+     * any more energy.
+     */
+    if (minT0 == -1 || depth == MAX_DEPTH || ray.getIntensity() <= EPSLON)
+    {
+        ray.normalizeColour();
+        image[ray.getHPos()][ray.getWPos()].r += ray.getR();
+        image[ray.getHPos()][ray.getWPos()].g += ray.getG();
+        image[ray.getHPos()][ray.getWPos()].b += ray.getB();
+    }
+    /* We need to move to the next level of recursivity. */
+    else
+            rayTracer(ray, depth + 1);
+
+    return;
 }
 
 void renderImage()
 {
-	int x, y;
-	
-	for (y = 0; y < screenHeight; y++)
-		for (x = 0; x < screenWidth; x++)
-		{
-			/*TODO: Change the starting point and the direction later. */
-			/* Orthogonal Perspective
-                        Ray ray(x,y,-1000.0, y, x);
-			ray.setDirection(0,0,1.0);
-                         */
-                        /* Conic Perspective. */
-                        Ray ray(x,y, 0.0, y, x);
-			point pixelPoint = {0.5 + x, 0.5 + y, 0.0};
-			vector dir = pixelPoint - camera;
-			ray.setDirection(dir);
-                        ray.normalize();
-			rayTracer(ray, 0);
-                        
-                        /*Ray ray(x,y, 0.0, y, x);
-                        vector dir;
-                        point pixelPoint;
-                        colour finalColour;
-                        finalColour.r = 0.0;
-                        finalColour.g = 0.0;
-                        finalColour.b = 0.0;
+    int x, y;
 
-			pixelPoint.x = 0.5 + x;
-                        pixelPoint.y = 0.5 + y;
-                        pixelPoint.z = 0.0;
-			dir = pixelPoint - camera;
-			ray.setDirection(dir);
-                        ray.normalize();
-			rayTracer(ray, 0);
-                        finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
-                        image[ray.getHPos()][ray.getWPos()] = 0.0;
+    for (y = 0; y < screenHeight; y++)
+            for (x = 0; x < screenWidth; x++)
+            {
+                /* Orthogonal Perspective
+                Ray ray(x,y,-1000.0, y, x);
+                ray.setDirection(0,0,1.0);
+                 */
+                /* Conic Perspective. */
+                Ray ray(x,y, 0.0, y, x);
+                point pixelPoint = {0.5 + x, 0.5 + y, 0.0};
+                vector dir = pixelPoint - camera;
+                ray.setDirection(dir);
+                ray.normalize();
+                rayTracer(ray, 0);
 
-                        pixelPoint.x = 0.5 + x;
-                        pixelPoint.y = y;
-                        pixelPoint.z = 0.0;
-			dir = pixelPoint - camera;
-			ray.setDirection(dir);
-                        ray.normalize();
-			rayTracer(ray, 0);
-                        finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
-                        image[ray.getHPos()][ray.getWPos()] = 0;
+                /* TODO: Antialiasing, doesn't seem to be working. */
+                /*Ray ray(x,y, 0.0, y, x);
+                vector dir;
+                point pixelPoint;
+                colour finalColour;
+                finalColour.r = 0.0;
+                finalColour.g = 0.0;
+                finalColour.b = 0.0;
 
-                        pixelPoint.x = x;
-                        pixelPoint.y = 0.5 + y;
-                        pixelPoint.z = 0.0;
-			dir = pixelPoint - camera;
-			ray.setDirection(dir);
-                        ray.normalize();
-			rayTracer(ray, 0);
-                        finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
-                        image[ray.getHPos()][ray.getWPos()] = 0.0;
+                pixelPoint.x = 0.5 + x;
+                pixelPoint.y = 0.5 + y;
+                pixelPoint.z = 0.0;
+                dir = pixelPoint - camera;
+                ray.setDirection(dir);
+                ray.normalize();
+                rayTracer(ray, 0);
+                finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
+                image[ray.getHPos()][ray.getWPos()] = 0.0;
 
-                        pixelPoint.x = x;
-                        pixelPoint.y = y;
-                        pixelPoint.z = 0.0;
-			dir = pixelPoint - camera;
-			ray.setDirection(dir);
-                        ray.normalize();
-			rayTracer(ray, 0);
-                        finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
-                        image[ray.getHPos()][ray.getWPos()] = finalColour / 4;*/
-		}
+                pixelPoint.x = 0.5 + x;
+                pixelPoint.y = y;
+                pixelPoint.z = 0.0;
+                dir = pixelPoint - camera;
+                ray.setDirection(dir);
+                ray.normalize();
+                rayTracer(ray, 0);
+                finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
+                image[ray.getHPos()][ray.getWPos()] = 0;
+
+                pixelPoint.x = x;
+                pixelPoint.y = 0.5 + y;
+                pixelPoint.z = 0.0;
+                dir = pixelPoint - camera;
+                ray.setDirection(dir);
+                ray.normalize();
+                rayTracer(ray, 0);
+                finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
+                image[ray.getHPos()][ray.getWPos()] = 0.0;
+
+                pixelPoint.x = x;
+                pixelPoint.y = y;
+                pixelPoint.z = 0.0;
+                dir = pixelPoint - camera;
+                ray.setDirection(dir);
+                ray.normalize();
+                rayTracer(ray, 0);
+                finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
+                image[ray.getHPos()][ray.getWPos()] = finalColour / 4;*/
+        }
 }
 
 
 void display()
 {
-	int i, j, k,  aliasingTimes = 1;
-	
-	/* Passes into an array all the colours gathered in the matrix 
-	 * image, so we can use it in the DrawPixels.
-	 */
-	float* pixels = new float[screenSize*3];
+    int i, j, k,  aliasingTimes = 1;
 
-	for( i = 0; i < screenHeight; i++)
-		for (j = 0; j < screenWidth; j++)
-		{
-			pixels[i*(screenWidth*3) + j*3] = image[j][i].r;
-			pixels[i*(screenWidth*3) + j*3 + 1] = image[j][i].g;
-			pixels[i*(screenWidth*3) + j*3 + 2] = image[j][i].b;
-		}
-	/* Antialiasing techniques:
-	 * Given all the calculated colours from the ray tracing process, we
-	 * pick up all the values around it and calculate its mean. That mean
-	 * will be the final colour of the pixel.
-	 */
-        for (k = 0; k < aliasingTimes; k++)
-        {
-            for( i = 1; i < screenHeight - 1; i++)
+    /* Passes into an array all the colours gathered in the matrix
+     * image, so we can use it in the DrawPixels.
+     */
+    float* pixels = new float[screenSize*3];
+
+    for( i = 0; i < screenHeight; i++)
+            for (j = 0; j < screenWidth; j++)
             {
-                    for (j = 1; j < screenWidth - 1; j++)
-                    {
-                            /* RED. */
-                            double value;
-                            value = pixels[(i-1)*(screenWidth*3) + (j-1)*3]
-                                            + pixels[(i-1)*(screenWidth*3) + j*3]
-                                              + pixels[(i-1)*(screenWidth*3) + (j+1)*3]
-                                                + pixels[i*(screenWidth*3) + (j-1)*3]
-                                                      + pixels[i*(screenWidth*3) + j*3]
-                                                        + pixels[i*(screenWidth*3) + (j+1)*3]
-                                                              + pixels[(i+1)*(screenWidth*3) + (j-1)*3]
-                                                                + pixels[(i+1)*(screenWidth*3) + j*3]
-                                                                      + pixels[(i+1)*(screenWidth*3) + (j+1)*3];
+                    pixels[i*(screenWidth*3) + j*3] = image[j][i].r;
+                    pixels[i*(screenWidth*3) + j*3 + 1] = image[j][i].g;
+                    pixels[i*(screenWidth*3) + j*3 + 2] = image[j][i].b;
+            }
+    /* Antialiasing techniques:
+     * Given all the calculated colours from the ray tracing process, we
+     * pick up all the values around it and calculate its mean. That mean
+     * will be the final colour of the pixel.
+     */
+    for (k = 0; k < aliasingTimes; k++)
+    {
+        for( i = 1; i < screenHeight - 1; i++)
+        {
+            for (j = 1; j < screenWidth - 1; j++)
+            {
+                /* RED. */
+                double value;
+                value = pixels[(i-1)*(screenWidth*3) + (j-1)*3]
+                            + pixels[(i-1)*(screenWidth*3) + j*3]
+                              + pixels[(i-1)*(screenWidth*3) + (j+1)*3]
+                                + pixels[i*(screenWidth*3) + (j-1)*3]
+                                  + pixels[i*(screenWidth*3) + j*3]
+                                    + pixels[i*(screenWidth*3) + (j+1)*3]
+                                      + pixels[(i+1)*(screenWidth*3) + (j-1)*3]
+                                        + pixels[(i+1)*(screenWidth*3) + j*3]
+                                          + pixels[(i+1)*(screenWidth*3) + (j+1)*3];
 
-                            if (abs(pixels[i*(screenWidth*3) + j*3] - value / 9) > ANTIALIASING_LIMIT)
-                                pixels[i*(screenWidth*3) + j*3] = value / 9;
+                if (abs(pixels[i*(screenWidth*3) + j*3] - value / 9) > ANTIALIASING_LIMIT)
+                    pixels[i*(screenWidth*3) + j*3] = value / 9;
 
-                            /* GREEN. */
-                            value = pixels[(i-1)*(screenWidth*3) + (j-1)*3 + 1]
-                                            + pixels[(i-1)*(screenWidth*3) + j*3 + 1]
-                                              + pixels[(i-1)*(screenWidth*3) + (j+1)*3 + 1]
-                                                + pixels[i*(screenWidth*3) + (j-1)*3 + 1]
-                                                      + pixels[i*(screenWidth*3) + j*3 + 1]
-                                                        + pixels[i*(screenWidth*3) + (j+1)*3 + 1]
-                                                              + pixels[(i+1)*(screenWidth*3) + (j-1)*3 + 1]
-                                                                + pixels[(i+1)*(screenWidth*3) + j*3 + 1]
-                                                                      + pixels[(i+1)*(screenWidth*3) + (j+1)*3 + 1];
+                /* GREEN. */
+                value = pixels[(i-1)*(screenWidth*3) + (j-1)*3 + 1]
+                            + pixels[(i-1)*(screenWidth*3) + j*3 + 1]
+                              + pixels[(i-1)*(screenWidth*3) + (j+1)*3 + 1]
+                                + pixels[i*(screenWidth*3) + (j-1)*3 + 1]
+                                  + pixels[i*(screenWidth*3) + j*3 + 1]
+                                    + pixels[i*(screenWidth*3) + (j+1)*3 + 1]
+                                      + pixels[(i+1)*(screenWidth*3) + (j-1)*3 + 1]
+                                        + pixels[(i+1)*(screenWidth*3) + j*3 + 1]
+                                          + pixels[(i+1)*(screenWidth*3) + (j+1)*3 + 1];
 
-                            if (abs(pixels[i*(screenWidth*3) + j*3 + 1] - value / 9) > ANTIALIASING_LIMIT)
-                                pixels[i*(screenWidth*3) + j*3 + 1] = value / 9;
+                if (abs(pixels[i*(screenWidth*3) + j*3 + 1] - value / 9) > ANTIALIASING_LIMIT)
+                    pixels[i*(screenWidth*3) + j*3 + 1] = value / 9;
 
-                            /* BLUE. */
-                            value = pixels[(i-1)*(screenWidth*3) + (j-1)*3 + 2]
-                                            + pixels[(i-1)*(screenWidth*3) + j*3 + 2]
-                                              + pixels[(i-1)*(screenWidth*3) + (j+1)*3 + 2]
-                                                + pixels[i*(screenWidth*3) + (j-1)*3 + 2]
-                                                      + pixels[i*(screenWidth*3) + j*3 + 2]
-                                                        + pixels[i*(screenWidth*3) + (j+1)*3 + 2]
-                                                              + pixels[(i+1)*(screenWidth*3) + (j-1)*3 + 2]
-                                                                + pixels[(i+1)*(screenWidth*3) + j*3 + 2]
-                                                                      + pixels[(i+1)*(screenWidth*3) + (j+1)*3 + 2];
+                /* BLUE. */
+                value = pixels[(i-1)*(screenWidth*3) + (j-1)*3 + 2]
+                            + pixels[(i-1)*(screenWidth*3) + j*3 + 2]
+                              + pixels[(i-1)*(screenWidth*3) + (j+1)*3 + 2]
+                                + pixels[i*(screenWidth*3) + (j-1)*3 + 2]
+                                  + pixels[i*(screenWidth*3) + j*3 + 2]
+                                    + pixels[i*(screenWidth*3) + (j+1)*3 + 2]
+                                      + pixels[(i+1)*(screenWidth*3) + (j-1)*3 + 2]
+                                        + pixels[(i+1)*(screenWidth*3) + j*3 + 2]
+                                          + pixels[(i+1)*(screenWidth*3) + (j+1)*3 + 2];
 
-                            if (abs(pixels[i*(screenWidth*3) + j*3 + 2] - value / 9) > ANTIALIASING_LIMIT)
-                                pixels[i*(screenWidth*3) + j*3 + 2] = value / 9;
-                    }
+                if (abs(pixels[i*(screenWidth*3) + j*3 + 2] - value / 9) > ANTIALIASING_LIMIT)
+                    pixels[i*(screenWidth*3) + j*3 + 2] = value / 9;
             }
         }
-		
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
 
-	/* Writes a block of pixels to the framebuffer. */
-	glDrawPixels(screenWidth,screenHeight,GL_RGB,GL_FLOAT, pixels);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glutSwapBuffers();
+    /* Writes a block of pixels to the framebuffer. */
+    glDrawPixels(screenWidth,screenHeight,GL_RGB,GL_FLOAT, pixels);
+
+    glutSwapBuffers();
 }
 
 int main(int argc, char** argv) {
-	glutInit(&argc, argv);
+    glutInit(&argc, argv);
 
-	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-	glutInitWindowSize(screenWidth, screenHeight);
-	glutCreateWindow("Our Fantastic Ray Tracer");
-	
-	/* Camera initialization. */
-	camera.x = 300;
-	camera.y = 400;
-	camera.z = -5000;
-	
-	/* Spheres initialization. */
-        Sphere *sphere = new Sphere(500.0,300, 300.0, 80.0, 1.0, 0.0, 0.0);
-	(*sphere).setReflection(0.0);
-	(*sphere).setShininess(50);
-	(*sphere).setSpecular(1, 1, 1);
-	(*sphere).setDiffuse(0.9, 0, 0);
-        (*sphere).setRefraction(0.0);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitWindowSize(screenWidth, screenHeight);
+    glutCreateWindow("Our Fantastic Ray Tracer");
 
-        objects[0] = sphere;
+    /* Camera initialization. */
+    camera.x = 300;
+    camera.y = 400;
+    camera.z = -5000;
 
-	/*sphere = new Sphere(380.0,220.0, 100.0, 50.0, 0.0, 0.0, 1.0);
-	(*sphere).setReflection(0.0);
-	(*sphere).setShininess(50);
-	(*sphere).setSpecular(1, 1, 1);
-	(*sphere).setDiffuse(0.0, 0.0, 0.9);
-        (*sphere).setRefraction(0.9);*/
+    /* Spheres initialization. */
+    Sphere *sphere = new Sphere(500.0,300, 300.0, 80.0, 1.0, 0.0, 0.0);
+    (*sphere).setReflection(0.0);
+    (*sphere).setShininess(50);
+    (*sphere).setSpecular(1, 1, 1);
+    (*sphere).setDiffuse(0.9, 0, 0);
+    (*sphere).setRefraction(0.0);
 
-        sphere = new Sphere(450.0,300.0, 100.0, 50.0, 0.1, 0.1, 0.1);
-	(*sphere).setReflection(0.0);
-	(*sphere).setShininess(10);
-	(*sphere).setSpecular(0.2, 0.2, 0.2);
-	(*sphere).setDiffuse(0.2, 0.2, 0.2);
-        (*sphere).setRefraction(0.5);
+    objects[0] = sphere;
 
-        objects[1] = sphere;
+    /*sphere = new Sphere(380.0,220.0, 100.0, 50.0, 0.0, 0.0, 1.0);
+    (*sphere).setReflection(0.0);
+    (*sphere).setShininess(50);
+    (*sphere).setSpecular(1, 1, 1);
+    (*sphere).setDiffuse(0.0, 0.0, 0.9);
+    (*sphere).setRefraction(0.9);*/
 
-        /* Planes initialization. */
+    sphere = new Sphere(450.0,300.0, 100.0, 50.0, 0.1, 0.1, 0.1);
+    (*sphere).setReflection(0.0);
+    (*sphere).setShininess(10);
+    (*sphere).setSpecular(0.2, 0.2, 0.2);
+    (*sphere).setDiffuse(0.2, 0.2, 0.2);
+    (*sphere).setRefraction(0.5);
 
-        vector normalZero = {0, 1, 0};
-        Plane *plane = new Plane(0,0,0, normalZero, 0.0,0.0,0.7);
-        (*plane).setReflection(0.0);
-	(*plane).setShininess(20);
-	(*plane).setSpecular(0.6, 0.4, 0.2);
-	(*plane).setDiffuse(0.0, 0.0, 0.7);
-        (*plane).setRefraction(0);
+    objects[1] = sphere;
 
-        objects[2] = plane;
+    /* Planes initialization. */
 
-        vector normalOne = {-1, 0, 0};
-        
-        plane = new Plane(800,0,0, normalOne, 0.0,0.0,0.7);
-        (*plane).setReflection(0.0);
-	(*plane).setShininess(20);
-	(*plane).setSpecular(0.2, 0.2, 0.2);
-	(*plane).setDiffuse(0.2, 0.2, 0.2);
-        (*plane).setRefraction(0);
+    vector normalZero = {0, 1, 0};
+    Plane *plane = new Plane(0,0,0, normalZero, 0.0,0.0,0.7);
+    (*plane).setReflection(0.0);
+    (*plane).setShininess(20);
+    (*plane).setSpecular(0.6, 0.4, 0.2);
+    (*plane).setDiffuse(0.0, 0.0, 0.7);
+    (*plane).setRefraction(0);
 
-        objects[3] = plane;
-        
-        /*vector normalTwo = {0, 0, -1};
-        plane = new Plane(0,0,20000, normalTwo, 0.7,0.0,0.0);
-        (*plane).setReflection(0.0);
-	(*plane).setShininess(20);
-	(*plane).setSpecular(0.8, 0.6, 0.4);
-	(*plane).setDiffuse(0.7, 0.2, 0.1);
-        (*plane).setRefraction(0);
+    objects[2] = plane;
 
-        objects[4] = plane; */
+    vector normalOne = {-1, 0, 0};
 
-	/* Lights initialization. */
-	lights[0] = Light(300,500,200, 1.0, 1, 1, 1);
-	
-	// Starts the ray tracing process.
-	renderImage();
-	
-	glutDisplayFunc(display);
-	//glutReshapeFunc(reshape);
-	//glutMouseFunc(mouse_button);
-	//glutMotionFunc(mouse_motion);
-	//glutKeyboardFunc(keyboard);
-	//glutIdleFunc(idle);
-  
-	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	//glPointSize(2);
+    plane = new Plane(800,0,0, normalOne, 0.0,0.0,0.7);
+    (*plane).setReflection(0.0);
+    (*plane).setShininess(20);
+    (*plane).setSpecular(0.2, 0.2, 0.2);
+    (*plane).setDiffuse(0.2, 0.2, 0.2);
+    (*plane).setRefraction(0);
 
-	glutMainLoop();
+    objects[3] = plane;
+
+    /*vector normalTwo = {0, 0, -1};
+    plane = new Plane(0,0,20000, normalTwo, 0.7,0.0,0.0);
+    (*plane).setReflection(0.0);
+    (*plane).setShininess(20);
+    (*plane).setSpecular(0.8, 0.6, 0.4);
+    (*plane).setDiffuse(0.7, 0.2, 0.1);
+    (*plane).setRefraction(0);
+
+    objects[4] = plane; */
+
+    /* Lights initialization. */
+    lights[0] = Light(300,500,200, 1.0, 1, 1, 1);
+
+    // Starts the ray tracing process.
+    renderImage();
+
+    glutDisplayFunc(display);
+    //glutReshapeFunc(reshape);
+    //glutMouseFunc(mouse_button);
+    //glutMotionFunc(mouse_motion);
+    //glutKeyboardFunc(keyboard);
+    //glutIdleFunc(idle);
+
+    glEnable(GL_DEPTH_TEST);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    //glPointSize(2);
+
+    glutMainLoop();
 }
