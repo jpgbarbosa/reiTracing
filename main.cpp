@@ -117,7 +117,16 @@ void rayTracer(Ray ray, int depth)
             /* We also need to calculate the normal at the intersection point. */
             objects[index]->intersectionPointNormal(ray, normal);
 
-            bool inShadow = false;
+            /* The transparent coefficient is used when we are looking for intersections
+             * between the intersection point and the lights (to know if we are in the
+             * shadow of another object or not). However, transparent objects (with refraction
+             * greater than 0.0), will count as intersections, but we know that they will still
+             * allow some light to pass. Therefore, we have to keep a coefficient that will
+             * go to 0.0 in case we find an opaque object between the intersection point
+             * and the light.
+             */
+            double transparencyCoef = 1.0;
+            
             /* If the normal is perpendicular or is in opposite direction of the light,
              * we can skip this light because it's not going to light the intersection
              * point.
@@ -134,15 +143,15 @@ void rayTracer(Ray ray, int depth)
             toLightRay.setIsToLight(true, sqrtf(toLightRay.getDir() * toLightRay.getDir()));
             toLightRay.normalize();
 
-            for (i = 0; i < noObjects && !inShadow; i++)
+            for (i = 0; i < noObjects && transparencyCoef > EPSLON; i++)
                 /* It can't intersect with itself. */
                 if (objects[i]->intersects(toLightRay, t0, t1) && index != i)
-                    inShadow = true;
+                    transparencyCoef *= objects[i]->getRefraction();
 
             /* We aren't in shadow of any other object. Therefore, we have to calculate
              * the contribution of this light to the final result.
              */
-            if (!inShadow)
+            if (transparencyCoef > EPSLON)
             {
                 /* The Lambert Effect. Depending on the direction of the light, it might
                  * be more or less intense.
@@ -172,9 +181,12 @@ void rayTracer(Ray ray, int depth)
                     /* Calculates the coeficient and then applies it to each colour component. */
                     double blinnCoef = 1.0/sqrtf(internProd) * max(fLightProjection - fViewProjection , 0.0);
                     blinnCoef = ray.getIntensity() * powf(blinnCoef, objects[index]->getShininess());
-                    ray.increaseR(blinnCoef * objects[index]->getSpecular().r  * lights[z].getIntensity());
-                    ray.increaseG(blinnCoef * objects[index]->getSpecular().g  * lights[z].getIntensity());
-                    ray.increaseB(blinnCoef * objects[index]->getSpecular().b  * lights[z].getIntensity());
+                    /* The smaller the transparency coefficient is, the darker is the shadow produced
+                     * by the objects.
+                     */
+                    ray.increaseR(blinnCoef * objects[index]->getSpecular().r  * lights[z].getIntensity() * transparencyCoef);
+                    ray.increaseG(blinnCoef * objects[index]->getSpecular().g  * lights[z].getIntensity() * transparencyCoef);
+                    ray.increaseB(blinnCoef * objects[index]->getSpecular().b  * lights[z].getIntensity() * transparencyCoef);
                 }
             } /* if (!inShadow)*/
         }
