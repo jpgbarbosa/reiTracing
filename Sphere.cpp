@@ -144,18 +144,17 @@ void Sphere::newDirection(Ray& ray, double& t)
 
 }
 
-void Sphere::refractionRedirection(Ray &ray, double t)
+bool Sphere::refractionRedirection(Ray &ray, double t0, double t1)
 {
+    if (t1 <= EPSLON)
+        return false;
+    
     /* First, we calculate the outgoing point of this
      * ray in the sphere.
      */
-    //printf("Before: %lf %lf %lf\n", ray.getOrigin().x,ray.getOrigin().y, ray.getOrigin().z);
-    ray.setOrigin(ray.getOrigin() + t*ray.getDir());
-    //printf("After: %lf %lf %lf\n", ray.getOrigin().x,ray.getOrigin().y, ray.getOrigin().z);
+    ray.setOrigin(ray.getOrigin() + (t1 + 0.1)*ray.getDir());
 
-    //printf("With %lf\n", t);
-
-    return;
+    return true;
 }
 
 void Sphere::intersectionPointNormal(Ray &ray, vector &normalInt)

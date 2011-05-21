@@ -64,12 +64,18 @@ void Plane::newDirection(Ray &ray, double &t)
 
 }
 
-/* In a plane, with no thickness, the ray will continue to move. Refraction isn't
- * applicable.
+/* In a plane, with no thickness, the ray will continue to move. Therefore, the
+ * starting point of the ray will be the same as the intersection point and the
+ * direction of the ray won't change.
  */
-void Plane::refractionRedirection(Ray &ray, double t)
+bool Plane::refractionRedirection(Ray &ray, double t0, double t1)
 {
-    return;
+    if (t0 <= EPSLON)
+        return false;
+    
+    ray.setOrigin(ray.getOrigin() + t0*ray.getDir());
+    
+    return true;
 }
 
 void Plane::intersectionPointNormal(Ray &ray, vector &normalInt)

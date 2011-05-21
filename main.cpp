@@ -45,139 +45,142 @@ Light lights[NO_LIGHTS];
 
 double min(double t, double v)
 {
-	if (t < v)
-		return t;
-	return v;
+    if (t < v)
+        return t;
+
+    return v;
 }
 
 void rayTracer(Ray ray, int depth)
 {
-	int i, z, index;
-	double minT0 = -1, minT1 = -1, t0, t1;
-        /* So we can know the object that this ray intersects. */
-        int intersectionType = -1;
+    int i, z, index;
+    double minT0 = -1, minT1 = -1, t0, t1;
+    /* So we can know the object that this ray intersects. */
+    int intersectionType = -1;
 
-	/* Goes through all the objects in the scene. */
-	for (i = 0; i < noObjects; i++)
-		if (objects[i]->intersects(ray, t0, t1))
-		{
-			/* Finds the closest. */
-			if (t0 < minT0 || minT0 == -1)
-			{
-				minT0 = t0;
-				index = i;
-                                intersectionType = objects[i]->getIntersectionType();
-			}
-		}
+    /* Goes through all the objects in the scene. */
+    for (i = 0; i < noObjects; i++)
+        if (objects[i]->intersects(ray, t0, t1))
+        {
+            /* Finds the closest. */
+            if (t0 < minT0 || minT0 == -1)
+            {
+                minT0 = t0;
+                minT1 = t1;
+                index = i;
+                intersectionType = objects[i]->getIntersectionType();
+            }
+        }
 	
-	/* We have found at least one intersection. */
-	if (minT0 != -1)
-	{
+    /* We have found at least one intersection. */
+    if (minT0 != -1)
+    {
+        //if (index == 0)
+        //    printf("Got here at index %i and %lf %lf!\n", index, minT0, minT1);
+        /* Used in the Blinn-Phong calculation. */
+        vector oldDir = ray.getDir();
 
-		/* Used in the Blinn-Phong calculation. */
-		vector oldDir = ray.getDir();
-		
-		/* Calculate the new direction of the ray. */
-                objects[index]->newDirection(ray, minT0);
+        /* There can be also refraction. In that case, we start a new call
+         * of the function and from this moment on, the ray splits into two.
+         */
+        if (objects[index]->getRefraction() > 0)
+        {
+           Ray refractionRay = ray;
 
-                /* There can be also refraction. In that case, we start a new call
-                 * of the function and from this moment on, the ray splits into two.
+           /* Sets the new starting point of the ray, at the 'other
+            * side' of the object. This point was previously calculated
+            * at the intersection function. Also, if there is some problem
+            * with this point (i.e., not a valid point, due, maybe, to the
+            * the fact that the ray only intersects the object at one point),
+            * the method return false and we won't make the recursive call.
+            */
+           if (objects[index]->refractionRedirection(refractionRay, minT0, minT1))
+           {
+               /* Sets the new intensity of the ray. */
+               refractionRay.setIntensity(refractionRay.getIntensity()*objects[index]->getRefraction());
+
+               /* Recursively starts a new ray, now for the refraction. */
+               rayTracer(refractionRay, depth + 1);
+           }
+        }
+
+        /* Calculate the new direction of the ray. */
+        objects[index]->newDirection(ray, minT0);
+
+        /* Then, calculate the lighting at this point. */
+        for (z = 0; z < noLights; z++)
+        {
+            /* The directional vector between the intersection point and the light. */
+            vector toLight, normal;
+            toLight = lights[z].getCentre() - ray.getOrigin();
+
+            /* We also need to calculate the normal at the intersection point. */
+            objects[index]->intersectionPointNormal(ray, normal);
+
+            bool inShadow = false;
+            /* If the normal is perpendicular or is in opposite direction of the light,
+             * we can skip this light because it's not going to light the intersection
+             * point.
+             */
+            if (normal * toLight < -EPSLON)
+                continue;
+
+            /* Now, we have to see if we are in the shadow of any other object.
+             * For that, we create a temporary ray that goes from the intersection
+             * point to the light spot.
+             */
+            Ray toLightRay = Ray(ray.getOrigin().x, ray.getOrigin().y, ray.getOrigin().z, 0, 0);
+            toLightRay.setDirection(toLight);
+            toLightRay.setIsToLight(true, sqrtf(toLightRay.getDir() * toLightRay.getDir()));
+            toLightRay.normalize();
+
+            for (i = 0; i < noObjects && !inShadow; i++)
+                /* It can't intersect with itself. */
+                if (objects[i]->intersects(toLightRay, t0, t1) && index != i)
+                    inShadow = true;
+
+            /* We aren't in shadow of any other object. Therefore, we have to calculate
+             * the contribution of this light to the final result.
+             */
+            if (!inShadow)
+            {
+                /* The Lambert Effect. Depending on the direction of the light, it might
+                 * be more or less intense.
                  */
-                if (objects[index]->getRefraction() > 0)
+                double lambert = (toLightRay.getDir() * normal * ray.getIntensity());
+
+                /* Updates the colour of the ray. */
+                ray.increaseR(lambert*lights[z].getR()*objects[index]->getR());
+                ray.increaseG(lambert*lights[z].getG()*objects[index]->getG());
+                ray.increaseB(lambert*lights[z].getB()*objects[index]->getB());
+
+                /* The Blinn-Phong Effect.
+                 * The direction of Blinn is exactly at mid point of the light ray
+                 * and the view ray.
+                 * We compute the Blinn vector and then we normalize it
+                 * then we compute the coeficient of blinn
+                 * which is the specular contribution of the current light.
+                 */
+                vector blinnDir = toLightRay.getDir() - oldDir;
+                double internProd = blinnDir * blinnDir;
+
+                if (internProd != 0.0 )
                 {
-                   Ray refractionRay = ray;
-                   /* We need to do this, because the starting point of the refraction
-                    * ray will be the intersection point, but the direction will be the
-                    * same as the direction of the ray before it hit the object.
-                    */
-                   refractionRay.setDirection(oldDir);
+                    double fViewProjection = oldDir * normal;
+                    double fLightProjection = toLightRay.getDir() * normal;
 
-                   /* Calculates the new starting point of the ray, at the 'other
-                    * side' of the object.
-                    */
-                   objects[index]->refractionRedirection(refractionRay, minT1);
-
-                   /* Sets the new intensity of the ray. */
-                   refractionRay.setIntensity(refractionRay.getIntensity()*objects[index]->getRefraction());
-
-                   /* Recursively starts a new ray, now for the refraction. */
-                   //rayTracer(refractionRay, depth + 1);
+                    /* Calculates the coeficient and then applies it to each colour component. */
+                    double blinnCoef = 1.0/sqrtf(internProd) * max(fLightProjection - fViewProjection , 0.0);
+                    blinnCoef = ray.getIntensity() * powf(blinnCoef, objects[index]->getShininess());
+                    ray.increaseR(blinnCoef * objects[index]->getSpecular().r  * lights[z].getIntensity());
+                    ray.increaseG(blinnCoef * objects[index]->getSpecular().g  * lights[z].getIntensity());
+                    ray.increaseB(blinnCoef * objects[index]->getSpecular().b  * lights[z].getIntensity());
                 }
-			
-		/* Then, calculate the lighting at this point. */
-		for (z = 0; z < noLights; z++)
-		{
-			/* The directional vector between the intersection point and the light. */
-			vector toLight, normal;
-			toLight = lights[z].getCentre() - ray.getOrigin();
+            } /* if (!inShadow)*/
+        }
 
-			/* We also need to calculate the normal at the intersection point. */
-                        objects[index]->intersectionPointNormal(ray, normal);
-
-			bool inShadow = false;
-			/* If the normal is perpendicular or is in opposite direction of the light,
-			 * we can skip this light because it's not going to light the intersection
-			 * point.
-			 */
-			if (normal * toLight < -EPSLON)
-                            continue;
-                        
-			/* Now, we have to see if we are in the shadow of any other object.
-			 * For that, we create a temporary ray that goes from the intersection
-			 * point to the light spot.
-			 */
-			Ray toLightRay = Ray(ray.getOrigin().x, ray.getOrigin().y, ray.getOrigin().z, 0, 0);
-			toLightRay.setDirection(toLight);
-                        toLightRay.setIsToLight(true, sqrtf(toLightRay.getDir() * toLightRay.getDir()));
-			toLightRay.normalize();
-                        
-			for (i = 0; i < noObjects && !inShadow; i++)
-                                /* It can't intersect with itself. */
-				if (objects[i]->intersects(toLightRay, t0, t1) && index != i)
-                                    inShadow = true;
-                        
-			/* We aren't in shadow of any other object. Therefore, we have to calculate
-			 * the contribution of this light to the final result.
-			 */
-			if (!inShadow)
-			{
-				/* The Lambert Effect. Depending on the direction of the light, it might
-				 * be more or less intense.
-				 */
-				double lambert = (toLightRay.getDir() * normal * ray.getIntensity());
-				
-				/* Updates the colour of the ray. */
-                                ray.increaseR(lambert*lights[z].getR()*objects[index]->getR());
-                                ray.increaseG(lambert*lights[z].getG()*objects[index]->getG());
-                                ray.increaseB(lambert*lights[z].getB()*objects[index]->getB());
-			
-				/* The Blinn-Phong Effect. 
-                                 * The direction of Blinn is exactly at mid point of the light ray
-                                 * and the view ray.
-                                 * We compute the Blinn vector and then we normalize it
-                                 * then we compute the coeficient of blinn
-                                 * which is the specular contribution of the current light.
-				 */
-				vector blinnDir = toLightRay.getDir() - oldDir;
-				double internProd = blinnDir * blinnDir;
-				
-				if (internProd != 0.0 )
-				{
-					double fViewProjection = oldDir * normal;
-					double fLightProjection = toLightRay.getDir() * normal;
-				
-					/* Calculates the coeficient and then applies it to each colour component. */
-					double blinnCoef = 1.0/sqrtf(internProd) * max(fLightProjection - fViewProjection , 0.0);
-                                        blinnCoef = ray.getIntensity() * powf(blinnCoef, objects[index]->getShininess());
-                                        ray.increaseR(blinnCoef * objects[index]->getSpecular().r  * lights[z].getIntensity());
-                                        ray.increaseG(blinnCoef * objects[index]->getSpecular().g  * lights[z].getIntensity());
-                                        ray.increaseB(blinnCoef * objects[index]->getSpecular().b  * lights[z].getIntensity());
-                                }
-			} /* if (!inShadow)*/
-		}
-
-                ray.multIntensity(objects[index]->getReflection());
-	}	
+        ray.multIntensity(objects[index]->getReflection());
+    }
 	
 	/* We have reached the limit of recursivity for ray tracing.
 	 * Consequently, we assume that we can't reach the light and
@@ -190,9 +193,9 @@ void rayTracer(Ray ray, int depth)
 	if (minT0 == -1 || depth == MAX_DEPTH || ray.getIntensity() <= EPSLON)
 	{
 		ray.normalizeColour();
-		image[ray.getHPos()][ray.getWPos()].r = ray.getR();
-		image[ray.getHPos()][ray.getWPos()].g = ray.getG();
-		image[ray.getHPos()][ray.getWPos()].b = ray.getB();
+		image[ray.getHPos()][ray.getWPos()].r += ray.getR();
+		image[ray.getHPos()][ray.getWPos()].g += ray.getG();
+		image[ray.getHPos()][ray.getWPos()].b += ray.getB();
 	}
 	/* We need to move to the next level of recursivity. */	
 	else
@@ -375,11 +378,18 @@ int main(int argc, char** argv) {
 
         objects[0] = sphere;
 
-	sphere = new Sphere(380.0,220.0, 100.0, 50.0, 0.0, 0.0, 1.0);
+	/*sphere = new Sphere(380.0,220.0, 100.0, 50.0, 0.0, 0.0, 1.0);
 	(*sphere).setReflection(0.0);
 	(*sphere).setShininess(50);
 	(*sphere).setSpecular(1, 1, 1);
 	(*sphere).setDiffuse(0.0, 0.0, 0.9);
+        (*sphere).setRefraction(0.9);*/
+
+        sphere = new Sphere(480.0,300.0, 100.0, 50.0, 0.9, 0.9, 0.9);
+	(*sphere).setReflection(0.0);
+	(*sphere).setShininess(50);
+	(*sphere).setSpecular(1, 1, 1);
+	(*sphere).setDiffuse(0.9, 0.9, 0.9);
         (*sphere).setRefraction(0.9);
 
         objects[1] = sphere;
