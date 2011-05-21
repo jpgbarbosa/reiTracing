@@ -75,7 +75,7 @@ bool Sphere::intersects(Ray &ray, double &rT0, double &rT1)
      * Also, if the intersection point is the same as the starting point, we
      * simply ignore it.
      */
-    if (t0 <= EPSLON && t1 <= EPSLON)
+    if (t0 <= EPSLON || t1 <= EPSLON)
         return false;
 
     /* Now, we need to save both furthest and closest points, because we need the

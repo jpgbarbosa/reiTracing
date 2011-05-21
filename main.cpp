@@ -14,9 +14,9 @@
 #define SCREEN_H 600
 #define MAX_DEPTH 10
 #define NO_SPHERES 2
-#define NO_LIGHTS 1
+#define NO_LIGHTS 2
 #define NO_PLANES 3
-#define NO_OBJECTS 4
+#define NO_OBJECTS 5
 
 #define ANTIALIASING_LIMIT 0.4
 
@@ -379,8 +379,8 @@ int main(int argc, char** argv) {
     camera.z = -5000;
 
     /* Spheres initialization. */
-    Sphere *sphere = new Sphere(500.0,300, 300.0, 80.0, 1.0, 0.0, 0.0);
-    (*sphere).setReflection(0.0);
+    Sphere *sphere = new Sphere(500.0,300, 300.0, 80.0, 0.0, 0.0, 0.0);
+    (*sphere).setReflection(0.9);
     (*sphere).setShininess(50);
     (*sphere).setSpecular(1, 1, 1);
     (*sphere).setDiffuse(0.9, 0, 0);
@@ -388,24 +388,25 @@ int main(int argc, char** argv) {
 
     objects[0] = sphere;
 
-    /*sphere = new Sphere(380.0,220.0, 100.0, 50.0, 0.0, 0.0, 1.0);
+    sphere = new Sphere(380.0,220.0, 100.0, 50.0, 0.0, 0.0, 1.0);
     (*sphere).setReflection(0.0);
     (*sphere).setShininess(50);
     (*sphere).setSpecular(1, 1, 1);
     (*sphere).setDiffuse(0.0, 0.0, 0.9);
-    (*sphere).setRefraction(0.9);*/
+    (*sphere).setRefraction(0.0);
 
-    sphere = new Sphere(450.0,300.0, 100.0, 50.0, 0.1, 0.1, 0.1);
+    /*sphere = new Sphere(450.0,300.0, 100.0, 50.0, 0.1, 0.1, 0.1);
     (*sphere).setReflection(0.0);
     (*sphere).setShininess(10);
     (*sphere).setSpecular(0.2, 0.2, 0.2);
     (*sphere).setDiffuse(0.2, 0.2, 0.2);
-    (*sphere).setRefraction(0.5);
+    (*sphere).setRefraction(0.5);*/
 
     objects[1] = sphere;
 
     /* Planes initialization. */
 
+    /* Ground. */
     vector normalZero = {0, 1, 0};
     Plane *plane = new Plane(0,0,0, normalZero, 0.0,0.0,0.7);
     (*plane).setReflection(0.0);
@@ -416,8 +417,8 @@ int main(int argc, char** argv) {
 
     objects[2] = plane;
 
+    /* Right wall. */
     vector normalOne = {-1, 0, 0};
-
     plane = new Plane(800,0,0, normalOne, 0.0,0.0,0.7);
     (*plane).setReflection(0.0);
     (*plane).setShininess(20);
@@ -427,18 +428,20 @@ int main(int argc, char** argv) {
 
     objects[3] = plane;
 
-    /*vector normalTwo = {0, 0, -1};
-    plane = new Plane(0,0,20000, normalTwo, 0.7,0.0,0.0);
-    (*plane).setReflection(0.0);
-    (*plane).setShininess(20);
-    (*plane).setSpecular(0.8, 0.6, 0.4);
-    (*plane).setDiffuse(0.7, 0.2, 0.1);
+    /* Back wall.*/
+    vector normalTwo = {0, 0, -1};
+    plane = new Plane(0,0,15000, normalTwo, 0.0,0.0,0.0);
+    (*plane).setReflection(0.9);
+    (*plane).setShininess(10);
+    (*plane).setSpecular(0.1, 0.1, 0.1);
+    (*plane).setDiffuse(0.0, 0.0, 0.0);
     (*plane).setRefraction(0);
 
-    objects[4] = plane; */
+    objects[4] = plane;
 
     /* Lights initialization. */
-    lights[0] = Light(300,500,200, 1.0, 1, 1, 1);
+    lights[0] = Light(300,10000,6000, 1.0, 1, 1, 1);
+    lights[1] = Light(300,400,-6000, 1.0, 1, 1, 1);
 
     // Starts the ray tracing process.
     renderImage();
