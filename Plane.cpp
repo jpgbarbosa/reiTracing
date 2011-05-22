@@ -56,7 +56,7 @@ void Plane::newDirection(Ray &ray, double &t)
     ray.setOrigin(ray.getOrigin() + t*ray.getDir());
 
     /* And then, its new direction. */
-    ray.setDirection(2*(ray.getDir()*normal)*normal - ray.getDir());
+    ray.setDirection(ray.getDir() - 2*(ray.getDir()*normal)*normal);
 
     ray.normalize();
 

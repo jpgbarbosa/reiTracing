@@ -64,6 +64,11 @@ void rayTracer(Ray ray, int depth)
                 minT1 = t1;
                 index = i;
                 intersectionType = objects[i]->getIntersectionType();
+
+                if (depth > 0 && index < 2)
+                {
+                    //printf("At index %d\n", index);
+                }
             }
         }
 	
@@ -226,11 +231,12 @@ void renderImage()
                 ray.setDirection(0,0,1.0);
                  */
                 /* Conic Perspective. */
-                Ray ray(x,y, 0.0, y, x);
+                Ray ray(camera.x,camera.y, camera.z, y, x);
                 point pixelPoint = {0.5 + x, 0.5 + y, 0.0};
                 vector dir = pixelPoint - camera;
                 ray.setDirection(dir);
                 ray.normalize();
+                //printf("%lf %lf %lf\n", ray.getDir().x, ray.getDir().y, ray.getDir().z);
                 rayTracer(ray, 0);
 
                 /* TODO: Antialiasing, doesn't seem to be working. */
@@ -366,6 +372,7 @@ void display()
     glutSwapBuffers();
 }
 
+
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
 
@@ -374,12 +381,12 @@ int main(int argc, char** argv) {
     glutCreateWindow("Our Fantastic Ray Tracer");
 
     /* Camera initialization. */
-    camera.x = 300;
-    camera.y = 400;
+    camera.x = 400;
+    camera.y = 300;
     camera.z = -5000;
 
     /* Spheres initialization. */
-    Sphere *sphere = new Sphere(500.0,300, 300.0, 80.0, 0.0, 0.0, 0.0);
+    Sphere *sphere = new Sphere(500.0,300, 4300.0, 80.0, 0.0, 0.0, 0.0);
     (*sphere).setReflection(0.9);
     (*sphere).setShininess(50);
     (*sphere).setSpecular(1, 1, 1);
@@ -388,7 +395,7 @@ int main(int argc, char** argv) {
 
     objects[0] = sphere;
 
-    sphere = new Sphere(380.0,220.0, 100.0, 50.0, 0.0, 0.0, 1.0);
+    sphere = new Sphere(380.0,220.0, 4100.0, 50.0, 0.0, 0.0, 1.0);
     (*sphere).setReflection(0.0);
     (*sphere).setShininess(50);
     (*sphere).setSpecular(1, 1, 1);
@@ -430,11 +437,11 @@ int main(int argc, char** argv) {
 
     /* Back wall.*/
     vector normalTwo = {0, 0, -1};
-    plane = new Plane(0,0,15000, normalTwo, 0.0,0.0,0.0);
-    (*plane).setReflection(0.9);
-    (*plane).setShininess(10);
-    (*plane).setSpecular(0.1, 0.1, 0.1);
-    (*plane).setDiffuse(0.0, 0.0, 0.0);
+    plane = new Plane(0,0,20000, normalTwo, 0.0,0.0,0.7);
+    (*plane).setReflection(0.0);
+    (*plane).setShininess(50);
+    (*plane).setSpecular(0.6, 0.6, 0.6);
+    (*plane).setDiffuse(0.0, 0.0, 0.7);
     (*plane).setRefraction(0);
 
     objects[4] = plane;
