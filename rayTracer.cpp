@@ -16,6 +16,22 @@ extern point camera;
 extern int screenWidth, screenHeight, screenSize;
 extern colour image[SCREEN_W][SCREEN_H];
 
+/* All the coefficients that will make the plane.
+ * a,b and c will go for x, y, z, while d is for the constant.
+ * A plane can be defined as a.x + b.y + c.z = d;
+ *
+/* initX and initY will define the beginning of the view plane.
+ * For example, if we have an initX and initY equal to zero, it means
+ * that the plane will be a rectangle with the lower left corner standing
+ * on the coordinate x = 0 and y = 0;
+ */
+double setViewPlaneZCoordinate(double a, double b, double c, double d, double initX, double initY, int x, int y)
+{
+    
+    return (d - a*(initX + x) - b*(initY + y));
+
+}
+
 void rayTracer(Ray ray, int depth)
 {
     int i, z, index;
@@ -182,6 +198,7 @@ void rayTracer(Ray ray, int depth)
 void renderImage()
 {
     int x, y;
+    double z = 0;
 
     for (y = 0; y < screenHeight; y++)
             for (x = 0; x < screenWidth; x++)
@@ -190,9 +207,15 @@ void renderImage()
                 Ray ray(x,y,-1000.0, y, x);
                 ray.setDirection(0,0,1.0);
                  */
+
+                /* Parameters:
+                 *  a , b, c, d, initX, initY, x, y
+                 */
+                z = setViewPlaneZCoordinate(10, 0, 1, 0, 0, 0, x,y);
+
                 /* Conic Perspective. */
-                Ray ray(camera.x,camera.y, camera.z, y, x);
-                point pixelPoint = {0.5 + x, 0.5 + y, 0.0};
+                Ray ray(x,y, z, y, x);
+                point pixelPoint = {0.5 + x, 0.5 + y, z};
                 vector dir = pixelPoint - camera;
                 ray.setDirection(dir);
                 ray.normalize();
