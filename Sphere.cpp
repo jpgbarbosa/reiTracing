@@ -14,7 +14,6 @@ Sphere::Sphere(double x, double y, double z, double rad, double rC, double gC, d
     c.r = rC;
     c.g = gC;
     c.b = bC;
-    intersectionType = INTERSECTS_SPHERE;
     
 }
 

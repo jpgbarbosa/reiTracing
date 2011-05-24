@@ -13,7 +13,6 @@ Plane::Plane(double x, double y, double z, vector n, double rC, double gC, doubl
     c.r = rC;
     c.g = gC;
     c.b = bC;
-    intersectionType = INTERSECTS_PLANE;
 }
 
 Plane::Plane() {}

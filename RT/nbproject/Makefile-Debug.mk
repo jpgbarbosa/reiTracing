@@ -34,6 +34,7 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/_ext/1472/Plane.o \
+	${OBJECTDIR}/_ext/1472/scene.o \
 	${OBJECTDIR}/_ext/1472/Object.o \
 	${OBJECTDIR}/_ext/1472/Light.o \
 	${OBJECTDIR}/_ext/1472/main.o \
@@ -69,6 +70,11 @@ ${OBJECTDIR}/_ext/1472/Plane.o: ../Plane.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/1472
 	${RM} $@.d
 	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1472/Plane.o ../Plane.cpp
+
+${OBJECTDIR}/_ext/1472/scene.o: ../scene.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1472
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1472/scene.o ../scene.cpp
 
 ${OBJECTDIR}/_ext/1472/Object.o: ../Object.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1472

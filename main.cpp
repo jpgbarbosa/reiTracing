@@ -10,16 +10,6 @@
 #include "BasicStructures.h"
 #include "Object.h"
 
-#define SCREEN_W 800
-#define SCREEN_H 600
-#define MAX_DEPTH 10
-#define NO_SPHERES 2
-#define NO_LIGHTS 2
-#define NO_PLANES 3
-#define NO_OBJECTS 5
-
-#define ANTIALIASING_LIMIT 0.4
-
 using namespace std;
 /* The screen definition. */
 int screenWidth = SCREEN_W;
@@ -32,11 +22,11 @@ colour image[SCREEN_W][SCREEN_H];
 /* Definition of all objects in the scene, as well as the camera. */
 point camera;
 
-int noObjects = NO_OBJECTS;
-Object *objects[NO_OBJECTS];
+int noObjects;
+Object **objects;
 
-int noLights = NO_LIGHTS;
-Light lights[NO_LIGHTS];
+int noLights;
+Light *lights;
 
 double min(double t, double v)
 {
@@ -50,8 +40,6 @@ void rayTracer(Ray ray, int depth)
 {
     int i, z, index;
     double minT0 = -1, minT1 = -1, t0, t1;
-    /* So we can know the object that this ray intersects. */
-    int intersectionType = -1;
 
     /* Goes through all the objects in the scene. */
     for (i = 0; i < noObjects; i++)
@@ -63,20 +51,12 @@ void rayTracer(Ray ray, int depth)
                 minT0 = t0;
                 minT1 = t1;
                 index = i;
-                intersectionType = objects[i]->getIntersectionType();
-
-                if (depth > 0 && index < 2)
-                {
-                    //printf("At index %d\n", index);
-                }
             }
         }
 	
     /* We have found at least one intersection. */
     if (minT0 != -1)
     {
-        //if (index == 0)
-        //    printf("Got here at index %i and %lf %lf!\n", index, minT0, minT1);
         /* Used in the Blinn-Phong calculation. */
         vector oldDir = ray.getDir();
 
@@ -372,7 +352,6 @@ void display()
     glutSwapBuffers();
 }
 
-
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
 
@@ -385,72 +364,9 @@ int main(int argc, char** argv) {
     camera.y = 300;
     camera.z = -5000;
 
-    /* Spheres initialization. */
-    Sphere *sphere = new Sphere(500.0,300, 4300.0, 80.0, 0.0, 0.0, 0.0);
-    (*sphere).setReflection(0.9);
-    (*sphere).setShininess(50);
-    (*sphere).setSpecular(1, 1, 1);
-    (*sphere).setDiffuse(0.0, 0.0, 0.0);
-    (*sphere).setRefraction(0.0);
+    buildScene(1);
 
-    objects[0] = sphere;
-
-    sphere = new Sphere(380.0,220.0, 4100.0, 50.0, 0.0, 0.0, 1.0);
-    (*sphere).setReflection(0.0);
-    (*sphere).setShininess(50);
-    (*sphere).setSpecular(1, 1, 1);
-    (*sphere).setDiffuse(0.0, 0.0, 0.9);
-    (*sphere).setRefraction(0.0);
-
-    /*sphere = new Sphere(450.0,300.0, 100.0, 50.0, 0.1, 0.1, 0.1);
-    (*sphere).setReflection(0.0);
-    (*sphere).setShininess(10);
-    (*sphere).setSpecular(0.2, 0.2, 0.2);
-    (*sphere).setDiffuse(0.2, 0.2, 0.2);
-    (*sphere).setRefraction(0.5);*/
-
-    objects[1] = sphere;
-
-    /* Planes initialization. */
-
-    /* Ground. */
-    vector normalZero = {0, 1, 0};
-    Plane *plane = new Plane(0,0,0, normalZero, 0.0,0.0,0.7);
-    (*plane).setReflection(0.0);
-    (*plane).setShininess(20);
-    (*plane).setSpecular(0.6, 0.4, 0.2);
-    (*plane).setDiffuse(0.0, 0.0, 0.7);
-    (*plane).setRefraction(0);
-
-    objects[2] = plane;
-
-    /* Right wall. */
-    vector normalOne = {-1, 0, 0};
-    plane = new Plane(800,0,0, normalOne, 0.0,0.0,0.0);
-    (*plane).setReflection(0.9);
-    (*plane).setShininess(50);
-    (*plane).setSpecular(1, 1, 1);
-    (*plane).setDiffuse(0.0, 0.0, 0.0);
-    (*plane).setRefraction(0);
-
-    objects[3] = plane;
-
-    /* Back wall.*/
-    vector normalTwo = {0, 0, -1};
-    plane = new Plane(0,0,20000, normalTwo, 0.0,0.0,0.7);
-    (*plane).setReflection(0.0);
-    (*plane).setShininess(50);
-    (*plane).setSpecular(0.6, 0.6, 0.6);
-    (*plane).setDiffuse(0.0, 0.0, 0.7);
-    (*plane).setRefraction(0);
-
-    objects[4] = plane;
-
-    /* Lights initialization. */
-    lights[0] = Light(300,10000,6000, 1.0, 1, 1, 1);
-    lights[1] = Light(300,400,-6000, 1.0, 1, 1, 1);
-
-    // Starts the ray tracing process.
+    /* Starts the ray tracing process. */
     renderImage();
 
     glutDisplayFunc(display);

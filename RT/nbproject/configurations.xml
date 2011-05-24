@@ -27,6 +27,7 @@
       <itemPath>../Ray.cpp</itemPath>
       <itemPath>../Sphere.cpp</itemPath>
       <itemPath>../main.cpp</itemPath>
+      <itemPath>../scene.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
