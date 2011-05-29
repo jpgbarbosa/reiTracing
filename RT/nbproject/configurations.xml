@@ -6,6 +6,7 @@
                    projectFiles="true"
                    kind="SOURCE_LOGICAL_FOLDER">
       <itemPath>../BasicStructures.h</itemPath>
+      <itemPath>../Cube.h</itemPath>
       <itemPath>../Light.h</itemPath>
       <itemPath>../Object.h</itemPath>
       <itemPath>../Plane.h</itemPath>
@@ -21,6 +22,7 @@
                    displayName="Source Files"
                    projectFiles="true"
                    kind="SOURCE_LOGICAL_FOLDER">
+      <itemPath>../Cube.cpp</itemPath>
       <itemPath>../Light.cpp</itemPath>
       <itemPath>../Object.cpp</itemPath>
       <itemPath>../Plane.cpp</itemPath>

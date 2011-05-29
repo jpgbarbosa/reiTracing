@@ -41,6 +41,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/1472/auxiliarFunctions.o \
 	${OBJECTDIR}/_ext/1472/main.o \
 	${OBJECTDIR}/_ext/1472/Ray.o \
+	${OBJECTDIR}/_ext/1472/Cube.o \
 	${OBJECTDIR}/_ext/1472/Sphere.o
 
 
@@ -107,6 +108,11 @@ ${OBJECTDIR}/_ext/1472/Ray.o: ../Ray.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/1472
 	${RM} $@.d
 	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1472/Ray.o ../Ray.cpp
+
+${OBJECTDIR}/_ext/1472/Cube.o: ../Cube.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1472
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1472/Cube.o ../Cube.cpp
 
 ${OBJECTDIR}/_ext/1472/Sphere.o: ../Sphere.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1472

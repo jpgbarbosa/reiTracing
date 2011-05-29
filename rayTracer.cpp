@@ -211,7 +211,7 @@ void renderImage()
                 /* Parameters:
                  *  a , b, c, d, initX, initY, x, y
                  */
-                z = setViewPlaneZCoordinate(10, 0, 1, 0, 0, 0, x,y);
+                z = setViewPlaneZCoordinate(0, 0, 1, 0, 0, 0, x,y);
 
                 /* Conic Perspective. */
                 Ray ray(x,y, z, y, x);

@@ -67,10 +67,10 @@ int main(int argc, char** argv) {
     /* Camera initialization. */
     camera.x = 400;
     camera.y = 300;
-    camera.z = -5000;
+    camera.z = -1000;
 
     /* Builds the right scene. */
-    buildScene(4);
+    buildScene(5);
 
     /* Starts the ray tracing process. */
     renderImage();

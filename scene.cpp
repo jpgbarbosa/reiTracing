@@ -1,6 +1,7 @@
 #include <stdio.h>
 /* Defines the needed classes and their headers. */
 #include "Sphere.h"
+#include "Cube.h"
 #include "Ray.h"
 #include "Light.h"
 #include "Plane.h"
@@ -259,6 +260,45 @@ void sceneFour()
     lights[1] = Light(300,10000,-6000, 1.0, 1, 1, 1);
 }
 
+/* SCENE DESCRIPTION:
+ *    -> Cube test.
+ */
+void sceneFive()
+{
+    /* First, allocates enough space for all the structures.*/
+    noObjects = 2;
+    noLights = 2;
+
+    objects = new Object *[noObjects];
+    lights = new Light[noLights];
+
+    /* Spheres initialization. */
+    Cube *cube = new Cube(200.0,300, 500.0, 200,200,500, 1.0, 0.0, 0.0);
+    (*cube).setReflection(0.0);
+    (*cube).setShininess(50);
+    (*cube).setSpecular(1, 1, 1);
+    (*cube).setDiffuse(1.0, 0.0, 0.0);
+    (*cube).setRefraction(0.0);
+
+    objects[0] = cube;
+
+    /* Back wall.*/
+    vector normalOne = {1, 0, 0};
+    Plane *plane = new Plane(0,0,0, normalOne, 0.1,0.1,0.8);
+    (*plane).setReflection(0.0);
+    (*plane).setShininess(0.1);
+    (*plane).setSpecular(0.1, 0.1, 0.1);
+    (*plane).setDiffuse(0.1, 0.1, 0.8);
+    (*plane).setRefraction(0);
+
+    objects[1] = plane;
+
+    /* Lights initialization. */
+    //lights[0] = Light(300,10000,6000, 1.0, 1, 1, 1);
+    lights[0] = Light(300,10000,-6000, 1.0, 1, 1, 1);
+    lights[1] = Light(10000,400,200, 1.0, 1, 1, 1);
+}
+
 /* No works at the scene selection. */
 void buildScene(int no)
 {
@@ -269,6 +309,7 @@ void buildScene(int no)
         case 2: sceneTwo(); return;
         case 3: sceneThree(); return;
         case 4: sceneFour(); return;
+        case 5: sceneFive(); return;
         default: sceneOne(); printf("WARNING: No valid scenarion has been choosen. Will set scenario one...\n");
     }
 
