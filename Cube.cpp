@@ -177,7 +177,6 @@ bool Cube::intersects(Ray &ray, double &rT0, double &rT1)
                 break;
             /* Back face. */
             case (4):
-                break;
                 if (iP.x >= vertixes[4].x && iP.x <= vertixes[5].x &&
                     iP.y >= vertixes[7].y && iP.y <= vertixes[4].y)
                 {
@@ -188,7 +187,6 @@ bool Cube::intersects(Ray &ray, double &rT0, double &rT1)
                 break;
             /* Top face. */
             case (5):
-                break;
                 if (iP.x >= vertixes[0].x && iP.x <= vertixes[1].x &&
                     iP.z >= vertixes[0].z && iP.z <= vertixes[4].z)
                 {
