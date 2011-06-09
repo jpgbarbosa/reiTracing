@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     camera.z = -1000;
 
     /* Builds the right scene. */
-    buildScene(5);
+    buildScene(2);
 
     /* Starts the ray tracing process. */
     renderImage();

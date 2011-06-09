@@ -296,7 +296,7 @@ void sceneFive()
     /* Lights initialization. */
     //lights[0] = Light(300,10000,6000, 1.0, 1, 1, 1);
     lights[0] = Light(300,400,-1000, 1.0, 1, 1, 1);
-    lights[1] = Light(1000,400,0, 1.0, 1, 1, 1);
+    lights[1] = Light(1000,400,500, 1.0, 1, 1, 1);
 }
 
 /* No works at the scene selection. */

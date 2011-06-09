@@ -107,7 +107,7 @@ void rayTracer(Ray ray, int depth)
              * we can skip this light because it's not going to light the intersection
              * point.
              */
-            if (normal * toLight < -EPSLON)
+            if (normal * toLight < EPSLON)
                 continue;
 
             /* Now, we have to see if we are in the shadow of any other object.
