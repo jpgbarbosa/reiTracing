@@ -38,7 +38,6 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/1472/scene.o \
 	${OBJECTDIR}/_ext/1472/Object.o \
 	${OBJECTDIR}/_ext/1472/Light.o \
-	${OBJECTDIR}/_ext/1472/auxiliarFunctions.o \
 	${OBJECTDIR}/_ext/1472/main.o \
 	${OBJECTDIR}/_ext/1472/Ray.o \
 	${OBJECTDIR}/_ext/1472/Cube.o \
@@ -93,11 +92,6 @@ ${OBJECTDIR}/_ext/1472/Light.o: ../Light.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/1472
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1472/Light.o ../Light.cpp
-
-${OBJECTDIR}/_ext/1472/auxiliarFunctions.o: ../auxiliarFunctions.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1472
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1472/auxiliarFunctions.o ../auxiliarFunctions.cpp
 
 ${OBJECTDIR}/_ext/1472/main.o: ../main.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1472

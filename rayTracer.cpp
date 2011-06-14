@@ -15,6 +15,7 @@ extern Light *lights;
 extern point camera;
 extern int screenWidth, screenHeight, screenSize;
 extern colour image[SCREEN_W][SCREEN_H];
+extern int visualizationType;
 
 /* All the coefficients that will make the plane.
  * a,b and c will go for x, y, z, while d is for the constant.
@@ -211,64 +212,31 @@ void renderImage()
                 /* Parameters:
                  *  a , b, c, d, initX, initY, x, y
                  */
-                z = setViewPlaneZCoordinate(0, 0, 1, 0, 0, 0, x,y);
+                if (visualizationType == LOOKING_AHEAD)
+                {
+                    z = setViewPlaneZCoordinate(0, 0, 1, 0, 0, 0, x,y);
 
-                /* Conic Perspective. */
-                Ray ray(x,y, z, y, x);
-                point pixelPoint = {0.5 + x, 0.5 + y, z};
-                vector dir = pixelPoint - camera;
-                ray.setDirection(dir);
-                ray.normalize();
-                //printf("%lf %lf %lf\n", ray.getDir().x, ray.getDir().y, ray.getDir().z);
-                rayTracer(ray, 0);
-
-                /* TODO: Antialiasing, doesn't seem to be working. */
-                /*Ray ray(x,y, 0.0, y, x);
-                vector dir;
-                point pixelPoint;
-                colour finalColour;
-                finalColour.r = 0.0;
-                finalColour.g = 0.0;
-                finalColour.b = 0.0;
-
-                pixelPoint.x = 0.5 + x;
-                pixelPoint.y = 0.5 + y;
-                pixelPoint.z = 0.0;
-                dir = pixelPoint - camera;
-                ray.setDirection(dir);
-                ray.normalize();
-                rayTracer(ray, 0);
-                finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
-                image[ray.getHPos()][ray.getWPos()] = 0.0;
-
-                pixelPoint.x = 0.5 + x;
-                pixelPoint.y = y;
-                pixelPoint.z = 0.0;
-                dir = pixelPoint - camera;
-                ray.setDirection(dir);
-                ray.normalize();
-                rayTracer(ray, 0);
-                finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
-                image[ray.getHPos()][ray.getWPos()] = 0;
-
-                pixelPoint.x = x;
-                pixelPoint.y = 0.5 + y;
-                pixelPoint.z = 0.0;
-                dir = pixelPoint - camera;
-                ray.setDirection(dir);
-                ray.normalize();
-                rayTracer(ray, 0);
-                finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
-                image[ray.getHPos()][ray.getWPos()] = 0.0;
-
-                pixelPoint.x = x;
-                pixelPoint.y = y;
-                pixelPoint.z = 0.0;
-                dir = pixelPoint - camera;
-                ray.setDirection(dir);
-                ray.normalize();
-                rayTracer(ray, 0);
-                finalColour = finalColour + image[ray.getHPos()][ray.getWPos()];
-                image[ray.getHPos()][ray.getWPos()] = finalColour / 4;*/
+                    /* Conic Perspective. */
+                    Ray ray(x,y, z, y, x);
+                    point pixelPoint = {0.5 + x, 0.5 + y, z};
+                    vector dir = pixelPoint - camera;
+                    ray.setDirection(dir);
+                    ray.normalize();
+                    //printf("%lf %lf %lf\n", ray.getDir().x, ray.getDir().y, ray.getDir().z);
+                    rayTracer(ray, 0);
+                }
+                else if (visualizationType == LOOKING_DOWN)
+                {
+                    //z = setViewPlaneZCoordinate(0, 1, 0, 0, 500, 100, x,y);
+                    z = 1000;
+                    /* Conic Perspective. */
+                    Ray ray(x,z, y, y, x);
+                    point pixelPoint = {0.5 + x, z, 0.5 + y};
+                    vector dir = pixelPoint - camera;
+                    ray.setDirection(dir);
+                    ray.normalize();
+                    //printf("%lf %lf %lf\n", ray.getDir().x, ray.getDir().y, ray.getDir().z);
+                    rayTracer(ray, 0);
+                }
         }
 }

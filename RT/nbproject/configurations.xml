@@ -28,7 +28,6 @@
       <itemPath>../Plane.cpp</itemPath>
       <itemPath>../Ray.cpp</itemPath>
       <itemPath>../Sphere.cpp</itemPath>
-      <itemPath>../auxiliarFunctions.cpp</itemPath>
       <itemPath>../main.cpp</itemPath>
       <itemPath>../rayTracer.cpp</itemPath>
       <itemPath>../scene.cpp</itemPath>

@@ -87,7 +87,7 @@ void sceneTwo()
     lights = new Light[noLights];
 
     /* Spheres initialization. */
-    Sphere *sphere = new Sphere(500.0,300, 300.0, 80.0, 1.0, 0.0, 0.0);
+    Sphere *sphere = new Sphere(800.0,600, 600.0, 380.0, 1.0, 0.0, 0.0);
     (*sphere).setReflection(0.0);
     (*sphere).setShininess(50);
     (*sphere).setSpecular(1, 1, 1);
@@ -96,7 +96,7 @@ void sceneTwo()
 
     objects[0] = sphere;
 
-    sphere = new Sphere(380.0,220.0, 100.0, 50.0, 0.0, 0.0, 1.0);
+    sphere = new Sphere(380.0,220.0, 500.0, 250.0, 0.0, 0.0, 1.0);
     (*sphere).setReflection(0.0);
     (*sphere).setShininess(50);
     (*sphere).setSpecular(1, 1, 1);
@@ -273,7 +273,7 @@ void sceneFive()
     lights = new Light[noLights];
 
     /* Spheres initialization. */
-    Cube *cube = new Cube(200.0,300, 500.0, 200,200,500, 1.0, 0.0, 0.0);
+    Cube *cube = new Cube(200.0,300, 500.0, 200,200,200, 1.0, 0.0, 0.0);
     (*cube).setReflection(0.0);
     (*cube).setShininess(50);
     (*cube).setSpecular(1, 1, 1);
@@ -286,9 +286,9 @@ void sceneFive()
     vector normalOne = {1, 0, 0};
     Plane *plane = new Plane(0,0,0, normalOne, 0.1,0.1,0.8);
     (*plane).setReflection(0.0);
-    (*plane).setShininess(0.1);
+    (*plane).setShininess(50);
     (*plane).setSpecular(0.1, 0.1, 0.1);
-    (*plane).setDiffuse(0.1, 0.1, 0.8);
+    (*plane).setDiffuse(0.1, 0.1, 0.1);
     (*plane).setRefraction(0);
 
     objects[1] = plane;

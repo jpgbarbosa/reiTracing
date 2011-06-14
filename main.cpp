@@ -29,6 +29,9 @@ Object **objects;
 int noLights;
 Light *lights;
 
+/* The visualization type. */
+int visualizationType;
+
 
 void display()
 {
@@ -37,22 +40,40 @@ void display()
     /* Passes into an array all the colours gathered in the matrix
      * image, so we can use it in the DrawPixels.
      */
-    float *pixels = new float[screenSize*3];
+    float *pixels = new float[(screenSize/4)*3];
 
-    for( i = 0; i < screenHeight; i++)
-            for (j = 0; j < screenWidth; j++)
-            {
-                    pixels[i*(screenWidth*3) + j*3] = image[j][i].r;
-                    pixels[i*(screenWidth*3) + j*3 + 1] = image[j][i].g;
-                    pixels[i*(screenWidth*3) + j*3 + 2] = image[j][i].b;
-            }
+    /* An antialiasing technique. Basically, we create a image four times than
+     * the final one and when generating it, we compress this bigger image into
+     * a smaller one, smoothing the differences between colours. This way, it's
+     * like each ray contributes to 25% of the final image.
+     */
+    for( i = 0; i < screenHeight/2 - 1; i++)
+    {
+        for (j = 0; j < screenWidth/2 - 1; j++)
+        {
+            /* RED. */
+            double value;
 
-    antiAliasing(pixels, ANTIALIASING_TIMES);
+           value = image[2*j][2*i].r + image[2*j][2*(i+1)].r +
+                   image[2*(j+1)][2*i].r + image[2*(j+1)][2*(i+1)].r;
+           pixels[i*(screenWidth/2*3) + j*3] = value / 4;
+
+            /* GREEN. */
+            value = image[2*j][2*i].g + image[2*j][2*(i+1)].g +
+                    image[2*(j+1)][2*i].g + image[2*(j+1)][2*(i+1)].g;
+            pixels[i*(screenWidth/2*3) + j*3 + 1] = value / 4;
+
+            /* BLUE. */
+            value = image[2*j][2*i].b + image[2*j][2*(i+1)].b +
+                    image[2*(j+1)][2*i].b + image[2*(j+1)][2*(i+1)].b;
+            pixels[i*(screenWidth/2*3) + j*3 + 2] = value / 4;
+        }
+    }
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     /* Writes a block of pixels to the framebuffer. */
-    glDrawPixels(screenWidth,screenHeight,GL_RGB,GL_FLOAT, pixels);
+    glDrawPixels(screenWidth/2,screenHeight/2,GL_RGB,GL_FLOAT, pixels);
 
     glutSwapBuffers();
 }
@@ -61,13 +82,25 @@ int main(int argc, char** argv) {
     glutInit(&argc, argv);
 
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(screenWidth, screenHeight);
+    glutInitWindowSize(screenWidth/2, screenHeight/2);
     glutCreateWindow("Our Fantastic Ray Tracer");
 
+    visualizationType = LOOKING_DOWN;
+
     /* Camera initialization. */
-    camera.x = 400;
-    camera.y = 300;
-    camera.z = -1000;
+    switch (visualizationType)
+    {
+        case LOOKING_AHEAD:
+                camera.x = 400;
+                camera.y = 300;
+                camera.z = -1000;
+                break;
+        case LOOKING_DOWN:
+                camera.x = 400;
+                camera.y = 1500;
+                camera.z = 300;
+                break;
+    }
 
     /* Builds the right scene. */
     buildScene(2);
