@@ -1,6 +1,6 @@
 build/Debug/MinGW_1-Windows/_ext/1472/scene.o: ../scene.cpp ../Sphere.h \
  ../BasicStructures.h ../Object.h ../Cube.h ../Ray.h ../Light.h \
- ../Plane.h
+ ../Plane.h ../PlaneChess.h
 
 ../Sphere.h:
 
@@ -15,3 +15,5 @@ build/Debug/MinGW_1-Windows/_ext/1472/scene.o: ../scene.cpp ../Sphere.h \
 ../Light.h:
 
 ../Plane.h:
+
+../PlaneChess.h:

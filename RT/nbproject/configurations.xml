@@ -10,6 +10,7 @@
       <itemPath>../Light.h</itemPath>
       <itemPath>../Object.h</itemPath>
       <itemPath>../Plane.h</itemPath>
+      <itemPath>../PlaneChess.h</itemPath>
       <itemPath>../Ray.h</itemPath>
       <itemPath>../Sphere.h</itemPath>
     </logicalFolder>
@@ -26,6 +27,7 @@
       <itemPath>../Light.cpp</itemPath>
       <itemPath>../Object.cpp</itemPath>
       <itemPath>../Plane.cpp</itemPath>
+      <itemPath>../PlaneChess.cpp</itemPath>
       <itemPath>../Ray.cpp</itemPath>
       <itemPath>../Sphere.cpp</itemPath>
       <itemPath>../main.cpp</itemPath>

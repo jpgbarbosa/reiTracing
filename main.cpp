@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
     }
 
     /* Builds the right scene. */
-    buildScene(6);
+    buildScene(7);
 
     /* Starts the ray tracing process. */
     renderImage();

@@ -45,8 +45,6 @@ bool Plane::intersects(Ray &ray, double &rT0, double &rT1)
     if (ray.isToLightRay())
         if (rT0 > ray.getToLightDistance())
             return false;
-
-    point iP = ray.getOrigin() + rT0*ray.getDir();
     
     return true;
 }
