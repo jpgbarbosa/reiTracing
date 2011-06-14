@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
     glutInitWindowSize(screenWidth/2, screenHeight/2);
     glutCreateWindow("Our Fantastic Ray Tracer");
 
-    visualizationType = LOOKING_DOWN;
+    visualizationType = LOOKING_AHEAD;
 
     /* Camera initialization. */
     switch (visualizationType)
@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
     }
 
     /* Builds the right scene. */
-    buildScene(2);
+    buildScene(6);
 
     /* Starts the ray tracing process. */
     renderImage();

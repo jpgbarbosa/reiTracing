@@ -299,6 +299,76 @@ void sceneFive()
     lights[1] = Light(1000,400,500, 1.0, 1, 1, 1);
 }
 
+/* SCENE DESCRIPTION:
+ *    -> Our mountain.
+ */
+void sceneSix()
+{
+    /* First, allocates enough space for all the structures.*/
+    int noPlanes, noCubes, i;
+
+    noPlanes = 2; noCubes = 50;
+    
+    noObjects = noPlanes + noCubes;
+    noLights = 2;
+
+    objects = new Object *[noObjects];
+    lights = new Light[noLights];
+
+    /* Back wall: the sky..*/
+    vector normalOne = {0, 0, -1};
+    Plane *plane = new Plane(0,0,10000, normalOne, 0.55,0.27,0.075);
+    (*plane).setReflection(0.0);
+    (*plane).setShininess(50);
+    (*plane).setSpecular(0.1, 0.1, 0.1);
+    (*plane).setDiffuse(0.55,0.27,0.075);
+    (*plane).setRefraction(0);
+
+    objects[0] = plane;
+
+    /* Ground. */
+    vector normalZero = {0, 1, 0};
+    plane = new Plane(0,0,0, normalZero, 0.35,0.27,0.075);
+    (*plane).setReflection(0.5);
+    (*plane).setShininess(20);
+    (*plane).setSpecular(0.6, 0.6, 0.6);
+    (*plane).setDiffuse(0.35,0.27,0.075);
+    (*plane).setRefraction(0.0);
+
+    objects[1] = plane;
+
+    /* Cubes initialization. */
+    Cube *cube;
+    /*for (i = 0; i < noCubes; i++)
+    {
+        cube = new Cube(200.0,300, 500.0, 200,100,200, 1.0, 0.0, 0.0);
+        (*cube).setReflection(0.0);
+        (*cube).setShininess(50);
+        (*cube).setSpecular(1, 1, 1);
+        (*cube).setDiffuse(1.0, 0.0, 0.0);
+        (*cube).setRefraction(0.0);
+
+        objects[] = cube;
+    }*/
+
+    for (i = noPlanes - 1; i <= noCubes; i++)
+    {
+        cube = new Cube(2000.0, 50*i, 1500.0, 5000/i,100,2000/i, 1.0, 0.0, 0.0);
+        (*cube).setReflection(0.0);
+        (*cube).setShininess(50);
+        (*cube).setSpecular(1, 1, 1);
+        (*cube).setDiffuse(1.0, 0.0, 0.0);
+        (*cube).setRefraction(0.0);
+
+        objects[noPlanes + i - 1] = cube;
+    }
+
+    /* Lights initialization. */
+    //lights[0] = Light(300,10000,6000, 1.0, 1, 1, 1);
+    lights[0] = Light(300,400,-1000, 1.0, 1, 1, 1);
+    lights[1] = Light(1000,400,500, 1.0, 1, 1, 1);
+}
+
 /* No works at the scene selection. */
 void buildScene(int no)
 {
@@ -310,6 +380,7 @@ void buildScene(int no)
         case 3: sceneThree(); return;
         case 4: sceneFour(); return;
         case 5: sceneFive(); return;
+        case 6: sceneSix(); return;
         default: sceneOne(); printf("WARNING: No valid scenarion has been choosen. Will set scenario one...\n");
     }
 
