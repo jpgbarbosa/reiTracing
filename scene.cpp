@@ -435,6 +435,8 @@ void sceneChess()
 
     objects[4] = plane;
 
+    noObjects = 3;
+
     /* Lights initialization. */
     lights[0] = Light(300,10000,6000, 1.0, 1, 1, 1);
     lights[1] = Light(300,400,-6000, 1.0, 1, 1, 1);

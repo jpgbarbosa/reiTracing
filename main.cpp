@@ -91,19 +91,19 @@ int main(int argc, char** argv) {
     switch (visualizationType)
     {
         case LOOKING_AHEAD:
-                camera.x = 400;
-                camera.y = 300;
+                camera.x = 800;
+                camera.y = 600;
                 camera.z = -1000;
                 break;
         case LOOKING_DOWN:
-                camera.x = 400;
+                camera.x = 800;
                 camera.y = 1500;
-                camera.z = 300;
+                camera.z = 600;
                 break;
     }
 
     /* Builds the right scene. */
-    buildScene(7);
+    buildScene(6);
 
     /* Starts the ray tracing process. */
     renderImage();
