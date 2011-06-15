@@ -55,12 +55,22 @@
         <platform>3</platform>
       </toolsSet>
       <compileType>
+        <cTool>
+          <commandLine>-lpthread</commandLine>
+        </cTool>
+        <ccTool>
+          <commandLine>-lpthread</commandLine>
+        </ccTool>
+        <asmTool>
+          <commandLine>-lpthread -D_REENTRANT -g</commandLine>
+        </asmTool>
         <linkerTool>
           <linkerLibItems>
             <linkerLibLibItem>glu32</linkerLibLibItem>
             <linkerLibLibItem>glut32</linkerLibLibItem>
             <linkerLibLibItem>opengl32</linkerLibLibItem>
           </linkerLibItems>
+          <commandLine>-lpthread</commandLine>
         </linkerTool>
       </compileType>
     </conf>

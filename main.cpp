@@ -1,6 +1,9 @@
 #include <windows.h>
 #include <GL/glut.h>
 #include <stdio.h>
+#include <stdlib.h>
+/* For threads. */
+#include <pthread.h>
 
 /* Defines the needed classes and their headers. */
 #include "Sphere.h"
@@ -22,6 +25,11 @@ colour image[SCREEN_W][SCREEN_H];
 
 /* Definition of all objects in the scene, as well as the camera. */
 point camera;
+
+/* Threads variables. */
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t goOn = PTHREAD_COND_INITIALIZER;
+pthread_t *thr_array;
 
 int noObjects;
 Object **objects;
@@ -105,8 +113,17 @@ int main(int argc, char** argv) {
     /* Builds the right scene. */
     buildScene(6);
 
-    /* Starts the ray tracing process. */
-    renderImage();
+    /* Starts the ray tracing process by creating two threads. */
+    thr_array = (pthread_t *)malloc(2*sizeof(pthread_t));
+    pthread_create(&thr_array[0], NULL, renderImage, NULL);
+    int threadTwo = 1;
+    pthread_create(&thr_array[1], NULL, renderImage, &threadTwo);
+
+    /* Now waits for the thread to conclude their work. */
+    printf("Waiting for threads...\n");
+    pthread_join(thr_array[0],NULL);
+    pthread_join(thr_array[1],NULL);
+    printf("Finished rendering!\n");
 
     glutDisplayFunc(display);
     //glutReshapeFunc(reshape);

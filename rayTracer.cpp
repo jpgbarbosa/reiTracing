@@ -5,6 +5,7 @@
 #include "Plane.h"
 #include "BasicStructures.h"
 #include "Object.h"
+#include <stdio.h>
 
 using namespace std;
 
@@ -196,12 +197,31 @@ void rayTracer(Ray ray, int depth)
     return;
 }
 
-void renderImage()
+/* Type will define whether we are rendering the lower part of the image
+ * or the upper.
+ */
+void *renderImage(void *type)
 {
     int x, y;
     double z = 0;
+    int limitY;
 
-    for (y = 0; y < screenHeight; y++)
+    /* Top rendering. */
+    if (type == NULL)
+    {
+        printf("One thread here.\n");
+        y = 0;
+        limitY = screenHeight/2;
+    
+    } else  /* Lower rendering. */
+    {
+        printf("Another thread here.\n");
+        y = screenHeight/2;
+        limitY = screenHeight;
+
+    }
+
+    for (; y < limitY; y++)
             for (x = 0; x < screenWidth; x++)
             {
                 /* Orthogonal Perspective
