@@ -205,9 +205,9 @@ void *renderImage(void *type)
     int x, y;
     double z = 0;
     int limitY;
-
+    
     /* Top rendering. */
-    if (type == NULL)
+    if ((*(int* )type) == 0)
     {
         printf("One thread here.\n");
         y = 0;

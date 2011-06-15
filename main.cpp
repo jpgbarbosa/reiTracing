@@ -111,11 +111,12 @@ int main(int argc, char** argv) {
     }
 
     /* Builds the right scene. */
-    buildScene(6);
+    buildScene(7);
 
     /* Starts the ray tracing process by creating two threads. */
     thr_array = (pthread_t *)malloc(2*sizeof(pthread_t));
-    pthread_create(&thr_array[0], NULL, renderImage, NULL);
+    int threadOne = 0;
+    pthread_create(&thr_array[0], NULL, renderImage, &threadOne);
     int threadTwo = 1;
     pthread_create(&thr_array[1], NULL, renderImage, &threadTwo);
 
