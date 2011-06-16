@@ -12,6 +12,8 @@
 extern int noObjects, noLights;
 extern Object **objects;
 extern Light *lights;
+extern long long fadingCoeficient;
+extern long long fullLightLimit;
 
 /* SCENE DESCRIPTION:
  *    -> There is one ground plane and another at the right, working as a mirror.
@@ -88,7 +90,7 @@ void sceneTwo()
     lights = new Light[noLights];
 
     /* Spheres initialization. */
-    Sphere *sphere = new Sphere(800.0,600, 10600.0, 380.0, 1.0, 0.0, 0.0);
+    Sphere *sphere = new Sphere(800.0,600, 5600.0, 380.0, 1.0, 0.0, 0.0);
     (*sphere).setReflection(0.0);
     (*sphere).setShininess(50);
     (*sphere).setSpecular(1, 1, 1);
@@ -308,7 +310,7 @@ void sceneMountain()
     /* First, allocates enough space for all the structures.*/
     int noPlanes, noCubes, i;
 
-    noPlanes = 2; noCubes = 50;
+    noPlanes = 2; noCubes = 20;
     
     noObjects = noPlanes + noCubes;
     noLights = 2;
@@ -375,6 +377,10 @@ void sceneMountain()
  */
 void sceneChess()
 {
+    /* Redefines the values for this specific scenario. */
+    fadingCoeficient = 4000;
+    fullLightLimit = 8000;
+
     /* First, allocates enough space for all the structures.*/
     noObjects = 5;
     noLights = 2;

@@ -40,15 +40,18 @@ Light *lights;
 /* The visualization type. */
 int visualizationType;
 
+/* Defines the fading coeficient of a light according with the distance. */
+long long fadingCoeficient = 5000;
+long long fullLightLimit = 15000;
+
+/* Passes into an array all the colours gathered in the matrix
+ * image, so we can use it in the DrawPixels.
+ */
+float *pixels = new float[(screenSize/4)*3];
 
 void display()
 {
     int i, j;
-
-    /* Passes into an array all the colours gathered in the matrix
-     * image, so we can use it in the DrawPixels.
-     */
-    float *pixels = new float[(screenSize/4)*3];
 
     /* An antialiasing technique. Basically, we create a image four times than
      * the final one and when generating it, we compress this bigger image into
@@ -93,6 +96,17 @@ int main(int argc, char** argv) {
     glutInitWindowSize(screenWidth/2, screenHeight/2);
     glutCreateWindow("Our Fantastic Ray Tracer");
 
+        glutDisplayFunc(display);
+    //glutReshapeFunc(reshape);
+    //glutMouseFunc(mouse_button);
+    //glutMotionFunc(mouse_motion);
+    //glutKeyboardFunc(keyboard);
+    //glutIdleFunc(idle);
+
+    glEnable(GL_DEPTH_TEST);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    //glPointSize(2);
+
     visualizationType = LOOKING_AHEAD;
 
     /* Camera initialization. */
@@ -110,8 +124,12 @@ int main(int argc, char** argv) {
                 break;
     }
 
+
     /* Builds the right scene. */
-    buildScene(7);
+    if (argc > 1)
+        buildScene(atoi(argv[1]));
+    else
+        buildScene(1);
 
     /* Starts the ray tracing process by creating two threads. */
     thr_array = (pthread_t *)malloc(2*sizeof(pthread_t));
@@ -120,22 +138,13 @@ int main(int argc, char** argv) {
     int threadTwo = 1;
     pthread_create(&thr_array[1], NULL, renderImage, &threadTwo);
 
+    glutMainLoop();
+
     /* Now waits for the thread to conclude their work. */
     printf("Waiting for threads...\n");
     pthread_join(thr_array[0],NULL);
     pthread_join(thr_array[1],NULL);
     printf("Finished rendering!\n");
 
-    glutDisplayFunc(display);
-    //glutReshapeFunc(reshape);
-    //glutMouseFunc(mouse_button);
-    //glutMotionFunc(mouse_motion);
-    //glutKeyboardFunc(keyboard);
-    //glutIdleFunc(idle);
-
-    glEnable(GL_DEPTH_TEST);
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    //glPointSize(2);
-
-    glutMainLoop();
+    return 0;
 }

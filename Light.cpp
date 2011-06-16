@@ -2,6 +2,9 @@
 #include "Light.h"
 #include <cmath>
 
+extern long long fadingCoeficient;
+extern long long fullLightLimit;
+
 /* In the constructor, we set the centre and the colour of the light point. */
 Light::Light(double x, double y, double z, double in, double rC, double gC, double bC):
 	intensity(in)
@@ -36,10 +39,10 @@ double Light::getFade( double distance)
      * Basically, we are produing a fade with a linear decrease from a certain
      * point, defined by FULL_LIGHT_LIMIT.
      */
-    if (distance < FULL_LIGHT_LIMIT)
+    if (distance < fullLightLimit)
         return 1;
     
-    double value = -(distance-FULL_LIGHT_LIMIT)/FADING_COEF + 1;
+    double value = -(distance - fullLightLimit)/fadingCoeficient + 1;
     
     return value > 1 ? 1 : value;
 }

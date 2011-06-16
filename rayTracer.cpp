@@ -6,6 +6,9 @@
 #include "BasicStructures.h"
 #include "Object.h"
 #include <stdio.h>
+#include <windows.h>
+#include <GL/glut.h>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -221,7 +224,13 @@ void *renderImage(void *type)
 
     }
 
+    /* Counter used to be printing information on the screen about the
+     * state of the rendering.
+     */
+    int perCounter = 0;
+
     for (; y < limitY; y++)
+    {
             for (x = 0; x < screenWidth; x++)
             {
                 /* Orthogonal Perspective
@@ -259,4 +268,11 @@ void *renderImage(void *type)
                     rayTracer(ray, 0);
                 }
         }
+
+        /* If it's an even number, we will display the image, because we already
+         * have some information to do so.
+         */
+        if ((y & 1) == 0)
+            glutPostRedisplay();
+    }
 }
