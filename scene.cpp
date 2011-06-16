@@ -88,7 +88,7 @@ void sceneTwo()
     lights = new Light[noLights];
 
     /* Spheres initialization. */
-    Sphere *sphere = new Sphere(800.0,600, 600.0, 380.0, 1.0, 0.0, 0.0);
+    Sphere *sphere = new Sphere(800.0,600, 10600.0, 380.0, 1.0, 0.0, 0.0);
     (*sphere).setReflection(0.0);
     (*sphere).setShininess(50);
     (*sphere).setSpecular(1, 1, 1);
@@ -407,8 +407,8 @@ void sceneChess()
     vector normalZero = {0, 1, 0};
     PlaneChess *planeChess = new PlaneChess(0,0,0, normalZero, 250.0);
     (*planeChess).setReflection(0.0);
-    (*planeChess).setShininess(20);
-    (*planeChess).setSpecular(1, 1, 1);
+    (*planeChess).setShininess(0);
+    (*planeChess).setSpecular(0, 0, 0);
     (*planeChess).setRefraction(0);
 
     objects[2] = planeChess;

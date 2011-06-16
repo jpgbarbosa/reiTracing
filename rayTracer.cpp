@@ -140,9 +140,9 @@ void rayTracer(Ray ray, int depth)
                 /* The smaller the transparency coefficient is, the darker is the shadow produced
                  * by the objects.
                  */
-                ray.increaseR(lambert*lights[z].getR()*objects[index]->getR() * transparencyCoef);
-                ray.increaseG(lambert*lights[z].getG()*objects[index]->getG() * transparencyCoef);
-                ray.increaseB(lambert*lights[z].getB()*objects[index]->getB() * transparencyCoef);
+                ray.increaseR(lambert*lights[z].getR()*objects[index]->getR() * transparencyCoef * lights[z].getFade(toLightRay.getToLightDistance()));
+                ray.increaseG(lambert*lights[z].getG()*objects[index]->getG() * transparencyCoef * lights[z].getFade(toLightRay.getToLightDistance()));
+                ray.increaseB(lambert*lights[z].getB()*objects[index]->getB() * transparencyCoef * lights[z].getFade(toLightRay.getToLightDistance()));
 
                 /* The Blinn-Phong Effect.
                  * The direction of Blinn is exactly at mid point of the light ray
@@ -165,9 +165,9 @@ void rayTracer(Ray ray, int depth)
                     /* The smaller the transparency coefficient is, the darker is the shadow produced
                      * by the objects.
                      */
-                    ray.increaseR(blinnCoef * objects[index]->getSpecular().r  * lights[z].getIntensity() * transparencyCoef);
-                    ray.increaseG(blinnCoef * objects[index]->getSpecular().g  * lights[z].getIntensity() * transparencyCoef);
-                    ray.increaseB(blinnCoef * objects[index]->getSpecular().b  * lights[z].getIntensity() * transparencyCoef);
+                    ray.increaseR(blinnCoef * objects[index]->getSpecular().r  * lights[z].getIntensity() * transparencyCoef * lights[z].getFade(toLightRay.getToLightDistance()));
+                    ray.increaseG(blinnCoef * objects[index]->getSpecular().g  * lights[z].getIntensity() * transparencyCoef * lights[z].getFade(toLightRay.getToLightDistance()));
+                    ray.increaseB(blinnCoef * objects[index]->getSpecular().b  * lights[z].getIntensity() * transparencyCoef * lights[z].getFade(toLightRay.getToLightDistance()));
                 }
             } /* if (!inShadow)*/
         }
