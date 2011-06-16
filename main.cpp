@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
     glutInitWindowSize(screenWidth/2, screenHeight/2);
     glutCreateWindow("Our Fantastic Ray Tracer");
 
-        glutDisplayFunc(display);
+    glutDisplayFunc(display);
     //glutReshapeFunc(reshape);
     //glutMouseFunc(mouse_button);
     //glutMotionFunc(mouse_motion);
@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     //glPointSize(2);
 
-    visualizationType = LOOKING_AHEAD;
+    visualizationType = LOOKING_DOWN;
 
     /* Camera initialization. */
     switch (visualizationType)
@@ -141,10 +141,10 @@ int main(int argc, char** argv) {
     glutMainLoop();
 
     /* Now waits for the thread to conclude their work. */
-    printf("Waiting for threads...\n");
+    /*printf("Waiting for threads...\n");
     pthread_join(thr_array[0],NULL);
     pthread_join(thr_array[1],NULL);
-    printf("Finished rendering!\n");
+    printf("Finished rendering!\n"); */
 
     return 0;
 }

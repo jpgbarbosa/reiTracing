@@ -275,4 +275,6 @@ void *renderImage(void *type)
         if ((y & 1) == 0)
             glutPostRedisplay();
     }
+
+    printf("Thread %d ended!\n", (*(int* )type));
 }

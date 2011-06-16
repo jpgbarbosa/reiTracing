@@ -46,7 +46,7 @@ OBJECTFILES= \
 
 
 # C Compiler Flags
-CFLAGS=-lpthread
+CFLAGS=
 
 # CC Compiler Flags
 CCFLAGS=-lpthread
@@ -56,10 +56,10 @@ CXXFLAGS=-lpthread
 FFLAGS=
 
 # Assembler Flags
-ASFLAGS=-lpthread -D_REENTRANT -g
+ASFLAGS=
 
 # Link Libraries and Options
-LDLIBSOPTIONS=-lglu32 -lglut32 -lopengl32
+LDLIBSOPTIONS=-lglu32 -lglut32 -lopengl32 -lpthread
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
@@ -67,7 +67,7 @@ LDLIBSOPTIONS=-lglu32 -lglut32 -lopengl32
 
 dist/Debug/MinGW_1-Windows/rt.exe: ${OBJECTFILES}
 	${MKDIR} -p dist/Debug/MinGW_1-Windows
-	${LINK.cc} -lpthread -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/rt ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/rt ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/_ext/1472/rayTracer.o: ../rayTracer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1472
