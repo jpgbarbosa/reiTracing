@@ -224,10 +224,6 @@ void *renderImage(void *type)
 
     }
 
-    /* Counter used to be printing information on the screen about the
-     * state of the rendering.
-     */
-    int perCounter = 0;
 
     for (; y < limitY; y++)
     {

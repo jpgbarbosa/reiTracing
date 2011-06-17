@@ -331,7 +331,7 @@ void sceneMountain()
     /* Ground. */
     vector normalZero = {0, 1, 0};
     plane = new Plane(0,0,0, normalZero, 0.35,0.27,0.075);
-    (*plane).setReflection(0.5);
+    (*plane).setReflection(0.0);
     (*plane).setShininess(20);
     (*plane).setSpecular(0.6, 0.6, 0.6);
     (*plane).setDiffuse(0.35,0.27,0.075);
@@ -449,11 +449,11 @@ void sceneMountain()
     objects[90] = cube;
 
     /* And now the water in the middle of the mountains. */
-    cube = new Cube(200.0, 20, 1000.0, 1800, 40, 850, 0.0, 0.0, 0.0);
+    cube = new Cube(200.0, 30, 1000.0, 1800, 50, 850, 0.5, 0.3, 0.8);
     (*cube).setReflection(1.0);
-    (*cube).setShininess(50);
-    (*cube).setSpecular(1, 1, 1);
-    (*cube).setDiffuse(0.0, 0.0, 0.0);
+    (*cube).setShininess(10);
+    (*cube).setSpecular(0, 0, 0);
+    (*cube).setDiffuse(0.5, 0.3, 0.8);
     (*cube).setRefraction(0.0);
     objects[91] = cube;
 
@@ -461,8 +461,8 @@ void sceneMountain()
 
     /* Lights initialization. */
     //lights[0] = Light(300,10000,6000, 1.0, 1, 1, 1);
-    lights[0] = Light(600,4000,-1000, 1.0, 1, 1, 1);
-    lights[1] = Light(4000,800,500, 1.0, 1, 1, 1);
+    lights[0] = Light(600,4000,-1000, 1.0, 1, 0.5, 0.5);
+    lights[1] = Light(4000,800,500, 1.0, 1, 0.5, 0.5);
 }
 
 /* SCENE DESCRIPTION:
