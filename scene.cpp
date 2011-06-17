@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <cmath>
 /* Defines the needed classes and their headers. */
 #include "Sphere.h"
 #include "Cube.h"
@@ -308,11 +309,9 @@ void sceneFive()
 void sceneMountain()
 {
     /* First, allocates enough space for all the structures.*/
-    int noPlanes, noCubes, i;
+    int i;
 
-    noPlanes = 2; noCubes = 20;
-    
-    noObjects = noPlanes + noCubes;
+    noObjects = 92;
     noLights = 2;
 
     objects = new Object *[noObjects];
@@ -342,34 +341,128 @@ void sceneMountain()
 
     /* Cubes initialization. */
     Cube *cube;
-    /*for (i = 0; i < noCubes; i++)
-    {
-        cube = new Cube(200.0,300, 500.0, 200,100,200, 1.0, 0.0, 0.0);
+
+    for (i = 2; i <= 35; i++)
+    {           
+        if (i <= 35/6)
+        {
+            /* Height definition */
+            cube = new Cube(0.0, 50*(i-1), 1500.0, 3000 - (3000.0/35)*i*4,100, 1000 - (1000.0/35)*i*4,
+                        /* Colour definition */
+                        0.36 + (pow(NEPER, 0.1423*i))*0.00894,
+                            0.25 + (pow(NEPER, 0.1471*i))*0.00894,
+                                0.2 + (pow(NEPER, 0.1499*i))*0.00890);
+        }
+        else
+        {
+            /* Height definition */
+            cube = new Cube(0.0, 50*(i-1), 1500.0, 5000/i,100, 2000/i,
+            /* Colour definition */
+            0.36 + (pow(NEPER, 0.1423*i))*0.00894,
+                0.25 + (pow(NEPER, 0.1471*i))*0.00894,
+                    0.2 + (pow(NEPER, 0.1499*i))*0.00890);
+        }
+
         (*cube).setReflection(0.0);
         (*cube).setShininess(50);
         (*cube).setSpecular(1, 1, 1);
-        (*cube).setDiffuse(1.0, 0.0, 0.0);
+        (*cube).setDiffuse(0.0, 0.0, 0.0);
         (*cube).setRefraction(0.0);
 
-        objects[] = cube;
-    }*/
-
-    for (i = noPlanes - 1; i <= noCubes; i++)
-    {
-        cube = new Cube(2000.0, 50*i, 1500.0, 5000/i,100,2000/i, 1.0, 0.0, 0.0);
-        (*cube).setReflection(0.0);
-        (*cube).setShininess(50);
-        (*cube).setSpecular(1, 1, 1);
-        (*cube).setDiffuse(1.0, 0.0, 0.0);
-        (*cube).setRefraction(0.0);
-
-        objects[noPlanes + i - 1] = cube;
+        objects[i] = cube;
     }
+
+    for (i = 2; i <= 21; i++)
+    {
+
+        /* Height definition */
+        cube = new Cube(1500.0, 50*(i-1), 1000.0, 2000/i, 100, 700/i,
+        /* Colour definition */
+        0.36 + (pow(NEPER, 0.2323*i))*0.00984,
+            0.25 + (pow(NEPER, 0.2371*i))*0.00984,
+                0.2 + (pow(NEPER, 0.2399*i))*0.00980);
+
+        (*cube).setReflection(0.0);
+        (*cube).setShininess(50);
+        (*cube).setSpecular(1, 1, 1);
+        (*cube).setDiffuse(0.0, 0.0, 0.0);
+        (*cube).setRefraction(0.0);
+
+        objects[i+34] = cube;
+    }
+
+    for (i = 2; i <= 21; i++)
+    {
+
+        /* Height definition */
+        cube = new Cube(100.0, 50*(i-1), 500.0, 2000/i, 100, 700/i,
+        /* Colour definition */
+        0.36 + (pow(NEPER, 0.2323*i))*0.00984,
+            0.25 + (pow(NEPER, 0.2371*i))*0.00984,
+                0.2 + (pow(NEPER, 0.2399*i))*0.00980);
+
+        (*cube).setReflection(0.0);
+        (*cube).setShininess(50);
+        (*cube).setSpecular(1, 1, 1);
+        (*cube).setDiffuse(0.0, 0.0, 0.0);
+        (*cube).setRefraction(0.0);
+
+        objects[i+54] = cube;
+    }
+
+    for (i = 2; i <= 14; i++)
+    {
+        /* Height definition */
+        cube = new Cube(1200.0, 50*(i-1), 600.0, 1200/i, 100, 300/i,
+        /* Colour definition */
+        0.36 + (pow(NEPER, 0.2523*i))*0.00994,
+            0.25 + (pow(NEPER, 0.2571*i))*0.00994,
+                0.2 + (pow(NEPER, 0.2599*i))*0.00990);
+
+        (*cube).setReflection(0.0);
+        (*cube).setShininess(50);
+        (*cube).setSpecular(1, 1, 1);
+        (*cube).setDiffuse(0.0, 0.0, 0.0);
+        (*cube).setRefraction(0.0);
+
+        objects[i+74] = cube;
+    }
+
+    /* After adding all the mountains, we still add some blocks to join the
+     * bottoms of each.
+     */
+    cube = new Cube(900.0, 30, 400.0, 800, 60, 250, 0.36, 0.25, 0.2);
+    (*cube).setReflection(0.0);
+    (*cube).setShininess(50);
+    (*cube).setSpecular(1, 1, 1);
+    (*cube).setDiffuse(0.0, 0.0, 0.0);
+    (*cube).setRefraction(0.0);
+    objects[89] = cube;
+
+
+    cube = new Cube(-750.0, 30, 800.0, 250, 60, 800, 0.36, 0.25, 0.2);
+    (*cube).setReflection(0.0);
+    (*cube).setShininess(50);
+    (*cube).setSpecular(1, 1, 1);
+    (*cube).setDiffuse(0.0, 0.0, 0.0);
+    (*cube).setRefraction(0.0);
+    objects[90] = cube;
+
+    /* And now the water in the middle of the mountains. */
+    cube = new Cube(200.0, 20, 1000.0, 1800, 40, 850, 0.0, 0.0, 0.0);
+    (*cube).setReflection(1.0);
+    (*cube).setShininess(50);
+    (*cube).setSpecular(1, 1, 1);
+    (*cube).setDiffuse(0.0, 0.0, 0.0);
+    (*cube).setRefraction(0.0);
+    objects[91] = cube;
+
+
 
     /* Lights initialization. */
     //lights[0] = Light(300,10000,6000, 1.0, 1, 1, 1);
-    lights[0] = Light(300,400,-1000, 1.0, 1, 1, 1);
-    lights[1] = Light(1000,400,500, 1.0, 1, 1, 1);
+    lights[0] = Light(600,4000,-1000, 1.0, 1, 1, 1);
+    lights[1] = Light(4000,800,500, 1.0, 1, 1, 1);
 }
 
 /* SCENE DESCRIPTION:

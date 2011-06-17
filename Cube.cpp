@@ -80,12 +80,43 @@ Cube::Cube(double x, double y, double z, double xSide, double ySide, double zSid
     normal.y = 1;
     normal.z = 0;
     normals[5] = normal;
+
+    /* Definition of maxSide, the largest side of all the three dimensions*/
+    if (x >= y && x >= z)
+        maxSide = x;
+    else if (y >= z)
+        maxSide = y;
+    else
+        maxSide = z;
+
 }
 
 Cube::Cube() {}
 //Destructor
 Cube::~Cube() {}
 
+bool Cube::intersectsSphere(Ray &ray)
+{
+    /* Compute a, b and c coefficients. */
+    //a = (x2 - x1)^2 + (y2 - y1)^2 + (z2 - z1)^2
+    double a = ray.getDir()*ray.getDir();
+    //b = 2[ (x2 - x1) (x1 - x3) + (y2 - y1) (y1 - y3) + (z2 - z1) (z1 - z3) ]
+    double b = 2*(ray.getDir()*(ray.getOrigin() - centre));
+    //c = x3^2 + y3^2 + z3^2 + x1^2 + y1^2 + z1^2 - 2[x3.x1 + y3.y1 + z3.z1] - r^2
+    double c = centre*centre + ray.getOrigin()*ray.getOrigin() - 2*(ray.getOrigin()*centre) - maxSide*maxSide;
+
+    /* Find the discriminant. */
+    double disc = b * b - 4 * a * c;
+
+    /* If discriminant is negative there are no real roots, so return
+     * false as ray misses sphere.
+	 */
+    if (disc < 0)
+        return false;
+
+    return true;
+  
+}
 
 bool Cube::intersects(Ray &ray, double &rT0, double &rT1)
 {
@@ -97,6 +128,12 @@ bool Cube::intersects(Ray &ray, double &rT0, double &rT1)
     double intersections[2];
     vector intNormal[2];
     int interCounter = 0;
+
+    /* First, we make sure the ray intersects the sphere that surrounds the cube.
+     * Otherwise, it is useless to perform such an heavy operation.
+     */
+    if(!intersectsSphere(ray))
+        return false;
 
     /* Each face of the cube. We can only have two intersections at most in a cube. */
     for (i = 0; i < 6 && interCounter < 2; i++)
@@ -155,7 +192,6 @@ bool Cube::intersects(Ray &ray, double &rT0, double &rT1)
                 break;
             /* Bottom face. */
             case (2):
-                break;
                 if (iP.x >= vertixes[3].x && iP.x <= vertixes[2].x &&
                     iP.z >= vertixes[3].z && iP.z <= vertixes[7].z)
                 {
@@ -166,7 +202,6 @@ bool Cube::intersects(Ray &ray, double &rT0, double &rT1)
                 break;
             /* Left face. */
             case (3):
-                break;
                 if (iP.z >= vertixes[0].z && iP.z <= vertixes[4].z &&
                     iP.y >= vertixes[3].y && iP.y <= vertixes[0].y)
                 {
