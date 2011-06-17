@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     //glPointSize(2);
 
-    visualizationType = LOOKING_DOWN;
+    visualizationType = LOOKING_AHEAD;
 
     /* Camera initialization. */
     switch (visualizationType)
@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
     if (argc > 1)
         buildScene(atoi(argv[1]));
     else
-        buildScene(1);
+        buildScene(5);
 
     /* Starts the ray tracing process by creating two threads. */
     thr_array = (pthread_t *)malloc(2*sizeof(pthread_t));

@@ -67,7 +67,7 @@ LDLIBSOPTIONS=-lglu32 -lglut32 -lopengl32 -lpthread
 
 dist/Debug/MinGW_1-Windows/rt.exe: ${OBJECTFILES}
 	${MKDIR} -p dist/Debug/MinGW_1-Windows
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/rt ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -lpthread -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/rt ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/_ext/1472/rayTracer.o: ../rayTracer.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1472

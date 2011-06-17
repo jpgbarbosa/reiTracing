@@ -65,6 +65,7 @@
             <linkerLibLibItem>opengl32</linkerLibLibItem>
             <linkerLibStdlibItem>PosixThreads</linkerLibStdlibItem>
           </linkerLibItems>
+          <commandLine>-lpthread</commandLine>
         </linkerTool>
       </compileType>
     </conf>
