@@ -330,6 +330,24 @@ void addMountainBlock(int objectNo, int i, double x, double y, double z, double 
         objects[objectNo] = cube;
 }
 
+void addMountainBlockTwo(int objectNo, int i, double x, double y, double z, double xS, double yS, double zS,
+        double e1, double e11, double e2, double e22, double e3, double e33)
+{
+        /* Height definition */
+        Cube *cube = new Cube(x, y, z, xS, yS, zS,
+        /* Colour definition */
+        0.36 + (pow(NEPER, e1*i))*e11,
+            0.25 + (pow(NEPER, e2*i))*e22,
+                0.2 + (pow(NEPER, e3*i))*e33);
+
+        (*cube).setReflection(0.0);
+        (*cube).setShininess(100);
+        (*cube).setSpecular(0.2, 0.2, 0.2);
+        (*cube).setRefraction(0.0);
+
+        objects[objectNo] = cube;
+}
+
 void sceneMountain()
 {
     /* First, allocates enough space for all the structures.*/
@@ -432,6 +450,80 @@ void sceneMountain()
     lights[1] = Light(4000,800,500, 1.0, 1, 0.5, 0.5);
 }
 
+void sceneTemp()
+{
+    /* First, allocates enough space for all the structures.*/
+    int i;
+
+    noObjects = 136;
+    noLights = 2;
+
+    objects = new Object *[noObjects];
+    lights = new Light[noLights];
+
+    /* Back wall: the sky..*/
+    vector normalOne = {0, 0, -1};
+    Plane *plane = new Plane(0,0,10000, normalOne, 0.55,0.27,0.075);
+    (*plane).setReflection(0.0);
+    (*plane).setShininess(50);
+    (*plane).setSpecular(0.1, 0.1, 0.1);
+    (*plane).setRefraction(0);
+
+    objects[0] = plane;
+
+    /* Ground. */
+    vector normalZero = {0, 1, 0};
+    plane = new Plane(0,0,0, normalZero, 0.35,0.27,0.075);
+    (*plane).setReflection(0.0);
+    (*plane).setShininess(20);
+    (*plane).setSpecular(0.6, 0.6, 0.6);
+    (*plane).setRefraction(0.0);
+
+    objects[1] = plane;
+
+    /* The mountains at the horizon. */
+    for (i = 2; i <= 35; i++)
+    {
+        if (i <= 35/6)
+            addMountainBlockTwo(i, i, 0.0, 50*(i-1), 10000.0, 3000 - (3000.0/35)*i*4,100, 1000 - (1000.0/35)*i*4,
+                    0.1423, 0.00894, 0.1471, 0.00894, 0.1499, 0.00890);
+        else
+            addMountainBlockTwo(i, i, 0.0, 50*(i-1), 10000.0, 5000/i,100, 2000/i,
+                    0.1423, 0.00894, 0.1471, 0.00894, 0.1499, 0.00890);
+    }
+
+    for (i = 2; i <= 21; i++)
+        addMountainBlockTwo(i+34, i, -1500.0, 50*(i-1), 10000.0, 2000/i, 100, 700/i,
+                0.2323, 0.00984, 0.2371, 0.00984, 0.2399, 0.00980);
+
+    for (i = 2; i <= 21; i++)
+        addMountainBlockTwo(i+54, i, 1700.0, 50*(i-1), 10000.0, 2000/i, 100, 700/i,
+                0.2323, 0.00984, 0.2371, 0.00984, 0.2399, 0.00980);
+
+    for (i = 2; i <= 14; i++)
+        addMountainBlock(i+74, i, 3300.0, 50*(i-1), 10000.0, 1200/i, 100, 300/i,
+                0.2523, 0.00994, 0.2571, 0.00994, 0.2599, 0.00990);
+
+    for (i = 2; i <= 14; i++)
+        addMountainBlock(i+87, i, 5400.0, 50*(i-1), 10000.0, 1200/i, 100, 300/i,
+                0.2523, 0.00994, 0.2571, 0.00994, 0.2599, 0.00990);
+
+    for (i = 2; i <= 35; i++)
+    {
+        if (i <= 35/6)
+            addMountainBlockTwo(i + 100, i, 7000.0, 50*(i-1), 10000.0, 3000 - (3000.0/35)*i*4,100, 1000 - (1000.0/35)*i*4,
+                    0.1423, 0.00894, 0.1471, 0.00894, 0.1499, 0.00890);
+        else
+            addMountainBlockTwo(i + 100, i, 0.0, 50*(i-1), 10000.0, 5000/i,100, 2000/i,
+                    0.1423, 0.00894, 0.1471, 0.00894, 0.1499, 0.00890);
+    }
+
+    /* Lights initialization. */
+    //lights[0] = Light(300,10000,6000, 1.0, 1, 1, 1);
+    lights[0] = Light(600,4000,-1000, 1.0, 1, 0.5, 0.5);
+    lights[1] = Light(4000,800,500, 1.0, 1, 0.5, 0.5);
+}
+
 /* SCENE DESCRIPTION:
  *    -> The chess scene.
  */
@@ -517,6 +609,7 @@ void buildScene(int no)
         case 5: sceneFive(); return;
         case 6: sceneMountain(); return;
         case 7: sceneChess(); return;
+        case 8: sceneTemp(); return;
         default: sceneOne(); printf("WARNING: No valid scenarion has been choosen. Will set scenario one...\n");
     }
 
