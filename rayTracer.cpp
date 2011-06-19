@@ -213,22 +213,22 @@ void *renderImage(void *type)
     if ((*(int* )type) == 0)
     {
         printf("One thread here.\n");
-        //y = 0;
-        //limitY = screenHeight/2;
+        y = 0;
+        limitY = screenHeight/2;
         //y = 500;
         //limitY = 650;
-        y = 0;
-        limitY = screenHeight/2 - screenHeight/8;
+        //y = 0;
+        //limitY = screenHeight/2 - screenHeight/8;
     
     } else  /* Lower rendering. */
     {
         printf("Another thread here.\n");
-        //y = screenHeight/2;
-        //limitY = screenHeight;
+        y = screenHeight/2;
+        limitY = screenHeight;
         //y = 650;
         //limitY = 800;
-        y = screenHeight/2 - screenHeight/8;
-        limitY = screenHeight;
+        //y = screenHeight/2 - screenHeight/8;
+        //limitY = screenHeight;
 
     }
 

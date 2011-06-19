@@ -61,7 +61,7 @@ void sceneOne()
 
     /* Right wall. */
     vector normalOne = {-1, 0, 0};
-    plane = new Plane(800,0,0, normalOne, 0.0,0.0,0.0);
+    plane = new Plane(1600,0,0, normalOne, 0.0,0.0,0.0);
     (*plane).setReflection(0.9);
     (*plane).setShininess(50);
     (*plane).setSpecular(1, 1, 1);
@@ -125,14 +125,14 @@ void sceneTwo()
 void sceneThree()
 {
     /* First, allocates enough space for all the structures.*/
-    noObjects = 5;
+    noObjects = 4;
     noLights = 2;
 
     objects = new Object *[noObjects];
     lights = new Light[noLights];
 
     /* Spheres initialization. */
-    Sphere *sphere = new Sphere(500.0,300, 4300.0, 80.0, 0.0, 0.0, 0.0);
+    Sphere *sphere = new Sphere(500.0,500, 800.0, 280.0, 0.0, 0.0, 0.0);
     (*sphere).setReflection(0.9);
     (*sphere).setShininess(50);
     (*sphere).setSpecular(1, 1, 1);
@@ -140,7 +140,7 @@ void sceneThree()
 
     objects[0] = sphere;
 
-    sphere = new Sphere(380.0,220.0, 4100.0, 50.0, 0.0, 0.0, 1.0);
+    sphere = new Sphere(50.0,520.0, 600.0, 200.0, 0.0, 0.0, 1.0);
     (*sphere).setReflection(0.0);
     (*sphere).setShininess(50);
     (*sphere).setSpecular(1, 1, 1);
@@ -169,23 +169,13 @@ void sceneThree()
 
     /* Right wall. */
     vector normalOne = {-1, 0, 0};
-    plane = new Plane(800,0,0, normalOne, 0.0,0.0,0.0);
+    plane = new Plane(1600,0,0, normalOne, 0.0,0.0,0.0);
     (*plane).setReflection(0.9);
     (*plane).setShininess(50);
     (*plane).setSpecular(1, 1, 1);
     (*plane).setRefraction(0);
 
     objects[3] = plane;
-
-    /* Back wall.*/
-    vector normalTwo = {0, 0, -1};
-    plane = new Plane(0,0,20000, normalTwo, 0.6,0.8,0.2);
-    (*plane).setReflection(0.2);
-    (*plane).setShininess(50);
-    (*plane).setSpecular(0.2, 0.2, 0.2);
-    (*plane).setRefraction(0);
-
-    objects[4] = plane;
 
     /* Lights initialization. */
     lights[0] = Light(300,10000,6000, 1.0, 1, 1, 1);
@@ -197,6 +187,9 @@ void sceneThree()
  */
 void sceneFour()
 {
+    fadingCoeficient = 100000;
+    fullLightLimit = 1000000;
+
     /* First, allocates enough space for all the structures.*/
     noObjects = 4;
     noLights = 2;
@@ -205,15 +198,15 @@ void sceneFour()
     lights = new Light[noLights];
 
     /* Spheres initialization. */
-    Sphere *sphere = new Sphere(480.0,300, 100.0, 80.0, 0.0, 0.0, 0.0);
+    Sphere *sphere = new Sphere(550.0,400, 500.0, 180.0, 0.0, 0.0, 0.0);
     (*sphere).setReflection(0.0);
     (*sphere).setShininess(50);
     (*sphere).setSpecular(1, 1, 1);
-    (*sphere).setRefraction(0.3);
+    (*sphere).setRefraction(0.5);
 
     objects[0] = sphere;
 
-    sphere = new Sphere(380.0,280.0, 300.0, 50.0, 0.0, 0.0, 1.0);
+    sphere = new Sphere(300.0,380.0, 1000.0, 150.0, 0.0, 0.0, 1.0);
     (*sphere).setReflection(0.0);
     (*sphere).setShininess(50);
     (*sphere).setSpecular(1, 1, 1);
@@ -542,7 +535,7 @@ void sceneChess()
 
     /* Spheres initialization. */
     Sphere *sphere = new Sphere(500.0,300, 4300.0, 80.0, 0.0, 0.0, 0.0);
-    (*sphere).setReflection(0.9);
+    (*sphere).setReflection(0.0);
     (*sphere).setShininess(50);
     (*sphere).setSpecular(1, 1, 1);
     (*sphere).setRefraction(0.0);
@@ -571,7 +564,7 @@ void sceneChess()
 
     /* Right wall. */
     vector normalOne = {-1, 0, 0};
-    Plane *plane = new Plane(2300,0,0, normalOne, 0.0,0.0,0.0);
+    Plane *plane = new Plane(1600,0,0, normalOne, 0.0,0.0,0.0);
     (*plane).setReflection(0.9);
     (*plane).setShininess(50);
     (*plane).setSpecular(1, 1, 1);
@@ -588,8 +581,6 @@ void sceneChess()
     (*plane).setRefraction(0);
 
     objects[4] = plane;
-
-    noObjects = 3;
 
     /* Lights initialization. */
     lights[0] = Light(300,10000,6000, 1.0, 1, 1, 1);
