@@ -10,9 +10,9 @@ Plane::Plane(double x, double y, double z, vector n, double rC, double gC, doubl
     centre.x = x;
     centre.y = y;
     centre.z = z;
-    c.r = rC;
-    c.g = gC;
-    c.b = bC;
+    diffuse.r = rC;
+    diffuse.g = gC;
+    diffuse.b = bC;
 }
 
 Plane::Plane() {}

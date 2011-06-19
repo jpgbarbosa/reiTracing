@@ -60,18 +60,12 @@ bool PlaneChess::intersects(Ray &ray, double &rT0, double &rT1)
     {
         if ((zTemp & 1) == 0)
         {
-            c.r = 1;
-            c.g = 1;
-            c.b = 1;
             diffuse.r = 1;
             diffuse.g = 1;
             diffuse.b = 1;
         }
         else
         {
-            c.r = 0;
-            c.g = 0;
-            c.b = 0;
             diffuse.r = 0;
             diffuse.g = 0;
             diffuse.b = 0;
@@ -81,18 +75,12 @@ bool PlaneChess::intersects(Ray &ray, double &rT0, double &rT1)
     {
       if ((zTemp & 1) == 0)
         {
-            c.r = 0;
-            c.g = 0;
-            c.b = 0;
             diffuse.r = 0;
             diffuse.g = 0;
             diffuse.b = 0;
         }
         else
         {
-            c.r = 1;
-            c.g = 1;
-            c.b = 1;
             diffuse.r = 1;
             diffuse.g = 1;
             diffuse.b = 1;

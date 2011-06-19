@@ -9,9 +9,9 @@ Cube::Cube(double x, double y, double z, double xSide, double ySide, double zSid
     centre.x = x;
     centre.y = y;
     centre.z = z;
-    c.r = rC;
-    c.g = gC;
-    c.b = bC;
+    diffuse.r = rC;
+    diffuse.g = gC;
+    diffuse.b = bC;
 
     /* Now, defines each vertix. */
     /* - - - */
