@@ -292,7 +292,7 @@ void sceneFive()
 void addTree(int objectNo, double x, double z)
 {
      /* Cubes initialization. */
-    Cube *cube = new Cube(x, 25, z, 20, 50, 20, 0.55, 0.27, 0.07);
+    Cube *cube = new Cube(x, 25, z, 20, 50, 10, 0.55, 0.27, 0.07);
     (*cube).setReflection(0.0);
     (*cube).setShininess(10);
     (*cube).setSpecular(1, 1, 1);
@@ -301,10 +301,10 @@ void addTree(int objectNo, double x, double z)
     objects[objectNo] = cube;
 
         /* Spheres initialization. */
-    Sphere *sphere = new Sphere(x, 100 , z, 50.0, 0.13, 0.55, 0.13);
+    Sphere *sphere = new Sphere(x, 65 , z, 30.0, 0.13, 0.55, 0.13);
     (*sphere).setReflection(0.2);
-    (*sphere).setShininess(50);
-    (*sphere).setSpecular(1, 1, 1);
+    (*sphere).setShininess(40);
+    (*sphere).setSpecular(0.2, 0.8, 0.2);
     (*sphere).setRefraction(0.0);
 
     objects[objectNo + 1] = sphere;
@@ -335,7 +335,7 @@ void sceneMountain()
     /* First, allocates enough space for all the structures.*/
     int i;
 
-    noObjects = 98;
+    noObjects = 114;
     noLights = 2;
 
     objects = new Object *[noObjects];
@@ -414,9 +414,17 @@ void sceneMountain()
     objects[91] = cube;
 
     /* Adding some trees to the scenario. */
-    addTree(92, 200.0, 200.0);
-    addTree(94, 210.0, 190.0);
-    addTree(96, 225.0, 170.0);
+    addTree(92, -50.0, 220.0);
+    addTree(98, 200.0, 70.0);
+    addTree(102, 290.0, 200.0);
+    addTree(94, 500.0, 90.0);
+    addTree(96, 700.0, 140.0);
+    addTree(106, 950.0, 200.0);
+    addTree(108, 1150.0, 50.0);
+    addTree(100, 1500.0, 135.0);
+    addTree(104, 1750.0, 270.0);
+    addTree(110, 1800.0, 500.0);
+    addTree(112, 1450.0, 380.0);
 
     /* Lights initialization. */
     //lights[0] = Light(300,10000,6000, 1.0, 1, 1, 1);
@@ -496,43 +504,6 @@ void sceneChess()
     lights[1] = Light(300,400,-6000, 1.0, 1, 1, 1);
 }
 
-void tempScene()
-{
-    /* First, allocates enough space for all the structures.*/
-    noObjects = 4;
-    noLights = 2;
-
-    objects = new Object *[noObjects];
-    lights = new Light[noLights];
-
-    /* Back wall: the sky..*/
-    vector normalOne = {0, 0, -1};
-    Plane *plane = new Plane(0,0,10000, normalOne, 0.55,0.27,0.075);
-    (*plane).setReflection(0.0);
-    (*plane).setShininess(50);
-    (*plane).setSpecular(0.1, 0.1, 0.1);
-    (*plane).setRefraction(0);
-
-    objects[0] = plane;
-
-    /* Ground. */
-    vector normalZero = {0, 1, 0};
-    plane = new Plane(0,0,0, normalZero, 0.35,0.27,0.075);
-    (*plane).setReflection(0.0);
-    (*plane).setShininess(20);
-    (*plane).setSpecular(0.6, 0.6, 0.6);
-    (*plane).setRefraction(0.0);
-
-    objects[1] = plane;
-
-
-
-    /* Lights initialization. */
-    //lights[0] = Light(300,10000,6000, 1.0, 1, 1, 1);
-    lights[0] = Light(600,4000,-1000, 1.0, 1, 0.5, 0.5);
-    lights[1] = Light(4000,800,500, 1.0, 1, 0.5, 0.5);
-}
-
 /* No works at the scene selection. */
 void buildScene(int no)
 {
@@ -546,7 +517,6 @@ void buildScene(int no)
         case 5: sceneFive(); return;
         case 6: sceneMountain(); return;
         case 7: sceneChess(); return;
-        case 8: tempScene(); return;
         default: sceneOne(); printf("WARNING: No valid scenarion has been choosen. Will set scenario one...\n");
     }
 
