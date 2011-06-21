@@ -36,6 +36,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/1472/rayTracer.o \
 	${OBJECTDIR}/_ext/1472/Plane.o \
 	${OBJECTDIR}/_ext/1472/scene.o \
+	${OBJECTDIR}/_ext/1472/Triangle.o \
 	${OBJECTDIR}/_ext/1472/PlaneChess.o \
 	${OBJECTDIR}/_ext/1472/Object.o \
 	${OBJECTDIR}/_ext/1472/Light.o \
@@ -83,6 +84,11 @@ ${OBJECTDIR}/_ext/1472/scene.o: ../scene.cpp
 	${MKDIR} -p ${OBJECTDIR}/_ext/1472
 	${RM} $@.d
 	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1472/scene.o ../scene.cpp
+
+${OBJECTDIR}/_ext/1472/Triangle.o: ../Triangle.cpp 
+	${MKDIR} -p ${OBJECTDIR}/_ext/1472
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1472/Triangle.o ../Triangle.cpp
 
 ${OBJECTDIR}/_ext/1472/PlaneChess.o: ../PlaneChess.cpp 
 	${MKDIR} -p ${OBJECTDIR}/_ext/1472

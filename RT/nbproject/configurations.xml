@@ -13,6 +13,7 @@
       <itemPath>../PlaneChess.h</itemPath>
       <itemPath>../Ray.h</itemPath>
       <itemPath>../Sphere.h</itemPath>
+      <itemPath>../Triangle.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -30,6 +31,7 @@
       <itemPath>../PlaneChess.cpp</itemPath>
       <itemPath>../Ray.cpp</itemPath>
       <itemPath>../Sphere.cpp</itemPath>
+      <itemPath>../Triangle.cpp</itemPath>
       <itemPath>../main.cpp</itemPath>
       <itemPath>../rayTracer.cpp</itemPath>
       <itemPath>../scene.cpp</itemPath>

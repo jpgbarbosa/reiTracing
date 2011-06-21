@@ -2,6 +2,7 @@
 #include <cmath>
 /* Defines the needed classes and their headers. */
 #include "Sphere.h"
+#include "Triangle.h"
 #include "Cube.h"
 #include "Ray.h"
 #include "Light.h"
@@ -587,6 +588,37 @@ void sceneChess()
     lights[1] = Light(300,400,-6000, 1.0, 1, 1, 1);
 }
 
+/* SCENE DESCRIPTION:
+ *    -> The triangle scene test.
+ */
+void sceneTriangles()
+{
+
+    /* First, allocates enough space for all the structures.*/
+    noObjects = 1;
+    noLights = 1;
+
+    objects = new Object *[noObjects];
+    lights = new Light[noLights];
+
+    /* Triangles initialization. */
+    Triangle *triangle = new Triangle(1.0, 0.0, 0.0);
+    (*triangle).setVertix(2, 700, 400, 1000);
+    (*triangle).setVertix(1, 900, 400, 200);
+    (*triangle).setVertix(0, 800, 700, 1700);
+    (*triangle).setNormal();
+    (*triangle).setReflection(0.0);
+    (*triangle).setShininess(50);
+    (*triangle).setSpecular(1, 1, 1);
+    (*triangle).setRefraction(0.0);
+
+    objects[0] = triangle;
+
+    /* Lights initialization. */
+    lights[0] = Light(0,10000,6000, 1.0, 1, 1, 1);
+
+}
+
 /* No works at the scene selection. */
 void buildScene(int no)
 {
@@ -601,6 +633,7 @@ void buildScene(int no)
         case 6: sceneMountain(); return;
         case 7: sceneChess(); return;
         case 8: sceneTemp(); return;
+        case 9: sceneTriangles(); return;
         default: sceneOne(); printf("WARNING: No valid scenarion has been choosen. Will set scenario one...\n");
     }
 
