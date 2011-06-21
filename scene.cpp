@@ -595,8 +595,8 @@ void sceneTriangles()
 {
 
     /* First, allocates enough space for all the structures.*/
-    noObjects = 1;
-    noLights = 1;
+    noObjects = 3;
+    noLights = 2;
 
     objects = new Object *[noObjects];
     lights = new Light[noLights];
@@ -614,8 +614,33 @@ void sceneTriangles()
 
     objects[0] = triangle;
 
+    triangle = new Triangle(0.0, 1.0, 0.0);
+    (*triangle).setVertix(2, 800, 700, 1700);
+    (*triangle).setVertix(1, 900, 400, 200);
+    (*triangle).setVertix(0, 1200, 700, 500);
+    (*triangle).setNormal();
+    (*triangle).setReflection(0.0);
+    (*triangle).setShininess(50);
+    (*triangle).setSpecular(1, 1, 1);
+    (*triangle).setRefraction(0.0);
+
+    objects[1] = triangle;
+
+    triangle = new Triangle(0.0, 0.0, 1.0);
+    (*triangle).setVertix(2, 900, 400, 200);
+    (*triangle).setVertix(1, 1600, 500, 1000);
+    (*triangle).setVertix(0, 1200, 700, 500);
+    (*triangle).setNormal();
+    (*triangle).setReflection(0.0);
+    (*triangle).setShininess(50);
+    (*triangle).setSpecular(1, 1, 1);
+    (*triangle).setRefraction(0.0);
+
+    objects[2] = triangle;
+
     /* Lights initialization. */
     lights[0] = Light(0,10000,6000, 1.0, 1, 1, 1);
+    lights[0] = Light(800,700,-6000, 1.0, 1, 1, 1);
 
 }
 
